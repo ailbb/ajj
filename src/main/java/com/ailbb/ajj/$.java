@@ -353,7 +353,7 @@ public class $ {
             return path;
         }
 
-        return $.rel(p.substring(0, p.indexOf("com")) + path);
+        return $.rel(p.substring(0, p.lastIndexOf("com")) + path);
     }
 
     public static String rel(String... path){
