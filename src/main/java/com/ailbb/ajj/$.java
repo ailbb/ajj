@@ -28,7 +28,17 @@ public class $ {
     protected static Map<String, Proxy> $PROXY = new HashMap<String, Proxy>();
 
     static {
-        initProxy($PROXY_PATH);
+        boolean inited = false;
+
+        $.info("Ajj init...");
+
+        if(new File(getPath($PROXY_PATH)).exists()) inited = initProxy($PROXY_PATH);
+
+        if(!inited){
+            $.info("Use default file.");
+            String p = $.class.getResource("").getPath().replaceFirst("file:", "");
+            initProxy($.rel(p.substring(0, p.lastIndexOf("com")), $.$PROXY_PATH));
+        }
     }
 
     private static boolean initProxy(final String $PATH) {
@@ -42,7 +52,8 @@ public class $ {
                 $PROXY.put(proxy.getServerName(), proxy);
             }
         } catch (Exception e) {
-            $.warn(e);
+            $.warn("File is load error! " + e);
+            return false;
         }
 
         new Thread(new Runnable() {
@@ -278,15 +289,14 @@ public class $ {
 
         String content = "";
         InputStream is;
-        String $JAR_PATH = ".jar!";
 
         try {
             path = getPath(path);
 
             $.info(String.format("Read file：%s", path));
 
-            if($.test("\\.jar!", path)) { // 如果内容在jarb包内，则用流去读取
-                is = $.class.getResourceAsStream(path.substring(path.lastIndexOf($JAR_PATH) + $JAR_PATH.length(), path.length()));
+            if($.test("\\.jar!", path)) { // 如果内容在jar包内，则用流去读取
+                is = new URL("jar:file:" + path).openConnection().getInputStream();
             } else {
                 is = new FileInputStream(new File(path));
             }
@@ -343,17 +353,15 @@ public class $ {
     }
 
     public static String getPath(String path){
-        String p = $.class.getResource("").getPath().replaceFirst("file:", "");
-
         if($.system().equals("windows")) {
-            if($.test("^[A-Za-z]:", path)) return $.rel("/", path);
+            if($.test("^[A-Za-z]:", path) || $.test("/[A-Za-z]:", path)  ) return $.rel("/", path);
         } else if($.system().equals("linux")) {
             if(path.startsWith("/")) return $.rel(path);
         } else {
             return path;
         }
 
-        return $.rel(p.substring(0, p.lastIndexOf("com")) + path);
+        return $.rel(Thread.currentThread().getContextClassLoader().getResource("").getPath(), path);
     }
 
     public static String rel(String... path){
