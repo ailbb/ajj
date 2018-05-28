@@ -9,6 +9,23 @@ import java.util.Arrays;
 public class HelloAjj {
     public static void main(String[] args) throws Exception {
         double q = Math.random();
+        if(q>1) return;
+
+        $.sout($.rel("C:/windows/system32/drivers/etc/HOSTS/", "../nihao/abc"));
+        $.sout($.rel("C:/windows/system32/drivers/etc/HOSTS", "../nihao/abc"));
+        $.sout($.rel("C:/windows/system32/drivers/etc/HOSTS", "./nihao/abc"));
+        $.sout($.rel("C:/windows/system32/drivers/etc/HOSTS", "nihao/abc"));
+
+        $.sout($.indexOfList("/", "C:/windows/system32/drivers/etc/HOSTS/"));
+
+        $.sout($.getPath(""));
+        $.sout($.getPath("."));
+        $.sout($.getPath("../nihao/abc"));
+
+        $.sout($.concat(null, "", "a", "<", "|", "nihao"));
+        $.sout($.concat());
+        $.copyFile("D:\\Z\\Work\\Project\\20171215!-【BigData】\\mr相关\\环境部署", "C:\\Users\\sirzh\\Desktop", true);
+
 
         $.sout($.readFile("ajj.json"));
 

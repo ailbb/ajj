@@ -8,6 +8,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -19,25 +20,38 @@ import com.ailbb.ajj.Ajax.Callback;
  * Created by Wz on 5/9/2018.
  */
 public class $ {
-    protected static final String $HTTP = "HTTP";
-    protected static final String $GET = "GET";
-    protected static final String $POST = "POST";
     protected static final int $PORT = 80;
     protected static final long $TIMEOUT = 100000;
     protected static final String $PROXY_PATH = "ajj.json";
     protected static Map<String, Proxy> $PROXY = new HashMap<String, Proxy>();
 
+    public static final String $HTTP = "HTTP";
+    public static final String $GET = "GET";
+    public static final String $POST = "POST";
+
+    // units
+    public static final String $BYTE = "byte";
+    public static final String $KB = "KB";
+    public static final String $MB = "MB";
+    public static final String $GB = "GB";
+    public static final String $TB = "TB";
+    public static final String $PB = "PB";
+    public static final String $EB = "EB";
+    public static final String $ZB = "ZB";
+    public static final String $YB = "$YB";
+    public static final String $BB = "BB";
+
     static {
         boolean inited = false;
 
-        $.info("Ajj init...");
+        info("Ajj init...");
 
         if(new File(getPath($PROXY_PATH)).exists()) inited = initProxy($PROXY_PATH);
 
         if(!inited){
-            $.info("Use default file.");
+            info("Use default file.");
             String p = $.class.getResource("").getPath().replaceFirst("file:", "");
-            initProxy($.rel(p.substring(0, p.lastIndexOf("com")), $.$PROXY_PATH));
+            initProxy(rel(p.substring(0, p.lastIndexOf("com")), $PROXY_PATH));
         }
     }
 
@@ -52,7 +66,7 @@ public class $ {
                 $PROXY.put(proxy.getServerName(), proxy);
             }
         } catch (Exception e) {
-            $.warn("File is load error! " + e);
+            warn("File is load error! " + e);
             return false;
         }
 
@@ -63,7 +77,7 @@ public class $ {
                     try {
                         Thread.sleep($TIMEOUT);
                     } catch (InterruptedException e) {
-                        $.warn(e);
+                        warn(e);
                         break;
                     }
                 }
@@ -115,7 +129,7 @@ public class $ {
         try {
             return JSONObject.fromObject(ajax(ajax.setType($GET)));
         } catch (Exception e) {
-            $.error(e);
+            error(e);
             return null;
         }
     }
@@ -124,13 +138,13 @@ public class $ {
         try {
             return JSONArray.fromObject(ajax(ajax.setType($GET)));
         } catch (Exception e) {
-            $.error(e);
+            error(e);
             return null;
         }
     }
 
     public static String getIp(String... name){
-        InetAddress inetAddress = getInetAddress($.last(name));
+        InetAddress inetAddress = getInetAddress(last(name));
 
         return null == inetAddress ? "localhost" : inetAddress.getHostAddress();
     }
@@ -140,10 +154,10 @@ public class $ {
             if(null == name) {
                 return InetAddress.getLocalHost();
             } else {
-                return InetAddress.getByName($.last(name));
+                return InetAddress.getByName(last(name));
             }
         } catch (Exception e) {
-            $.error(e);
+            error(e);
         }
 
         return null;
@@ -153,7 +167,7 @@ public class $ {
         String data = null;
 
         if(null == ajax.getUrl()) {
-            $.error(String.format("request url is null! [%s]", ajax));
+            error(String.format("request url is null! [%s]", ajax));
             return data;
         }
 
@@ -170,7 +184,7 @@ public class $ {
             Callback callback = ajax.getCallback();
 
             try {
-                $.info(String.format("Send %s request：%s", ajax.getType(), ajax.getUrl()));
+                info(String.format("Send %s request：%s", ajax.getType(), ajax.getUrl()));
 
                 data = ajax.getType().equals($GET) ? sendGet(ajax) : sendPost(ajax);
 
@@ -178,7 +192,7 @@ public class $ {
                 if(null != callback) callback.success(data);
 
             } catch (Exception e) {
-                $.error(e);
+                error(e);
 
                 if(null != callback) callback.error(e.toString());
             }
@@ -217,7 +231,7 @@ public class $ {
             Map<String, List<String>> map = conn.getHeaderFields();
             // 遍历所有的响应头字段
 //            for (String key : map.keySet()) {
-//               $.sout(key + "--->" + map.get(key));
+//               sout(key + "--->" + map.get(key));
 //            }
             // 定义 BufferedReader输入流来读取URL的响应
             in = new BufferedReader(new InputStreamReader(
@@ -232,7 +246,7 @@ public class $ {
             try{
                 if(in!=null) in.close();
             } catch(IOException ex){
-                $.warn(ex);
+                warn(ex);
             }
         }
 
@@ -276,7 +290,7 @@ public class $ {
                 if(out!=null) out.close();
                 if(in!=null) in.close();
             } catch(IOException ex){
-                $.warn(ex);
+                warn(ex);
             }
         }
 
@@ -293,12 +307,12 @@ public class $ {
         try {
             path = getPath(path);
 
-            $.info(String.format("Read file：%s", path));
+            info(String.format("Read file：%s", path));
 
-            if($.test("\\.jar!", path)) { // 如果内容在jar包内，则用流去读取
+            if(test("\\.jar!", path)) { // 如果内容在jar包内，则用流去读取
                 is = new URL("jar:file:" + path).openConnection().getInputStream();
             } else {
-                is = new FileInputStream(new File(path));
+                is = new FileInputStream(getFile(path));
             }
 
             if(null == is) throw new FileNotFoundException(path);
@@ -312,7 +326,7 @@ public class $ {
             }
             bis.close();
         } catch (Exception e) {
-            $.error(e);
+            error(e);
         }
 
         return content;
@@ -322,17 +336,17 @@ public class $ {
         if(null == path) return;
 
         path = getPath(path);
-        File file = new File(path);
+        File file = getFile(path);
         FileWriter fw = null;
         try {
-            $.info(String.format("Write file：%s", path));
+            info(String.format("Write file：%s", path));
 
-            $.mkdir(path.substring(0, path.lastIndexOf("/")));
+            mkdir(path.substring(0, path.lastIndexOf("/")));
             fw = new FileWriter(file);
             if(null != object) for(Object o : object) fw.write(o.toString());
             fw.flush();
         } catch (Exception e) {
-            $.error(e);
+            error(e);
         } finally {
             try {
                 if(null != fw) fw.close();
@@ -342,36 +356,115 @@ public class $ {
         }
     }
 
+    public static void copyFile(String sourcePath, String destPath) {
+        copyFile(sourcePath, destPath, false);
+    }
+
+    public static void copyFile(String sourcePath, String destPath, boolean isReplace) {
+        if(!isExists(sourcePath)) return;
+
+        // format path
+        sourcePath = getPath(sourcePath);
+        destPath = getPath(destPath);
+        File sfile = getFile(sourcePath);
+        File dfile = getFile(destPath);
+
+        if(!isFile(sourcePath)) {
+            if(!dfile.exists()) dfile.mkdirs();
+
+            for(String s: sfile.list()) {
+                copyFile(concat(sourcePath, "/", s), concat(destPath, "/", s), isReplace);
+            }
+        } else if(dfile.exists() && !isReplace) {
+            warn(String.format("%s is exists! -> %s", destPath, convert(dfile.length())));
+        } else {
+            FileChannel inputChannel = null;
+            FileChannel outputChannel = null;
+            try {
+                info(String.format("Copy file：%s -> %s -> %s", sourcePath, destPath, convert(sfile.length())));
+                inputChannel = new FileInputStream(sfile).getChannel();
+                outputChannel = new FileOutputStream(dfile).getChannel();
+                outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
+            } catch (Exception e) {
+                error(e);
+            } finally {
+                try {
+                    inputChannel.close();
+                    outputChannel.close();
+                } catch (Exception e) {
+                    warn(e);
+                }
+            }
+        }
+    }
+
+    public static boolean isFile(String path){
+        return getFile(path).isFile();
+    }
+
+    public static boolean isExists(String path){
+        return getFile(path).exists();
+    }
+
+    public static File getFile(String path){
+        return new File(getPath(path));
+    }
+
     public static void mkdir(String... path) {
         for(String p : path) {
             File file = new File(getPath(p));
             if(!file.exists()) {
-                $.info(String.format("Make directory：%s", p));
+                info(String.format("Make directory：%s", p));
                 file.mkdirs();
             }
         }
     }
 
     public static String getPath(String path){
-        if($.system().equals("windows")) {
-            if($.test("^[A-Za-z]:", path) || $.test("/[A-Za-z]:", path)  ) return $.rel("/", path);
-        } else if($.system().equals("linux")) {
-            if(path.startsWith("/")) return $.rel(path);
+        String pr = null;
+        if(system().equals("windows")) {
+            if(test("^[A-Za-z]:", path) || test("/[A-Za-z]:", path)  ) pr = rel("/", path);
+        } else if(system().equals("linux")) {
+            if(path.startsWith("/")) pr = rel(path);
         } else {
-            return path;
+            pr = path;
         }
 
-        return $.rel(Thread.currentThread().getContextClassLoader().getResource("").getPath(), path);
+        return isEmptyOrNull(pr) ? rel(Thread.currentThread().getContextClassLoader().getResource("").getPath(), path) : pr;
+    }
+
+    public static String concat(String... str){
+        StringBuffer p = new StringBuffer();
+        for(String pa : str) p.append(null == pa ? "" : pa);
+        return p.toString();
     }
 
     public static String rel(String... path){
-        if($.isEmptyOrNull(path)) return "/";
         String p = "";
-        for(String pa : path) p += pa;
-        return p.replaceAll("\\\\+|/+", "/");
+        for(String pa : path) {
+            pa = (isEmptyOrNull(pa) ? "" : pa).replaceAll("^\\.|$\\.", "").replaceAll("\\\\+|/+", "/"); // 去掉当前目录
+
+            if(test("^\\.", pa)) { // 切割层级
+                int level = regex("/\\.\\./", pa).size() + 1; // 需要向上递归层级个数
+                List<Integer> ss = indexOfList("/", (p + "/").replaceAll("\\\\+|/+", "/")); // 源目录有多少级
+
+                 // 如果源目录级别大于需要递归的层级，则向上递归，否则，为根目录
+                p = p.substring(0,
+                        ss.size() > level ?
+                        ss.get(ss.size() - level - 1) :
+                        ss.get(0)
+                );
+
+                pa = pa.replaceAll("/\\.\\./", "");
+            }
+
+            p = concat(p, "/", pa).replaceAll("\\\\+|/+", "/");
+        }
+
+        return p;
     }
 
-     //* Thread area
+    //* Thread area
 
     public static void async(Runnable r){
         new Thread(r).start();
@@ -380,7 +473,7 @@ public class $ {
      //* date area
 
     public static String now(String... ns){
-        String n = $.lastDef("s", ns);
+        String n = lastDef("s", ns);
         if(n.equals("s")) return format("YYYY-MM-dd HH:mm:ss"); // stand
         if(n.equals("ss")) return format("YYYY-MM-dd HH:mm:ss.S"); // stand millisecond
         if(n.equals("n")) return format("YYYYMMddHHmmss"); // number
@@ -390,18 +483,33 @@ public class $ {
     }
 
     public static String format(String patten, Date... date){
-        return new SimpleDateFormat(patten).format($.isEmptyOrNull(date) ? new Date() : date[date.length-1]);
+        return new SimpleDateFormat(patten).format(isEmptyOrNull(date) ? new Date() : date[date.length-1]);
     }
 
     public static Date parse(String date, String... patten) {
         try {
-            return new SimpleDateFormat($.lastDef("YYYY-MM-dd HH:mm:ss", patten)).parse(date);
+            return new SimpleDateFormat(lastDef("YYYY-MM-dd HH:mm:ss", patten)).parse(date);
         } catch (Exception e) {
             return null;
         }
     }
 
      //* util area
+
+    public static List<Integer> indexOfList(String r, String str) {
+        List<Integer> li = new ArrayList<>();
+
+        if(isEmptyOrNull(str)) return li;
+
+        int i = -1;
+
+        while((i= str.indexOf(r)) != -1) {
+            li.add(i + (li.size() > 0 ? li.get(li.size()-1) + 1 : 0));
+            str =  str.substring(i + 1, str.length());
+        }
+
+        return li;
+    }
 
     public static List<String> regex(String pattern, String... str) {
         List<String> list = new ArrayList<String>();
@@ -432,6 +540,38 @@ public class $ {
         return false;
     }
 
+    /**
+     * byte to anything
+     * @param num
+     * @return
+     */
+    public static String convert(double num) {
+        return convert(num, $BYTE);
+    }
+
+    /**
+     * byte to anything
+     * @param num
+     * @return
+     */
+    public static String convert(double num, String unit) {
+        if(isEmptyOrNull(unit)) return convert(num);
+
+        if(num >= 1024) {
+            if(unit.equals($BYTE)) return convert(num/1024, $KB);
+            if(unit.equals($KB)) return convert(num/1024, $MB);
+            if(unit.equals($MB)) return convert(num/1024, $GB);
+            if(unit.equals($GB)) return convert(num/1024, $TB);
+            if(unit.equals($TB)) return convert(num/1024, $PB);
+            if(unit.equals($PB)) return convert(num/1024, $EB);
+            if(unit.equals($EB)) return convert(num/1024, $ZB);
+            if(unit.equals($ZB)) return convert(num/1024, $YB);
+            if(unit.equals($YB)) return convert(num/1024, $BB);
+        }
+
+        return String.format("%.2f %s", num, unit);
+    }
+
     public static String join(Collection list, Object... u){
         if(null == list) return null;
 
@@ -440,7 +580,7 @@ public class $ {
 
         for(Object l : list) {
             if(null != l) sb.append(l);
-            if(++i != list.size())  if(!$.isEmptyOrNull(u)) {
+            if(++i != list.size())  if(!isEmptyOrNull(u)) {
                 for (Object ui: u) sb.append(ui);
             }
         }
@@ -453,7 +593,7 @@ public class $ {
     }
 
     public static String firstDef(String def, String... strs) {
-        return $.isEmptyOrNull(strs) ? def : strs[0];
+        return isEmptyOrNull(strs[0]) ? def : strs[0];
     }
 
     public static String last(String... strs) {
@@ -461,7 +601,7 @@ public class $ {
     }
 
     public static String lastDef(String def, String... strs) {
-        return $.isEmptyOrNull(strs) ? def : strs[strs.length-1];
+        return isEmptyOrNull(strs[strs.length-1]) ? def : strs[strs.length-1];
     }
 
     public static boolean isEmptyOrNull(Object... o){
@@ -499,7 +639,7 @@ public class $ {
 
     public static void sout(Object... o){
         for(Object oi : o)
-            System.out.println(String.format($.now("s") + "\t%s", oi));
+            System.out.println(String.format(now("s") + "\t%s", oi));
     }
 
     private static class $Exception extends Exception {
