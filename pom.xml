@@ -6,12 +6,12 @@
 
     <groupId>com.ailbb</groupId>
     <artifactId>ajj</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.5-SNAPSHOT</version>
 
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
-    <url>https://github.com/ailbb/ajj</url>
+    <url>https://github.com/ailbb/${artifactId}</url>
     <description>Ailbb jquery for java</description>
 
     <licenses>
@@ -32,12 +32,12 @@
 
     <scm>
         <connection>
-            scm:git:https://github.com/ailbb/ajj.git
+            scm:git:https://github.com/ailbb/${artifactId}.git
         </connection>
         <developerConnection>
-            scm:git:https://github.com/ailbb/ajj.git
+            scm:git:https://github.com/ailbb/${artifactId}.git
         </developerConnection>
-        <url>https://github.com/ailbb/ajj</url>
+        <url>https://github.com/ailbb/${artifactId}</url>
         <tag>vv${project.version}</tag>
     </scm>
 
@@ -53,6 +53,8 @@
     </distributionManagement>
 
     <build>
+        <finalName>${artifactId}-${version}</finalName>
+
         <plugins>
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
@@ -108,6 +110,40 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!--About build jar-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>${groupId}.${artifactId}.Application</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -115,8 +151,16 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <encoding>UTF-8</encoding>
+        <!--<java.version>1.7</java.version>--> <!--Don't specify the version-->
 
         <version.jsonlib>2.4</version.jsonlib>
+        <version.servlet>3.0.1</version.servlet>
+
+        <version.velocity>1.7</version.velocity>
+        <version.velocity.tools>2.0</version.velocity.tools>
+        <version.ssh>262</version.ssh>
+        <version.ftp>3.6</version.ftp>
+        <version.jsch>0.1.54</version.jsch>
     </properties>
 
     <dependencies>
@@ -126,6 +170,48 @@
             <artifactId>json-lib</artifactId>
             <version>${version.jsonlib}</version>
             <classifier>jdk15</classifier>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${version.servlet}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity -->
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+            <version>${version.velocity}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity-tools -->
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity-tools</artifactId>
+            <version>${version.velocity.tools}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/ch.ethz.ganymed/ganymed-ssh2 -->
+        <dependency>
+            <groupId>ch.ethz.ganymed</groupId>
+            <artifactId>ganymed-ssh2</artifactId>
+            <version>${version.ssh}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/commons-net/commons-net - FTP -->
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+            <version>${version.ftp}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.jcraft/jsch -->
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <version>${version.jsch}</version>
         </dependency>
 
     </dependencies>

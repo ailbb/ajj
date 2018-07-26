@@ -1,651 +1,366 @@
 package com.ailbb.ajj;
 
+import com.ailbb.ajj.date.$Date;
+import com.ailbb.ajj.file.$File;
+import com.ailbb.ajj.file.$Path;
+import com.ailbb.ajj.ftp.$Ftp;
+import com.ailbb.ajj.http.*;
+import com.ailbb.ajj.lang.$Json;
+import com.ailbb.ajj.lang.$List;
+import com.ailbb.ajj.lang.$Object;
+import com.ailbb.ajj.lang.$String;
+import com.ailbb.ajj.linux.$Linux;
+import com.ailbb.ajj.log.$Logger;
+import com.ailbb.ajj.regex.$Regex;
+import com.ailbb.ajj.sys.$System;
+import com.ailbb.ajj.thread.$Thread;
+import com.ailbb.ajj.unit.$Unit;
 import net.sf.json.JSONArray;
-import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 
-import java.io.*;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.channels.FileChannel;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import com.ailbb.ajj.Ajax.Callback;
 
 /**
  * Created by Wz on 5/9/2018.
  */
 public class $ {
-    protected static final int $PORT = 80;
-    protected static final long $TIMEOUT = 100000;
-    protected static final String $PROXY_PATH = "ajj.json";
-    protected static Map<String, Proxy> $PROXY = new HashMap<String, Proxy>();
+    public static String $ = "ailbb";
+    public static String $NAME = $;
+    public static String $ROOT = "/" + $;
+    
+    public static final long $TIMEOUT = 100000;
+    public static final String $PROXY_PATH = "ajj.json";
 
-    public static final String $HTTP = "HTTP";
-    public static final String $GET = "GET";
-    public static final String $POST = "POST";
+    public static Map<String, Proxy> $PROXY = new HashMap<String, Proxy>();
 
-    // units
-    public static final String $BYTE = "byte";
-    public static final String $KB = "KB";
-    public static final String $MB = "MB";
-    public static final String $GB = "GB";
-    public static final String $TB = "TB";
-    public static final String $PB = "PB";
-    public static final String $EB = "EB";
-    public static final String $ZB = "ZB";
-    public static final String $YB = "$YB";
-    public static final String $BB = "BB";
+    // http
+    public static $Http http = new $Http();
+    public static $Url url = new $Url();
+    public static $Velocity velocity = new $Velocity();
+
+    // file
+    public static $File file = new $File();
+    public static $Path path = new $Path();
+
+    // date
+    public static $Date date = new $Date();
+
+    // thread
+    public static $Thread thread = new $Thread();
+
+    // regex
+    public static $Regex regex = new $Regex();
+
+    // unit
+    public static $Unit unit = new $Unit();
+
+    // lang
+    public static $Json json = new $Json();
+    public static $String string = new $String();
+    public static $Object object = new $Object();
+    public static $List list = new $List();
+
+    // system
+    public static $System system = new $System();
+
+    // log
+    public static $Logger logger = new $Logger();
+
+    // ftp
+    public static $Ftp ftp = new $Ftp();
+
+    // linux
+    public static $Linux linux = new $Linux();
 
     static {
-        boolean inited = false;
-
-        info("Ajj init...");
-
-        if(new File(getPath($PROXY_PATH)).exists()) inited = initProxy($PROXY_PATH);
-
-        if(!inited){
-            info("Use default file.");
-            String p = $.class.getResource("").getPath().replaceFirst("file:", "");
-            initProxy(rel(p.substring(0, p.lastIndexOf("com")), $PROXY_PATH));
-        }
+        Proxy.init();
     }
+    
+    public static $ $(){ return new $(); }
 
-    private static boolean initProxy(final String $PATH) {
-        try {
-            JSONArray ja = JSONArray.fromObject(readFile($PATH));
-
-            $PROXY.clear();
-
-            for(Object o : ja) {
-                Proxy proxy = (Proxy)JSONObject.toBean(JSONObject.fromObject(o), Proxy.class);
-                $PROXY.put(proxy.getServerName(), proxy);
-            }
-        } catch (Exception e) {
-            warn("File is load error! " + e);
-            return false;
-        }
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while(initProxy($PATH)) {
-                    try {
-                        Thread.sleep($TIMEOUT);
-                    } catch (InterruptedException e) {
-                        warn(e);
-                        break;
-                    }
-                }
-            }
-        });
-
-        return true;
-    }
-
-     //* ajax area
+     //* Http area
 
     public static String get(String url){
-        return get(new Ajax(url));
+        return http.get(url);
     }
 
     public static String post(String url){
-        return post(new Ajax(url));
+        return http.post(url);
     }
 
     public static JSONObject getJSON(String url){
-        return getJSON(new Ajax(url));
+        return http.getJSON(url);
     }
 
     public static JSONObject getJSONObject(String url){
-        return getJSONObject(new Ajax(url));
+        return http.getJSONObject(url);
     }
 
     public static JSONArray getJSONArray(String url){
-        return getJSONArray(new Ajax(url));
+        return http.getJSONArray(url);
     }
 
     public static String ajax(String url){
-        return ajax(new Ajax(url));
+        return http.ajax(url);
     }
 
     public static String get(Ajax ajax){
-        return ajax(ajax.setType($GET));
+        return http.get(ajax);
     }
 
     public static String post(Ajax ajax){
-        return ajax(ajax.setType($POST));
+        return http.post(ajax);
     }
 
     public static JSONObject getJSON(Ajax ajax){
-        return getJSONObject(ajax.setType($GET));
+        return http.getJSON(ajax);
     }
 
     public static JSONObject getJSONObject(Ajax ajax) {
-        try {
-            return JSONObject.fromObject(ajax(ajax.setType($GET)));
-        } catch (Exception e) {
-            error(e);
-            return null;
-        }
+        return http.getJSONObject(ajax);
     }
 
     public static JSONArray getJSONArray(Ajax ajax) {
-        try {
-            return JSONArray.fromObject(ajax(ajax.setType($GET)));
-        } catch (Exception e) {
-            error(e);
-            return null;
-        }
+        return http.getJSONArray(ajax);
     }
 
     public static String getIp(String... name){
-        InetAddress inetAddress = getInetAddress(last(name));
-
-        return null == inetAddress ? "localhost" : inetAddress.getHostAddress();
+        return http.getIp(name);
     }
 
     public static InetAddress getInetAddress(String... name) {
-        try {
-            if(null == name) {
-                return InetAddress.getLocalHost();
-            } else {
-                return InetAddress.getByName(last(name));
-            }
-        } catch (Exception e) {
-            error(e);
-        }
-
-        return null;
+        return http.getInetAddress(name);
     }
 
     public static String ajax(final Ajax ajax) {
-        String data = null;
-
-        if(null == ajax.getUrl()) {
-            error(String.format("request url is null! [%s]", ajax));
-            return data;
-        }
-
-        if(ajax.isAsync()) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    ajax(ajax.setAsync(false));
-                }
-            }).start();
-
-            return data;
-        } else {
-            Callback callback = ajax.getCallback();
-
-            try {
-                info(String.format("Send %s request：%s", ajax.getType(), ajax.getUrl()));
-
-                data = ajax.getType().equals($GET) ? sendGet(ajax) : sendPost(ajax);
-
-                if(null != callback) callback.complete(data);
-                if(null != callback) callback.success(data);
-
-            } catch (Exception e) {
-                error(e);
-
-                if(null != callback) callback.error(e.toString());
-            }
-
-            return data;
-        }
+        return http.ajax(ajax);
     }
 
     private static String sendGet(Ajax ajax) throws Exception {
-        String result = "";
-        BufferedReader in = null;
-        try {
-            String requestUrl = ajax.getUrl();
-
-            if(ajax.getData() != null) {
-                requestUrl += "?";
-
-                for(Object o : ajax.getData().keySet()) {
-                    Object ad = ajax.getData().get(o);
-                    if(null != ad && !(ad instanceof JSONNull)) requestUrl += String.format("%s=%s&", o, ad);
-                }
-                requestUrl = requestUrl.substring(0, requestUrl.length()-1);
-            }
-
-            URL realUrl = new URL(requestUrl);
-            // 打开和URL之间的连接
-            URLConnection conn = realUrl.openConnection();
-            // 设置通用的请求属性
-            conn.setRequestProperty("accept", "*/*");
-            conn.setRequestProperty("connection", "Keep-Alive");
-            conn.setRequestProperty("user-agent",
-                    "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
-            // 建立实际的连接
-            conn.connect();
-            // 获取所有响应头字段
-            Map<String, List<String>> map = conn.getHeaderFields();
-            // 遍历所有的响应头字段
-//            for (String key : map.keySet()) {
-//               sout(key + "--->" + map.get(key));
-//            }
-            // 定义 BufferedReader输入流来读取URL的响应
-            in = new BufferedReader(new InputStreamReader(
-                    conn.getInputStream()));
-            String line;
-            while ((line = in.readLine()) != null) {
-                result += line;
-            }
-        } catch (Exception e) {
-            throw e;
-        } finally {  //使用finally块来关闭输出流、输入流
-            try{
-                if(in!=null) in.close();
-            } catch(IOException ex){
-                warn(ex);
-            }
-        }
-
-        return result;
+        return http.sendGet(ajax);
     }
 
     private static String sendPost(Ajax ajax) throws Exception {
-        PrintWriter out = null;
-        BufferedReader in = null;
-        String result = "";
-
-        try {
-            URL realUrl = new URL(ajax.getUrl());
-            // 打开和URL之间的连接
-            URLConnection conn = realUrl.openConnection();
-            // 设置通用的请求属性
-            conn.setRequestProperty("accept", "*/*");
-            conn.setRequestProperty("connection", "Keep-Alive");
-            conn.setRequestProperty("user-agent",
-                    "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
-            // 发送POST请求必须设置如下两行
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
-            // 获取URLConnection对象对应的输出流
-            out = new PrintWriter(conn.getOutputStream());
-            // 发送请求参数
-            if(null != ajax.getData() && !ajax.getData().isNullObject()) out.print(ajax.getData().toString());
-            // flush输出流的缓冲
-            out.flush();
-            // 定义BufferedReader输入流来读取URL的响应
-            in = new BufferedReader(
-                    new InputStreamReader(conn.getInputStream()));
-            String line;
-            while ((line = in.readLine()) != null) {
-                result += line;
-            }
-        } catch (Exception e) {
-            throw e;
-        } finally {  //使用finally块来关闭输出流、输入流
-            try{
-                if(out!=null) out.close();
-                if(in!=null) in.close();
-            } catch(IOException ex){
-                warn(ex);
-            }
-        }
-
-        return result;
+        return http.sendPost(ajax);
     }
 
-     //* file area
-
-    public static String readFile(String path) {
-
-        String content = "";
-        InputStream is;
-
-        try {
-            path = getPath(path);
-
-            info(String.format("Read file：%s", path));
-
-            if(test("\\.jar!", path)) { // 如果内容在jar包内，则用流去读取
-                is = new URL("jar:file:" + path).openConnection().getInputStream();
-            } else {
-                is = new FileInputStream(getFile(path));
-            }
-
-            if(null == is) throw new FileNotFoundException(path);
-
-            BufferedInputStream bis = new BufferedInputStream(is);
-            //自己定义一个缓冲区
-            byte[] buffer=new byte[10240];
-            int flag=0;
-            while((flag=bis.read(buffer))!=-1){
-                content+=new String(buffer, 0, flag);
-            }
-            bis.close();
-        } catch (Exception e) {
-            error(e);
-        }
-
-        return content;
+    public static String redirect(HttpServletResponse response, String url) throws ServletException, IOException {
+        return http.redirect(response, url);
     }
 
-    public static void writeFile(String path, Object... object) {
-        if(null == path) return;
-
-        path = getPath(path);
-        File file = getFile(path);
-        FileWriter fw = null;
-        try {
-            info(String.format("Write file：%s", path));
-
-            mkdir(path.substring(0, path.lastIndexOf("/")));
-            fw = new FileWriter(file);
-            if(null != object) for(Object o : object) fw.write(o.toString());
-            fw.flush();
-        } catch (Exception e) {
-            error(e);
-        } finally {
-            try {
-                if(null != fw) fw.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+    public static String reforward(HttpServletRequest request, HttpServletResponse response, String url) throws ServletException, IOException {
+        return http.reforward(request, response, url);
     }
 
-    public static void copyFile(String sourcePath, String destPath) {
-        copyFile(sourcePath, destPath, false);
+    public static Object requestBody(HttpServletRequest request) {
+        return http.requestBody(request);
     }
 
-    public static void copyFile(String sourcePath, String destPath, boolean isReplace) {
-        if(!isExists(sourcePath)) return;
-
-        // format path
-        sourcePath = getPath(sourcePath);
-        destPath = getPath(destPath);
-        File sfile = getFile(sourcePath);
-        File dfile = getFile(destPath);
-
-        if(!isFile(sourcePath)) {
-            if(!dfile.exists()) dfile.mkdirs();
-
-            for(String s: sfile.list()) {
-                copyFile(concat(sourcePath, "/", s), concat(destPath, "/", s), isReplace);
-            }
-        } else if(dfile.exists() && !isReplace) {
-            warn(String.format("%s is exists! -> %s", destPath, convert(dfile.length())));
-        } else {
-            FileChannel inputChannel = null;
-            FileChannel outputChannel = null;
-            try {
-                info(String.format("Copy file：%s -> %s -> %s", sourcePath, destPath, convert(sfile.length())));
-                inputChannel = new FileInputStream(sfile).getChannel();
-                outputChannel = new FileOutputStream(dfile).getChannel();
-                outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
-            } catch (Exception e) {
-                error(e);
-            } finally {
-                try {
-                    inputChannel.close();
-                    outputChannel.close();
-                } catch (Exception e) {
-                    warn(e);
-                }
-            }
-        }
+    public static Cookie[] getCookie(HttpServletRequest request){
+        return http.getCookie(request);
     }
 
-    public static boolean isFile(String path){
-        return getFile(path).isFile();
+    public static String getCookie(HttpServletRequest request, String key){
+        return http.getCookie(request, key);
     }
 
-    public static boolean isExists(String path){
-        return getFile(path).exists();
+    public static boolean sendJSONP(HttpServletResponse response, String callback, Object object) {
+        return http.sendJSONP(response, callback, object);
     }
 
-    public static File getFile(String path){
-        return new File(getPath(path));
+    public static boolean send(HttpServletResponse response, Object object) {
+        return http.send(response, object);
     }
 
-    public static void mkdir(String... path) {
-        for(String p : path) {
-            File file = new File(getPath(p));
-            if(!file.exists()) {
-                info(String.format("Make directory：%s", p));
-                file.mkdirs();
-            }
-        }
+    public static boolean sendVelocity(HttpServletRequest request, HttpServletResponse response, String relPath, JSONObject object) {
+        return velocity.sendVelocity(request, response, relPath, object);
     }
 
-    public static String getPath(String path){
-        String pr = null;
-        if(system().equals("windows")) {
-            if(test("^[A-Za-z]:", path) || test("/[A-Za-z]:", path)  ) pr = rel("/", path);
-        } else if(system().equals("linux")) {
-            if(path.startsWith("/")) pr = rel(path);
-        } else {
-            pr = path;
-        }
-
-        return isEmptyOrNull(pr) ? rel(Thread.currentThread().getContextClassLoader().getResource("").getPath(), path) : pr;
+    public static String url(String u) {
+        return url.url(u);
     }
 
-    public static String concat(String... str){
-        StringBuffer p = new StringBuffer();
-        for(String pa : str) p.append(null == pa ? "" : pa);
-        return p.toString();
+    public static String parameterStr(Map<String, String[]>... map){
+        return url.parameterStr(map);
     }
 
     public static String rel(String... path){
-        String p = "";
-        for(String pa : path) {
-            pa = (isEmptyOrNull(pa) ? "" : pa).replaceAll("^\\.|$\\.", "").replaceAll("\\\\+|/+", "/"); // 去掉当前目录
-
-            if(test("^\\.", pa)) { // 切割层级
-                int level = regex("/\\.\\./", pa).size() + 1; // 需要向上递归层级个数
-                List<Integer> ss = indexOfList("/", (p + "/").replaceAll("\\\\+|/+", "/")); // 源目录有多少级
-
-                 // 如果源目录级别大于需要递归的层级，则向上递归，否则，为根目录
-                p = p.substring(0,
-                        ss.size() > level ?
-                        ss.get(ss.size() - level - 1) :
-                        ss.get(0)
-                );
-
-                pa = pa.replaceAll("/\\.\\./", "");
-            }
-
-            p = concat(p, "/", pa).replaceAll("\\\\+|/+", "/");
-        }
-
-        return p;
+        return url.rel(path);
     }
 
-    //* Thread area
+     //* file area
+    public static String read(InputStream is) {
+       return file.read(is);
+    }
 
-    public static void async(Runnable r){
-        new Thread(r).start();
+    public static String readFile(String path) {
+        return file.readFile(path);
+    }
+
+    public static void writeFile(String path, Object... object) {
+        file.writeFile(path, object);
+    }
+
+    public static void copyFile(String sourcePath, String destPath) {
+        file.copyFile(sourcePath, destPath);
+    }
+
+    public static void copyFile(String sourcePath, String destPath, boolean isReplace) {
+        file.copyFile(sourcePath, destPath, isReplace);
+    }
+
+    public static boolean isFile(String path){
+        return file.isFile(path);
+    }
+
+    public static boolean isExists(String path){
+        return file.isExists(path);
+    }
+
+    public static File getFile(String path){
+        return file.getFile(path);
+    }
+
+    public static void mkdir(String... path) {
+        file.mkdir(path);
+    }
+
+    public static String getPath(String p){
+        return path.getPath(p);
+    }
+
+    public static String getRootPath(){
+        return path.getRootPath();
     }
 
      //* date area
 
     public static String now(String... ns){
-        String n = lastDef("s", ns);
-        if(n.equals("s")) return format("YYYY-MM-dd HH:mm:ss"); // stand
-        if(n.equals("ss")) return format("YYYY-MM-dd HH:mm:ss.S"); // stand millisecond
-        if(n.equals("n")) return format("YYYYMMddHHmmss"); // number
-        if(n.equals("ns")) return format("YYYYMMddHHmmssS"); // number millisecond
-
-        return format("YYYY-MM-dd HH:mm:ss");
+        return date.now(ns);
     }
 
-    public static String format(String patten, Date... date){
-        return new SimpleDateFormat(patten).format(isEmptyOrNull(date) ? new Date() : date[date.length-1]);
+    public static String format(String patten, Date... d){
+        return date.format(patten, d);
     }
 
-    public static Date parse(String date, String... patten) {
-        try {
-            return new SimpleDateFormat(lastDef("YYYY-MM-dd HH:mm:ss", patten)).parse(date);
-        } catch (Exception e) {
-            return null;
-        }
+    public static Date parse(String d, String... patten) {
+        return date.parse(d, patten);
     }
 
-     //* util area
+    //* Thread area
 
-    public static List<Integer> indexOfList(String r, String str) {
-        List<Integer> li = new ArrayList<>();
-
-        if(isEmptyOrNull(str)) return li;
-
-        int i = -1;
-
-        while((i= str.indexOf(r)) != -1) {
-            li.add(i + (li.size() > 0 ? li.get(li.size()-1) + 1 : 0));
-            str =  str.substring(i + 1, str.length());
-        }
-
-        return li;
+    public static void async(Runnable r){
+        thread.async(r);
     }
+
+    //* regex
 
     public static List<String> regex(String pattern, String... str) {
-        List<String> list = new ArrayList<String>();
-
-        for(String s: str) {
-            Pattern r = Pattern.compile(pattern);
-
-            // 现在创建 matcher 对象
-            Matcher m = r.matcher(s);
-
-            if (m.find( ))
-                list.add(m.group());
-        }
-
-        return list;
+        return regex.regex(pattern, str);
     }
 
     public static boolean test(String pattern, String... str) {
-        return regex(pattern, str).size() != 0;
+        return regex.test(pattern, str);
     }
 
     public static boolean match(String pattern, String... str) {
-        for(String s: str) {
-            boolean isMatch = Pattern.matches(pattern, s);
-            if(isMatch) return isMatch;
-        }
-
-        return false;
+        return regex.match(pattern, str);
     }
 
-    /**
-     * byte to anything
-     * @param num
-     * @return
-     */
+    //* unit
+
     public static String convert(double num) {
-        return convert(num, $BYTE);
+        return unit.convert(num);
     }
 
-    /**
-     * byte to anything
-     * @param num
-     * @return
-     */
-    public static String convert(double num, String unit) {
-        if(isEmptyOrNull(unit)) return convert(num);
+    public static String convert(double num, String u) {
+        return unit.convert(num, u);
+    }
 
-        if(num >= 1024) {
-            if(unit.equals($BYTE)) return convert(num/1024, $KB);
-            if(unit.equals($KB)) return convert(num/1024, $MB);
-            if(unit.equals($MB)) return convert(num/1024, $GB);
-            if(unit.equals($GB)) return convert(num/1024, $TB);
-            if(unit.equals($TB)) return convert(num/1024, $PB);
-            if(unit.equals($PB)) return convert(num/1024, $EB);
-            if(unit.equals($EB)) return convert(num/1024, $ZB);
-            if(unit.equals($ZB)) return convert(num/1024, $YB);
-            if(unit.equals($YB)) return convert(num/1024, $BB);
-        }
+    //* lang
 
-        return String.format("%.2f %s", num, unit);
+    public static String concat(String... str){
+        return string.concat(str);
+    }
+
+    public static String str(Object object){
+        return string.str(object);
     }
 
     public static String join(Collection list, Object... u){
-        if(null == list) return null;
-
-        int i=0;
-        StringBuffer sb = new StringBuffer();
-
-        for(Object l : list) {
-            if(null != l) sb.append(l);
-            if(++i != list.size())  if(!isEmptyOrNull(u)) {
-                for (Object ui: u) sb.append(ui);
-            }
-        }
-
-        return sb.toString();
+        return string.join(list, u);
     }
 
     public static String first(String... strs) {
-        return lastDef(null, strs);
+        return string.first(strs);
     }
 
     public static String firstDef(String def, String... strs) {
-        return isEmptyOrNull(strs[0]) ? def : strs[0];
+        return string.firstDef(def, strs);
     }
 
     public static String last(String... strs) {
-        return lastDef(null, strs);
+        return string.last(strs);
     }
 
     public static String lastDef(String def, String... strs) {
-        return isEmptyOrNull(strs[strs.length-1]) ? def : strs[strs.length-1];
+        return string.lastDef(def, strs);
     }
 
     public static boolean isEmptyOrNull(Object... o){
-        if(null == o || o.length == 0) return true;
-        for(Object oi : o)
-            if(null == oi || oi.toString().trim().length() == 0 || "null".equals(oi.toString().trim().toLowerCase())) return true;
-        return false;
+        return object.isEmptyOrNull(o);
     }
+
+    public static List<Integer> indexOfList(String r, String str) {
+        return list.indexOfList(r, str);
+    }
+
+    public static String jsonStr(Object object){
+        return json.jsonStr(object);
+    }
+
+    public static String jsonStr(List<Object> map){
+        return json.jsonStr(map);
+    }
+
+    //* system
 
     public static String system(){
-        return System.getProperty("os.name").toLowerCase().startsWith("windows") ? "windows" : "linux";
+        return system.system();
     }
 
-     //* system out print area
+    //* log
 
     public static void exception(Exception... e){
-        for(Exception ei : e) ei.printStackTrace();
+        logger.exception(e);
     }
 
     public static void error(Object... o){
-        for(Object oi : o) exception(new $Exception(String.format("[ERROR]\t%s", oi)));
+        logger.error(o);
     }
 
     public static void warn(Object... o){
-        for(Object oi : o) sout(String.format("[WARNING]\t%s", oi));
+        logger.warn(o);
     }
 
     public static void info(Object... o){
-        for(Object oi : o) sout(String.format("[INFO]\t%s", oi));
+        logger.info(o);
     }
 
     public static void log(Object... o){
-        for(Object oi : o) sout(String.format("[LOG]\t%s", oi));
+        logger.log(o);
     }
 
     public static void sout(Object... o){
-        for(Object oi : o)
-            System.out.println(String.format(now("s") + "\t%s", oi));
+        logger.sout(o);
     }
 
-    private static class $Exception extends Exception {
-        public $Exception() {
-            super();
-        }
-        public $Exception(String msg){ super(msg); }
-    }
 }

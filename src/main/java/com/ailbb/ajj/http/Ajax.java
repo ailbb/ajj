@@ -1,6 +1,8 @@
-package com.ailbb.ajj;
+package com.ailbb.ajj.http;
 
 import net.sf.json.JSONObject;
+
+import static com.ailbb.ajj.$.*;
 
 /**
  * Created by Wz on 5/9/2018.
@@ -8,8 +10,8 @@ import net.sf.json.JSONObject;
 public class Ajax {
     private String url;
     private boolean async = false;
-    private String type = $.$GET;
-    private long timeout = $.$TIMEOUT;
+    private String type = $Http.$GET;
+    private long timeout = $TIMEOUT;
     private JSONObject data;
     private Proxy proxy;
 
@@ -20,21 +22,21 @@ public class Ajax {
     }
 
     public Ajax(String serverName, String requestMapping){
-        this.setProxy($.$PROXY.get(serverName));
+        this.setProxy($PROXY.get(serverName));
         String ip;
         int port;
 
         if(this.getProxy() == null) {
-            $.warn("Proxy is null! Use default config!");
-            ip = $.getIp();
-            port = $.$PORT;
+            warn("Proxy is null! Use default config!");
+            ip = getIp();
+            port = $Http.$PORT;
         } else {
             ip = this.getProxy().getIp();
             port = this.getProxy().getPort();
         }
 
         this.setUrl(
-                String.format("%s://%s:%s" , $.$HTTP, ip, port)
+                String.format("%s://%s:%s" , $Http.$HTTP, ip, port)
                         + String.format("/%s/%s", serverName, requestMapping).replaceAll("//+", "/")
         );
 
@@ -116,7 +118,7 @@ public class Ajax {
     @Override
     public String toString() {
         return "Ajax{" +
-                "url='" + url + '\'' +
+                "$url='" + url + '\'' +
                 ", async=" + async +
                 ", type='" + type + '\'' +
                 ", timeout=" + timeout +

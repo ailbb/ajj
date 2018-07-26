@@ -1,7 +1,14 @@
 import com.ailbb.ajj.$;
-import com.ailbb.ajj.Ajax;
+import com.ailbb.ajj.http.Ajax;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * Created by Wz on 5/9/2018.
@@ -9,8 +16,24 @@ import java.util.Arrays;
 public class HelloAjj {
     public static void main(String[] args) throws Exception {
         double q = Math.random();
-        if(q>1) return;
 
+        String json = $.get("http://132.225.168.211:19888/ws/v1/history/mapreduce/jobs");
+
+        JSONObject Jobs = JSONObject.fromObject(json);
+        JSONObject job = Jobs.getJSONObject("jobs");
+        JSONArray jarr = job.getJSONArray("job");
+
+        for(Object info : jarr) {
+            JSONObject data = JSONObject.fromObject(info);
+            String jobId = data.getString("jobId");
+        }
+
+        if(q<1) return;
+
+        $.copyFile("D:\\Z\\Work\\Project\\20171215!-【BigData】\\sharepro相关\\环境部署\\release\\broadtech\\config", "C:\\Users\\sirzh\\Desktop\\t");
+
+        $.sout($.getRootPath());
+        $.sout($.last(null));
         $.sout($.rel("C:/windows/system32/drivers/etc/HOSTS/", "../nihao/abc"));
         $.sout($.rel("C:/windows/system32/drivers/etc/HOSTS", "../nihao/abc"));
         $.sout($.rel("C:/windows/system32/drivers/etc/HOSTS", "./nihao/abc"));
