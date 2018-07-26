@@ -1,5 +1,7 @@
 package com.ailbb.ajj.file;
 
+import com.ailbb.ajj.unit.$Charset;
+
 import static com.ailbb.ajj.$.*;
 
 import java.io.*;
@@ -10,8 +12,11 @@ import java.nio.channels.FileChannel;
  * Created by Wz on 6/20/2018.
  */
 public class $File {
-
     public String readFile(String path) {
+        return readFile(path, charset.UTF8);
+    }
+    
+    public String readFile(String path, String charset) {
 
         String content = "";
         InputStream is;
@@ -29,7 +34,7 @@ public class $File {
 
             if(null == is) throw new FileNotFoundException(path);
 
-            return read(is);
+            return read(is, charset);
         } catch (Exception e) {
             error(e);
         }
@@ -38,14 +43,19 @@ public class $File {
     }
 
     public String read(InputStream is) {
+        return read(is, charset.UTF8);
+    }
+    
+    public String read(InputStream is, String charset) {
         StringBuffer content = new StringBuffer();
         if(null != is) {
             BufferedInputStream bis = new BufferedInputStream(is);
-            BufferedReader reader = new BufferedReader (new InputStreamReader(bis));
+            BufferedReader reader = null;
             //之所以用BufferedReader,而不是直接用BufferedInputStream读取,是因为BufferedInputStream是InputStream的间接子类,
             //InputStream的read方法读取的是一个byte,而一个中文占两个byte,所以可能会出现读到半个汉字的情况,就是乱码.
             //BufferedReader继承自Reader,该类的read方法读取的是char,所以无论如何不会出现读个半个汉字的.
             try {
+                reader = new BufferedReader (new InputStreamReader(bis, charset));
                 while (reader.ready()) {
                     content.append((char) reader.read());
                 }

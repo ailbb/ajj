@@ -17,8 +17,11 @@ public class HelloAjj {
     public static void main(String[] args) throws Exception {
         double q = Math.random();
 
-        String json = $.get("http://132.225.168.211:19888/ws/v1/history/mapreduce/jobs");
+        String text = $.readFile("/D:/Z/Code/java/java-ee/Share/sharepro/target/sharepro/module/system/control/MyApp/app/Common.js");
 
+        if(q<1) return;
+
+        String json = $.get("http://132.225.168.211:19888/ws/v1/history/mapreduce/jobs");
         JSONObject Jobs = JSONObject.fromObject(json);
         JSONObject job = Jobs.getJSONObject("jobs");
         JSONArray jarr = job.getJSONArray("job");
@@ -27,8 +30,6 @@ public class HelloAjj {
             JSONObject data = JSONObject.fromObject(info);
             String jobId = data.getString("jobId");
         }
-
-        if(q<1) return;
 
         $.copyFile("D:\\Z\\Work\\Project\\20171215!-【BigData】\\sharepro相关\\环境部署\\release\\broadtech\\config", "C:\\Users\\sirzh\\Desktop\\t");
 

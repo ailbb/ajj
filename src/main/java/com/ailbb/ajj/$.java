@@ -14,6 +14,7 @@ import com.ailbb.ajj.log.$Logger;
 import com.ailbb.ajj.regex.$Regex;
 import com.ailbb.ajj.sys.$System;
 import com.ailbb.ajj.thread.$Thread;
+import com.ailbb.ajj.unit.$Charset;
 import com.ailbb.ajj.unit.$Unit;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -61,6 +62,7 @@ public class $ {
 
     // unit
     public static $Unit unit = new $Unit();
+    public static $Charset charset = new $Charset();
 
     // lang
     public static $Json json = new $Json();
@@ -79,6 +81,7 @@ public class $ {
 
     // linux
     public static $Linux linux = new $Linux();
+
 
     static {
         Proxy.init();
@@ -140,7 +143,7 @@ public class $ {
         return http.getInetAddress(name);
     }
 
-    public static String ajax(final Ajax ajax) {
+    public static String ajax(Ajax ajax) {
         return http.ajax(ajax);
     }
 
@@ -172,12 +175,12 @@ public class $ {
         return http.getCookie(request, key);
     }
 
-    public static boolean sendJSONP(HttpServletResponse response, String callback, Object object) {
-        return http.sendJSONP(response, callback, object);
-    }
-
     public static boolean send(HttpServletResponse response, Object object) {
         return http.send(response, object);
+    }
+
+    public static boolean sendJSONP(HttpServletResponse response, String callback, Object object) {
+        return http.sendJSONP(response, callback, object);
     }
 
     public static boolean sendVelocity(HttpServletRequest request, HttpServletResponse response, String relPath, JSONObject object) {
