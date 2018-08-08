@@ -9,7 +9,7 @@ Ailbb Jquery for Java.
 <dependency>
     <groupId>com.ailbb</groupId>
     <artifactId>ajj</artifactId>
-    <version>1.1</version>
+    <version>1.2</version>
 </dependency>
 ```
 
