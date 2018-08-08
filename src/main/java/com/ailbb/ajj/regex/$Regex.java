@@ -1,7 +1,6 @@
 package com.ailbb.ajj.regex;
 
 import com.ailbb.ajj.$;
-import com.sun.istack.internal.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
