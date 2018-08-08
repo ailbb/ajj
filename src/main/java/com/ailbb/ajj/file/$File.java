@@ -1,21 +1,44 @@
 package com.ailbb.ajj.file;
 
-import com.ailbb.ajj.unit.$Charset;
+import com.ailbb.ajj.file.ctl.$Ctl;
 
 import static com.ailbb.ajj.$.*;
 
 import java.io.*;
 import java.net.URL;
 import java.nio.channels.FileChannel;
+import java.util.List;
 
 /**
  * Created by Wz on 6/20/2018.
  */
 public class $File {
+    public $Path path = new $Path();
+
+    public $Ctl ctl = new $Ctl();
+
+    public $Compress compress = new $Compress();
+
+    public String zip(String path, String... paths) {
+        return compress.zip(path, paths);
+    }
+
+    public String zip(String path, List<String> paths) {
+        return compress.zip(path, paths);
+    }
+
+    public String zip(String path, boolean isDelete, String... paths) {
+        return compress.zip(path, isDelete, paths);
+    }
+
+    public String zip(String path, boolean isDelete, List<String> paths) {
+        return compress.zip(path, isDelete, paths);
+    }
+
     public String readFile(String path) {
         return readFile(path, charset.UTF8);
     }
-    
+
     public String readFile(String path, String charset) {
 
         String content = "";
@@ -40,6 +63,16 @@ public class $File {
         }
 
         return content;
+    }
+
+    public String readFile(File file) {
+        try {
+            return read(new FileInputStream(file));
+        } catch (Exception e) {
+            error(e);
+        }
+
+        return "";
     }
 
     public String read(InputStream is) {
@@ -78,14 +111,21 @@ public class $File {
         return content.toString();
     }
 
-    public void writeFile(String path, Object... object) {
-        if(null == path) return;
+    public String writeFile(String path, Object... object) {
+        return writeFile(path, false, object);
+    }
+
+    public String writeFile(String path, boolean isAppend, Object... object) {
+        if(null == path) return path;
 
         path = getPath(path);
         File file = getFile(path);
         FileWriter fw = null;
         try {
-            info(String.format("Write file：%s", path));
+            if(file.exists() && isAppend)
+                warn(String.format("Append file：%s", path));
+            else
+                info(String.format("Write file：%s", path));
 
             mkdir(path.substring(0, path.lastIndexOf("/")));
             fw = new FileWriter(file);
@@ -100,6 +140,8 @@ public class $File {
                 e.printStackTrace();
             }
         }
+
+        return path;
     }
 
     public void copyFile(String sourcePath, String destPath) {

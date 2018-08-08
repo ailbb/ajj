@@ -3,12 +3,8 @@ import com.ailbb.ajj.http.Ajax;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by Wz on 5/9/2018.
@@ -17,8 +13,7 @@ public class HelloAjj {
     public static void main(String[] args) throws Exception {
         double q = Math.random();
 
-        String text = $.readFile("/D:/Z/Code/java/java-ee/Share/sharepro/target/sharepro/module/system/control/MyApp/app/Common.js");
-
+        System.out.println(InterviewQuestion.count("   ni  hao   a sdfsdafdsafas  "));
         if(q<1) return;
 
         String json = $.get("http://132.225.168.211:19888/ws/v1/history/mapreduce/jobs");
@@ -136,4 +131,5 @@ public class HelloAjj {
         $.log($.ajax(u3));
         Thread.sleep(1000);
     }
+
 }

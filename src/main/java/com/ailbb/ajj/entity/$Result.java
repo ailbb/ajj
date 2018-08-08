@@ -1,4 +1,4 @@
-package com.ailbb.ajj.result;
+package com.ailbb.ajj.entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,9 @@ public class $Result {
     /**状态*/
     private $Status status = $Status.$DEFAULT;
     /**数据*/
-    private Object data = new Object[]{};
+    private Object data = new Object();
+    /**标题*/
+    private String title = "";
     /**请求信息*/
     private List<String> message = new ArrayList<>();
     /**错误信息*/
@@ -22,9 +24,16 @@ public class $Result {
     /**备注*/
     private String remark = "";
 
+    public $Result() {}
+
+    public $Result(boolean success) {
+        this.setSuccess(success);
+    }
+
     public boolean isSuccess() {
         return getStatus().isSuccess();
     }
+
     public $Result setSuccess(boolean success) {
         this.success = setStatus(success ? $Status.$DEFAULT_SUCCESS : $Status.$DEFAULT_ERROR).isSuccess();
         return this;
@@ -36,6 +45,15 @@ public class $Result {
 
     public $Result setMessage(List<String> message) {
         this.message = message;
+        return this;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public $Result setTitle(String title) {
+        this.title = title;
         return this;
     }
 
@@ -84,14 +102,14 @@ public class $Result {
         return this;
     }
 
-    public String addMessage(String message) {
+    public $Result addMessage(String message) {
         this.message.add(message);
-        return message;
+        return this;
     }
 
-    public String addError(String error) {
+    public $Result addError(String error) {
         this.error.add(error);
-        return error;
+        return this;
     }
 
     @Override

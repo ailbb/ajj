@@ -1,6 +1,8 @@
 package com.ailbb.ajj;
 
 import com.ailbb.ajj.date.$Date;
+import com.ailbb.ajj.entity.$Progress;
+import com.ailbb.ajj.entity.$Result;
 import com.ailbb.ajj.file.$File;
 import com.ailbb.ajj.file.$Path;
 import com.ailbb.ajj.ftp.$Ftp;
@@ -82,6 +84,11 @@ public class $ {
     // linux
     public static $Linux linux = new $Linux();
 
+    // 结果对象
+    public static $Result result() { return new $Result(); }
+
+    // 结果对象
+    public static $Progress progress() { return new $Progress(); }
 
     static {
         Proxy.init();
@@ -204,12 +211,32 @@ public class $ {
        return file.read(is);
     }
 
+    public static String zip(String path, String... paths){
+        return file.zip(path, paths);
+    }
+
+    public static String zip(String path, List<String> paths){
+        return file.zip(path, paths);
+    }
+
+    public static String zip(String path, boolean isDelete, String... paths) {
+        return file.zip(path, isDelete, paths);
+    }
+
+    public static String zip(String path, boolean isDelete, List<String> paths) {
+        return file.zip(path, isDelete, paths);
+    }
+
     public static String readFile(String path) {
         return file.readFile(path);
     }
 
-    public static void writeFile(String path, Object... object) {
-        file.writeFile(path, object);
+    public static String writeFile(String path, Object... object) {
+        return file.writeFile(path, object);
+    }
+
+    public static String writeFile(String path, boolean isAppend, Object... object) {
+        return file.writeFile(path, isAppend, object);
     }
 
     public static void copyFile(String sourcePath, String destPath) {
@@ -244,6 +271,10 @@ public class $ {
         return path.getRootPath();
     }
 
+    public String getRelativePath(String _path){
+        return path.getRelativePath(_path);
+    }
+
      //* date area
 
     public static String now(String... ns){
@@ -270,6 +301,22 @@ public class $ {
         return regex.regex(pattern, str);
     }
 
+    public static String pickup(String pattern, String str) {
+        return regex.pickup(pattern, str);
+    }
+
+    /**
+     * 拾取文本
+     * @param before 前置文本
+     * @param pattern 匹配表达式
+     * @param end 后置文本
+     * @param text 需要匹配的文本
+     * @return 表达式的内容
+     */
+    public static String pickup(String before, String pattern, String end, String text) {
+        return regex.pickup(pattern, text);
+    }
+
     public static boolean test(String pattern, String... str) {
         return regex.test(pattern, str);
     }
@@ -290,7 +337,7 @@ public class $ {
 
     //* lang
 
-    public static String concat(String... str){
+    public static String concat(Object... str){
         return string.concat(str);
     }
 

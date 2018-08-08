@@ -1,20 +1,14 @@
 package com.ailbb.ajj.ftp;
 
+import com.ailbb.ajj.entity.$Result;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPClientConfig;
-import org.apache.commons.net.ftp.FTPReply;
 
 import java.io.*;
 import java.net.InetAddress;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Properties;
-import java.util.TimeZone;
 
 import static com.ailbb.ajj.$.*;
 
@@ -96,22 +90,22 @@ public class $SFtp {
      * 退出/关闭服务器连接
      * @return
      */
-    public FTPResult logout(){
-        FTPResult ftpResult = new FTPResult();
+    public $Result logout(){
+        $Result ftpResult = new $Result();
 
         try {
             if (channel != null) channel.disconnect();
         } catch (Exception e) {
-            warn(ftpResult.setSuccess(false).addError("关闭channel异常：" + ip), e);
+            warn(ftpResult.setSuccess(false).addError("关闭channel异常：" + ip).getError(), e);
         }
 
         try {
             if (session != null) session.disconnect();
         } catch (Exception e) {
-            warn(ftpResult.setSuccess(false).addError("关闭session异常：" + ip), e);
+            warn(ftpResult.setSuccess(false).addError("关闭session异常：" + ip).getError(), e);
         }
 
-        info(ftpResult.addMessage("成功断开服务器连接：" + ip));
+        info(ftpResult.addMessage("成功断开服务器连接：" + ip).getMessage());
 
         return ftpResult;
     }

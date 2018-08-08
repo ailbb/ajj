@@ -31,7 +31,7 @@ public class $Logger {
 
     public void sout(Object... o){
         for(Object oi : o)
-            System.out.println(String.format(now("s") + "\t%s", oi));
+            System.out.println(String.format(now("s") + "\t" + oi.toString()));
     }
 
 }

@@ -1,5 +1,8 @@
 package com.ailbb.ajj.regex;
 
+import com.ailbb.ajj.$;
+import com.sun.istack.internal.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -39,4 +42,43 @@ public class $Regex {
         return false;
     }
 
+    /**
+     * 拾取文本
+     * @param before 前置文本
+     * @param pattern 匹配表达式
+     * @param end 后置文本
+     * @param text 需要匹配的文本
+     * @return 表达式的内容
+     */
+    public String pickup(String before, String pattern, String end, String text){
+        StringBuffer sb = new StringBuffer();
+        if(!$.isEmptyOrNull(before)) sb.append(before);
+        if(!$.isEmptyOrNull(pattern)) sb.append(pattern);
+        if(!$.isEmptyOrNull(end)) sb.append(end);
+
+        List<String> list = regex(sb.toString(), text);
+
+        if(list.size() == 0) return null;
+
+        String v = list.get(0);
+
+        if(!$.isEmptyOrNull(before))  v = v.replaceAll("^" + before, "");
+        if(!$.isEmptyOrNull(end)) v = v.replaceAll(before + "$", "");
+
+        return v;
+    }
+
+    /**
+     * 拾取文本
+     * @param pattern
+     * @param text
+     * @return
+     */
+    public String pickup(String pattern, String text){
+        List<String> list = regex(pattern, text);
+
+        if(list.size() == 0) return null;
+
+        return list.get(0);
+    }
 }

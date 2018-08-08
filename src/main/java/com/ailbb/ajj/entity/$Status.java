@@ -1,12 +1,12 @@
-package com.ailbb.ajj.result;
+package com.ailbb.ajj.entity;
 
 /**
  * Created by Wz on 6/22/2018.
  */
 public class $Status {
-    public static final $Status $DEFAULT = getStatus(0);
-    public static final $Status $DEFAULT_SUCCESS = getStatus(1);
-    public static final $Status $DEFAULT_ERROR = getStatus(-1);
+    public static final $Status $DEFAULT = getStatus(0); // 0代表默认
+    public static final $Status $DEFAULT_SUCCESS = getStatus(1); //（正数开头）1代表成功
+    public static final $Status $DEFAULT_ERROR = getStatus(-1); // （负数开头）-1代表失败
 
     private boolean success = true; // 是否成功
     private int code = 0; // 状态代码

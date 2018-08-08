@@ -25,6 +25,23 @@ public class $String {
         return sb.toString();
     }
 
+    public String join(String key, String str, int length) {
+        StringBuffer sb = new StringBuffer();
+        int i=0;
+
+        for(String s : str.split("")) {
+            if(++i % length == 0)
+                sb.append(key);
+            sb.append(s);
+        }
+
+        return sb.toString();
+    }
+
+    public String join(String key, String str) {
+        return join(key, str, 1);
+    }
+
     public String first(String... strs) {
         return lastDef(null, strs);
     }
@@ -45,10 +62,16 @@ public class $String {
         return isEmptyOrNull(object) ? "" : object.toString();
     }
 
-    public String concat(String... str){
+    public String concat(Object... objects){
         StringBuffer p = new StringBuffer();
-        for(String pa : str) p.append(null == pa ? "" : pa);
+        for(Object o : objects) p.append(isEmptyOrNull(o) ? "" : String.valueOf(o));
         return p.toString();
+    }
+
+    public String trim(String str){
+        if(null == str) return null;
+
+        return str.replaceAll("^\\s+|\\s+$", "");
     }
 
 }

@@ -8,7 +8,7 @@ import static com.ailbb.ajj.$.*;
 public class $Unit {
 
     // units
-    public final String $BYTE = "byte";
+    public final String $BYTE = "BYTE";
     public final String $KB = "KB";
     public final String $MB = "MB";
     public final String $GB = "GB";
@@ -37,6 +37,7 @@ public class $Unit {
         if(isEmptyOrNull(unit)) return convert(num);
 
         if(num >= 1024) {
+            unit = unit.toUpperCase();
             if(unit.equals($BYTE)) return convert(num/1024, $KB);
             if(unit.equals($KB)) return convert(num/1024, $MB);
             if(unit.equals($MB)) return convert(num/1024, $GB);

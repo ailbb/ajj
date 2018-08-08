@@ -49,8 +49,10 @@ public class Proxy {
 
         if(!inited){
             info("Use default file.");
-            String p = getRootPath();
-            initProxy(rel(p.substring(0, p.lastIndexOf("com")), $PROXY_PATH));
+            String p = path.getPath(Proxy.class); // 默认获取类文件目录
+            int pIndex = p.lastIndexOf("com/ailbb");
+            if(-1 !=pIndex) p = p.substring(0, pIndex);
+            initProxy(rel(p, $PROXY_PATH));
         }
     }
 
