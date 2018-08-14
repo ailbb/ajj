@@ -162,7 +162,7 @@ public class $Ctl {
             progress.getResult().setData(list);
         }
 
-        if(-1 == row.indexOf("(")) {
+        if(!$.test("\\(|\\)", row)) {
             String[] strs = $.string.trim(row.replaceAll(",$","")).split("\\s+|\\|");
             list.add(new $Field(
                     $.string.trim(strs[0]),

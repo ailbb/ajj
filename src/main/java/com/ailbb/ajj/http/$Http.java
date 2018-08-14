@@ -42,7 +42,7 @@ public class $Http {
         return url;
     }
 
-    public Object requestBody(HttpServletRequest request) {
+    public Object getRequestBody(HttpServletRequest request) {
         StringBuffer result = new StringBuffer();
         String str;
         BufferedReader br = null;
@@ -263,7 +263,7 @@ public class $Http {
 
     public InetAddress getInetAddress(String... name) {
         try {
-            if(null == name) {
+            if(isEmptyOrNull(name)) {
                 return InetAddress.getLocalHost();
             } else {
                 return InetAddress.getByName(last(name));

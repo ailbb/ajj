@@ -25,6 +25,22 @@ public class $String {
         return sb.toString();
     }
 
+    public String join(Object[] list, Object... u){
+        if(null == list) return null;
+
+        int i=0;
+        StringBuffer sb = new StringBuffer();
+
+        for(Object l : list) {
+            if(null != l) sb.append(l);
+            if(++i != list.length)  if(!isEmptyOrNull(u)) {
+                for (Object ui: u) sb.append(ui);
+            }
+        }
+
+        return sb.toString();
+    }
+
     public String join(String key, String str, int length) {
         StringBuffer sb = new StringBuffer();
         int i=0;

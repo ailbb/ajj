@@ -5,14 +5,13 @@ import com.ailbb.ajj.entity.$Progress;
 import com.ailbb.ajj.entity.$Result;
 import com.ailbb.ajj.file.$File;
 import com.ailbb.ajj.file.$Path;
-import com.ailbb.ajj.ftp.$Ftp;
 import com.ailbb.ajj.http.*;
 import com.ailbb.ajj.lang.$Json;
 import com.ailbb.ajj.lang.$List;
 import com.ailbb.ajj.lang.$Object;
 import com.ailbb.ajj.lang.$String;
-import com.ailbb.ajj.linux.$Linux;
 import com.ailbb.ajj.log.$Logger;
+import com.ailbb.ajj.mail.$Mail;
 import com.ailbb.ajj.regex.$Regex;
 import com.ailbb.ajj.sys.$System;
 import com.ailbb.ajj.thread.$Thread;
@@ -35,7 +34,7 @@ import java.util.*;
  * Created by Wz on 5/9/2018.
  */
 public class $ {
-    public static String $ = "ailbb";
+    public static String $ = "ajj";
     public static String $NAME = $;
     public static String $ROOT = "/" + $;
     
@@ -78,22 +77,21 @@ public class $ {
     // log
     public static $Logger logger = new $Logger();
 
-    // ftp
-    public static $Ftp ftp = new $Ftp();
-
-    // linux
-    public static $Linux linux = new $Linux();
+    // email
+    public static $Mail mail = new $Mail();
 
     // 结果对象
     public static $Result result() { return new $Result(); }
 
-    // 结果对象
+    // 进度条对象
     public static $Progress progress() { return new $Progress(); }
 
     static {
         Proxy.init();
     }
-    
+
+    public static $ ajj = $();
+
     public static $ $(){ return new $(); }
 
      //* Http area
@@ -170,8 +168,8 @@ public class $ {
         return http.reforward(request, response, url);
     }
 
-    public static Object requestBody(HttpServletRequest request) {
-        return http.requestBody(request);
+    public static Object getRequestBody(HttpServletRequest request) {
+        return http.getRequestBody(request);
     }
 
     public static Cookie[] getCookie(HttpServletRequest request){
@@ -373,12 +371,20 @@ public class $ {
         return list.indexOfList(r, str);
     }
 
-    public static String jsonStr(Object object){
-        return json.jsonStr(object);
+    public static String parseJsonString(Object object){
+        return json.parseJsonString(object);
     }
 
-    public static String jsonStr(List<Object> map){
-        return json.jsonStr(map);
+    public static String parseJsonString(List<Object> object){
+        return json.parseJsonString(object);
+    }
+
+    public static List<Object> parseJsonArray(Object object){
+        return json.parseJsonArray(object);
+    }
+
+    public static Map<String, Object> parseJsonObject(Object object){
+        return json.parseJsonObject(object);
     }
 
     //* system

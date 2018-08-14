@@ -6,7 +6,7 @@
 
     <groupId>com.ailbb</groupId>
     <artifactId>ajj</artifactId>
-    <version>1.7-SNAPSHOT</version>
+    <version>1.8-SNAPSHOT</version>
 
     <packaging>jar</packaging>
 
@@ -158,9 +158,11 @@
 
         <version.velocity>1.7</version.velocity>
         <version.velocity.tools>2.0</version.velocity.tools>
-        <version.ssh>262</version.ssh>
-        <version.ftp>3.6</version.ftp>
-        <version.jsch>0.1.54</version.jsch>
+        <version.mail>1.6.0</version.mail>
+
+        <version.jdbc.mysql>5.1.38</version.jdbc.mysql>
+
+        <version.poi>3.16</version.poi>
     </properties>
 
     <dependencies>
@@ -194,25 +196,32 @@
             <version>${version.velocity.tools}</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/ch.ethz.ganymed/ganymed-ssh2 -->
+        <!-- https://mvnrepository.com/artifact/javax.mail/javax.mail-api -->
         <dependency>
-            <groupId>ch.ethz.ganymed</groupId>
-            <artifactId>ganymed-ssh2</artifactId>
-            <version>${version.ssh}</version>
+            <groupId>javax.mail</groupId>
+            <artifactId>javax.mail-api</artifactId>
+            <version>${version.mail}</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/commons-net/commons-net - FTP -->
+        <!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
         <dependency>
-            <groupId>commons-net</groupId>
-            <artifactId>commons-net</artifactId>
-            <version>${version.ftp}</version>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>${version.poi}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.jcraft/jsch -->
+        <!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
+
         <dependency>
-            <groupId>com.jcraft</groupId>
-            <artifactId>jsch</artifactId>
-            <version>${version.jsch}</version>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${version.poi}</version>
         </dependency>
 
+        <!-- MySQL 连接驱动依赖 -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${version.jdbc.mysql}</version>
+        </dependency>
     </dependencies>
 </project>
