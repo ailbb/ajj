@@ -12,7 +12,7 @@ import java.util.Map;
  * Created by Wz on 6/20/2018.
  */
 public class $Json {
-    public String parseJsonString(Object object){
+    public String toJsonString(Object object){
         try {
             return JSONObject.fromObject(object).toString();
         } catch (Exception e) {
@@ -20,7 +20,7 @@ public class $Json {
         }
     }
 
-    public String parseJsonString(List<Object> map){
+    public String toJsonString(List<Object> map){
         try {
             return JSONArray.fromObject(map).toString();
         } catch (Exception e) {
@@ -28,7 +28,7 @@ public class $Json {
         }
     }
 
-    public Map<String, Object> parseJsonObject(Object object){
+    public Map<String, Object> toJsonObject(Object object){
         try {
             return JSONObject.fromObject(object);
         } catch (Exception e) {
@@ -36,11 +36,19 @@ public class $Json {
         }
     }
 
-    public List<Object> parseJsonArray(Object object){
+    public List<Object> toJsonArray(Object object){
         try {
             return JSONArray.fromObject(object);
         } catch (Exception e) {
             return new ArrayList<>();
+        }
+    }
+
+    public Object toBean(Object object, Class c){
+        try {
+            return JSONObject.toBean(JSONObject.fromObject(object), c);
+        } catch (Exception e) {
+            return null;
         }
     }
 

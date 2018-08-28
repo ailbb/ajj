@@ -1,5 +1,6 @@
 package com.ailbb.ajj.http;
 
+import com.ailbb.ajj.$;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
@@ -12,10 +13,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
-import java.net.URLConnection;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.ailbb.ajj.$.*;
@@ -24,6 +25,7 @@ import static com.ailbb.ajj.$.*;
  * Created by Wz on 6/20/2018.
  */
 public class $Http {
+    public static Map<String, String> cookies = new HashMap<>();
 
     public static final int $PORT = 80;
 
@@ -142,9 +144,15 @@ public class $Http {
             Ajax.Callback callback = ajax.getCallback();
 
             try {
+                info("-----------------------");
+
                 info(String.format("Send %s request：%s", ajax.getType(), ajax.getUrl()));
 
+                info(String.format("Send %s Data：%s", ajax.getType(), $.simple(ajax.getData())));
+
                 data = ajax.getType().equals($GET) ? sendGet(ajax) : sendPost(ajax);
+
+                info(String.format("Get %s Data：%s", ajax.getType(), $.simple(data)));
 
                 if(null != callback) callback.complete(data);
                 if(null != callback) callback.success(data);
@@ -160,12 +168,29 @@ public class $Http {
     }
 
     public String sendGet(Ajax ajax) throws Exception {
-        String result = "";
+        return sendRequest(ajax.setType($GET));
+    }
+
+    public String sendPost(Ajax ajax) throws Exception {
+        return sendRequest(ajax.setType($POST));
+    }
+
+    /**
+     * 发送请求
+     * @param ajax
+     * @return
+     * @throws Exception
+     */
+    public String sendRequest(Ajax ajax) throws Exception {
+        PrintWriter out = null;
         BufferedReader in = null;
+        String result = "";
+
         try {
             String requestUrl = ajax.getUrl();
 
-            if(ajax.getData() != null) {
+            // 如果是get请求，在链接内添加内容
+            if(ajax.getType().equalsIgnoreCase($GET) && ajax.getData() != null) {
                 requestUrl += "?";
 
                 for(Object o : ajax.getData().keySet()) {
@@ -177,70 +202,54 @@ public class $Http {
 
             URL realUrl = new URL(requestUrl);
             // 打开和URL之间的连接
-            URLConnection conn = realUrl.openConnection();
+            HttpURLConnection conn = (HttpURLConnection)realUrl.openConnection();
+            String baseUrl = $.url.base(conn.getURL());
+            String localCookie = cookies.get(baseUrl); // 获取本地留存的 cookie
+
             // 设置通用的请求属性
-            conn.setRequestProperty("accept", "*/*");
-            conn.setRequestProperty("connection", "Keep-Alive");
-            conn.setRequestProperty("user-agent",
-                    "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+            conn.setRequestMethod(ajax.getType().equalsIgnoreCase($GET) ? $GET : $POST);
+            conn.setDoOutput(true); // 允许连接提交信息
+            conn.setDoInput(true);
+            conn.setUseCaches(false);
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            conn.setRequestProperty("User-Agent","Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET CLR 1.1.4322; .NET4.0C; .NET4.0E)");
+            conn.setRequestProperty("Accept-Language","zh-CN");
+            conn.setRequestProperty("Accept-Encoding","gzip, deflate");
+
+            if(!$.isEmptyOrNull(localCookie)) {
+                $.info("set-cookie：" + localCookie);
+                conn.setRequestProperty("Cookie", localCookie); // 设置发送的cookie
+            }
+
             // 建立实际的连接
             conn.connect();
-            // 获取所有响应头字段
-            Map<String, List<String>> map = conn.getHeaderFields();
-            // 遍历所有的响应头字段
-//            for (String key : map.keySet()) {
-//               sout(key + "--->" + map.get(key));
-//            }
-            // 定义 BufferedReader输入流来读取URL的响应
-            in = new BufferedReader(new InputStreamReader(
-                    conn.getInputStream()));
-            String line;
-            while ((line = in.readLine()) != null) {
-                result += line;
+
+            if(ajax.getType().equalsIgnoreCase($POST) && ajax.getData() != null) {
+                // 获取URLConnection对象对应的输出流
+                out = new PrintWriter(conn.getOutputStream());
+                // 发送请求参数
+                if (null != ajax.getData() && !ajax.getData().isNullObject()) {
+                    out.print(ajax.getData().toString());
+                }
+                // flush输出流的缓冲
+                out.flush();
             }
-        } catch (Exception e) {
-            throw e;
-        } finally {  //使用finally块来关闭输出流、输入流
-            try{
-                if(in!=null) in.close();
-            } catch(IOException ex){
-                warn(ex);
+
+            // 设置返回后的通用请求
+            localCookie = conn.getHeaderField("Set-Cookie");// 取到返回的Cookie
+            if (localCookie != null) {
+                $.info("get-cookie：" + localCookie);
+                cookies.put(baseUrl, localCookie);
             }
-        }
 
-        return result;
-    }
-
-    public String sendPost(Ajax ajax) throws Exception {
-        PrintWriter out = null;
-        BufferedReader in = null;
-        String result = "";
-
-        try {
-            URL realUrl = new URL(ajax.getUrl());
-            // 打开和URL之间的连接
-            URLConnection conn = realUrl.openConnection();
-            // 设置通用的请求属性
-            conn.setRequestProperty("accept", "*/*");
-            conn.setRequestProperty("connection", "Keep-Alive");
-            conn.setRequestProperty("user-agent",
-                    "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
-            // 发送POST请求必须设置如下两行
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
-            // 获取URLConnection对象对应的输出流
-            out = new PrintWriter(conn.getOutputStream());
-            // 发送请求参数
-            if(null != ajax.getData() && !ajax.getData().isNullObject()) out.print(ajax.getData().toString());
-            // flush输出流的缓冲
-            out.flush();
             // 定义BufferedReader输入流来读取URL的响应
-            in = new BufferedReader(
-                    new InputStreamReader(conn.getInputStream()));
+            in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String line;
             while ((line = in.readLine()) != null) {
                 result += line;
             }
+
+            conn.disconnect(); // 断开连接
         } catch (Exception e) {
             throw e;
         } finally {  //使用finally块来关闭输出流、输入流

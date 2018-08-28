@@ -1,8 +1,12 @@
 package com.ailbb.ajj.lang;
 
+import com.ailbb.ajj.$;
+
 import static com.ailbb.ajj.$.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by Wz on 6/20/2018.
@@ -17,9 +21,12 @@ public class $String {
 
         for(Object l : list) {
             if(null != l) sb.append(l);
-            if(++i != list.size())  if(!isEmptyOrNull(u)) {
-                for (Object ui: u) sb.append(ui);
+            if(++i != list.size())  {
+                if(!isEmptyOrNull(u)) {
+                    for (Object ui: u) sb.append(ui);
+                } else sb.append(",");
             }
+
         }
 
         return sb.toString();
@@ -63,7 +70,7 @@ public class $String {
     }
 
     public String firstDef(String def, String... strs) {
-        return (null == strs || isEmptyOrNull(strs[0])) ? def : strs[0];
+        return (isEmptyOrNull(strs) || isEmptyOrNull(strs[0])) ? def : strs[0];
     }
 
     public String last(String... strs) {
@@ -71,11 +78,15 @@ public class $String {
     }
 
     public String lastDef(String def, String... strs) {
-        return (null == strs || isEmptyOrNull(strs[strs.length-1])) ? def : strs[strs.length-1];
+        return (isEmptyOrNull(strs) || isEmptyOrNull(strs[strs.length-1])) ? def : strs[strs.length-1];
+    }
+
+    public String lastDef(Object def, Object... strs) {
+        return (isEmptyOrNull(strs) || isEmptyOrNull(strs[strs.length-1])) ? $.str(def) : $.str(strs[strs.length-1]);
     }
 
     public String str(Object object){
-        return isEmptyOrNull(object) ? "" : object.toString();
+        return isEmptyOrNull(object) ? "" : String.valueOf(object);
     }
 
     public String concat(Object... objects){
@@ -90,4 +101,38 @@ public class $String {
         return str.replaceAll("^\\s+|\\s+$", "");
     }
 
+    public String fillBrefore(Object str, int length, String fill) {
+        return fill(str, length, fill, false);
+    }
+
+    public String fillAfter(Object str, int length, String fill) {
+        return fill(str, length, fill, true);
+    }
+
+    public String fill(Object str, int length, String fill) {
+        return fill(str, length, fill, false);
+    }
+
+    public String fill(Object str, int length, String fill, boolean isAfter) {
+        String s = $.str(str);
+        while (length > s.length()) {
+            s = isAfter ? (s + fill) : fill + s;
+        }
+        return s;
+    }
+
+    /**
+     * 文本简化
+     * @param data
+     * @return
+     */
+    public String simple(Object data) {
+        try {
+            String str = data.toString();
+            if(str.length() > 100) str = str.substring(0, 100) + "......";
+            return str;
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+    }
 }

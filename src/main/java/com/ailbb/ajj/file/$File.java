@@ -1,6 +1,7 @@
 package com.ailbb.ajj.file;
 
 import com.ailbb.ajj.file.ctl.$Ctl;
+import com.ailbb.ajj.file.properties.$Properties;
 
 import static com.ailbb.ajj.$.*;
 
@@ -16,6 +17,8 @@ public class $File {
     public $Path path = new $Path();
 
     public $Ctl ctl = new $Ctl();
+
+    public $Properties properties = new $Properties();
 
     public $Compress compress = new $Compress();
 
@@ -40,29 +43,7 @@ public class $File {
     }
 
     public String readFile(String path, String charset) {
-
-        String content = "";
-        InputStream is;
-
-        try {
-            path = getPath(path);
-
-            info(String.format("Read file：%s", path));
-
-            if(test("\\.jar!", path)) { // 如果内容在jar包内，则用流去读取
-                is = new URL("jar:file:" + path).openConnection().getInputStream();
-            } else {
-                is = new FileInputStream(getFile(path));
-            }
-
-            if(null == is) throw new FileNotFoundException(path);
-
-            return read(is, charset);
-        } catch (Exception e) {
-            error(e);
-        }
-
-        return content;
+        return read(getInputStream(path), charset);
     }
 
     public String readFile(File file) {
@@ -196,6 +177,29 @@ public class $File {
 
     public File getFile(String path){
         return new File(getPath(path));
+    }
+
+    public InputStream getInputStream(String path){
+        InputStream is = null;
+
+        try {
+            path = getPath(path);
+
+            info(String.format("Read file：%s", path));
+
+            if(test("\\.jar!", path)) { // 如果内容在jar包内，则用流去读取
+                is = new URL("jar:file:" + path).openConnection().getInputStream();
+            } else {
+                is = new FileInputStream(getFile(path));
+            }
+
+            if(null == is) throw new FileNotFoundException(path);
+
+        } catch (Exception e) {
+            error(e);
+        }
+
+        return is;
     }
 
     public void mkdir(String... path) {

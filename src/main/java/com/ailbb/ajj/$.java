@@ -1,15 +1,13 @@
 package com.ailbb.ajj;
 
+import com.ailbb.ajj.jdbc.$JDBC;
 import com.ailbb.ajj.date.$Date;
 import com.ailbb.ajj.entity.$Progress;
 import com.ailbb.ajj.entity.$Result;
 import com.ailbb.ajj.file.$File;
 import com.ailbb.ajj.file.$Path;
 import com.ailbb.ajj.http.*;
-import com.ailbb.ajj.lang.$Json;
-import com.ailbb.ajj.lang.$List;
-import com.ailbb.ajj.lang.$Object;
-import com.ailbb.ajj.lang.$String;
+import com.ailbb.ajj.lang.*;
 import com.ailbb.ajj.log.$Logger;
 import com.ailbb.ajj.mail.$Mail;
 import com.ailbb.ajj.regex.$Regex;
@@ -34,9 +32,9 @@ import java.util.*;
  * Created by Wz on 5/9/2018.
  */
 public class $ {
-    public static String $ = "ajj";
-    public static String $NAME = $;
-    public static String $ROOT = "/" + $;
+    //* 存储全局变量
+    public static String $NAME = "";
+    public static String $ROOT = "/" + $NAME;
     
     public static final long $TIMEOUT = 100000;
     public static final String $PROXY_PATH = "ajj.json";
@@ -68,11 +66,15 @@ public class $ {
     // lang
     public static $Json json = new $Json();
     public static $String string = new $String();
+    public static $Integer integer = new $Integer();
     public static $Object object = new $Object();
     public static $List list = new $List();
 
     // system
     public static $System system = new $System();
+
+    // jdbc
+    public static $JDBC jdbc = new $JDBC();
 
     // log
     public static $Logger logger = new $Logger();
@@ -89,10 +91,6 @@ public class $ {
     static {
         Proxy.init();
     }
-
-    public static $ ajj = $();
-
-    public static $ $(){ return new $(); }
 
      //* Http area
 
@@ -200,6 +198,10 @@ public class $ {
         return url.parameterStr(map);
     }
 
+    public static String parameterStr(Object... objects){
+        return url.parameterStr(objects);
+    }
+
     public static String rel(String... path){
         return url.rel(path);
     }
@@ -259,6 +261,10 @@ public class $ {
 
     public static void mkdir(String... path) {
         file.mkdir(path);
+    }
+
+    public static String getPath(){
+        return path.getPath("");
     }
 
     public static String getPath(String p){
@@ -343,6 +349,10 @@ public class $ {
         return string.str(object);
     }
 
+    public static int toInt(Object object){
+        return integer.toInt(object);
+    }
+
     public static String join(Collection list, Object... u){
         return string.join(list, u);
     }
@@ -363,28 +373,43 @@ public class $ {
         return string.lastDef(def, strs);
     }
 
+    public static String lastDef(Object def, Object... strs) {
+        return string.lastDef(def, strs);
+    }
+
     public static boolean isEmptyOrNull(Object... o){
         return object.isEmptyOrNull(o);
+    }
+
+    public static String notNull(Object o, String... message) {
+        return object.notNull(o, message);
     }
 
     public static List<Integer> indexOfList(String r, String str) {
         return list.indexOfList(r, str);
     }
 
-    public static String parseJsonString(Object object){
-        return json.parseJsonString(object);
+
+    //* json
+
+    public static String toJsonString(Object object){
+        return json.toJsonString(object);
     }
 
-    public static String parseJsonString(List<Object> object){
-        return json.parseJsonString(object);
+    public static String toJsonString(List<Object> object){
+        return json.toJsonString(object);
     }
 
-    public static List<Object> parseJsonArray(Object object){
-        return json.parseJsonArray(object);
+    public static List<Object> toJsonArray(Object object){
+        return json.toJsonArray(object);
     }
 
-    public static Map<String, Object> parseJsonObject(Object object){
-        return json.parseJsonObject(object);
+    public static Map<String, Object> toJsonObject(Object object){
+        return json.toJsonObject(object);
+    }
+
+    public static Object toBean(Object object, Class cLass){
+        return json.toJsonObject(object);
     }
 
     //* system
@@ -395,28 +420,31 @@ public class $ {
 
     //* log
 
-    public static void exception(Exception... e){
-        logger.exception(e);
+    public static boolean exception(Exception... e){
+        return logger.exception(e);
     }
 
-    public static void error(Object... o){
-        logger.error(o);
+    public static boolean error(Object... o){
+        return logger.error(o);
     }
 
-    public static void warn(Object... o){
-        logger.warn(o);
+    public static boolean warn(Object... o){
+        return logger.warn(o);
     }
 
-    public static void info(Object... o){
-        logger.info(o);
+    public static boolean info(Object... o){
+        return logger.info(o);
     }
 
-    public static void log(Object... o){
-        logger.log(o);
+    public static boolean log(Object... o){
+        return logger.log(o);
     }
 
-    public static void sout(Object... o){
-        logger.sout(o);
+    public static boolean sout(Object... o){
+        return logger.sout(o);
     }
 
+    public static String simple(Object data) {
+        return string.simple(data);
+    }
 }

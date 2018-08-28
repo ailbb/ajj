@@ -8,4 +8,6 @@ public class $Exception  extends Exception {
         super();
     }
     public $Exception(String msg){ super(msg); }
+
+
 }

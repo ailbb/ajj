@@ -6,7 +6,7 @@
 
     <groupId>com.ailbb</groupId>
     <artifactId>ajj</artifactId>
-    <version>1.8-SNAPSHOT</version>
+    <version>1.9-SNAPSHOT</version>
 
     <packaging>jar</packaging>
 
@@ -153,8 +153,10 @@
         <encoding>UTF-8</encoding>
         <!--<java.version>1.7</java.version>--> <!--Don't specify the version-->
 
+        <version.spring>4.3.9.RELEASE</version.spring>
+
         <version.jsonlib>2.4</version.jsonlib>
-        <version.servlet>3.0.1</version.servlet>
+        <version.servlet>3.1.0</version.servlet>
 
         <version.velocity>1.7</version.velocity>
         <version.velocity.tools>2.0</version.velocity.tools>
@@ -174,14 +176,6 @@
             <classifier>jdk15</classifier>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>${version.servlet}</version>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity -->
         <dependency>
             <groupId>org.apache.velocity</groupId>
@@ -194,6 +188,14 @@
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity-tools</artifactId>
             <version>${version.velocity.tools}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${version.servlet}</version>
+            <!--<scope>provided</scope>-->
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/javax.mail/javax.mail-api -->
@@ -223,5 +225,13 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>${version.jdbc.mysql}</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>${version.spring}</version>
+        </dependency>
+
     </dependencies>
 </project>

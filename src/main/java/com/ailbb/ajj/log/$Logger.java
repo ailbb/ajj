@@ -9,29 +9,35 @@ import com.ailbb.ajj.exception.$Exception;
  */
 public class $Logger {
 
-    public void exception(Exception... e){
+    public boolean exception(Exception... e){
         for(Exception ei : e) ei.printStackTrace();
+        return false;
     }
 
-    public void error(Object... o){
+    public boolean error(Object... o){
         for(Object oi : o) exception(new $Exception(String.format("[ERROR]\t%s", oi)));
+        return false;
     }
 
-    public void warn(Object... o){
+    public boolean warn(Object... o){
         for(Object oi : o) sout(String.format("[WARNING]\t%s", oi));
+        return false;
     }
 
-    public void info(Object... o){
+    public boolean info(Object... o){
         for(Object oi : o) sout(String.format("[INFO]\t%s", oi));
+        return true;
     }
 
-    public void log(Object... o){
+    public boolean log(Object... o){
         for(Object oi : o) sout(String.format("[LOG]\t%s", oi));
+        return true;
     }
 
-    public void sout(Object... o){
+    public boolean sout(Object... o){
         for(Object oi : o)
-            System.out.println(String.format(now("s") + "\t" + oi.toString()));
+            System.out.println(now("s") + "\t" + oi.toString());
+        return true;
     }
 
 }

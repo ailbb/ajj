@@ -1,7 +1,12 @@
 package com.ailbb.ajj.http;
 
+import com.ailbb.ajj.$;
+import com.sun.corba.se.spi.ior.ObjectKey;
+import net.sf.json.JSONObject;
+
 import static com.ailbb.ajj.$.*;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,4 +64,23 @@ public class $Url {
         return join(li, "&");
     }
 
+    public String parameterStr(Object... objects){
+        List<String> li = new ArrayList<String>();
+        for(Object o : objects) {
+            Map<String, Object> ok = JSONObject.fromObject(o);
+            for(String key : ok.keySet()) {
+                li.add(concat(key, "=", isEmptyOrNull(ok.get(key)) ? "null" : ok.get(key)));
+            }
+        }
+        return join(li, "&");
+    }
+
+    /**
+     * 获取根节点
+     * @param url
+     * @return
+     */
+    public String base(URL url) {
+        return concat(url.getHost(), ":" ,url.getPort());
+    }
 }
