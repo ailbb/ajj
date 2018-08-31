@@ -7,10 +7,6 @@ import com.ailbb.ajj.$;
  */
 public class $Integer {
     public int toInt(Object o){
-        try {
-            return Integer.parseInt($.str(o));
-        } catch (Exception e) {
-            return 0;
-        }
+        return Integer.parseInt($.str(o));
     }
 }

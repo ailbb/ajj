@@ -1,9 +1,11 @@
 package com.ailbb.ajj.mail;
 
 import com.ailbb.ajj.$;
+import com.ailbb.ajj.entity.$Result;
 import org.apache.commons.lang.StringUtils;
 
 import javax.mail.*;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.ArrayList;
@@ -31,9 +33,9 @@ public class $Mail {
      * 发送邮件
      * @param title 标题
      * @param text 内容
-     * @throws Exception
+     * @return $Result 结构体
      */
-    public $Mail send(String title, String text, List<String> recipientTOEmails) throws Exception {
+    public $Result send(String title, String text, List<String> recipientTOEmails)  {
         return send(title, text, recipientTOEmails.toArray(new String[recipientTOEmails.size()]));
     }
 
@@ -42,69 +44,75 @@ public class $Mail {
      * @param title 标题
      * @param text 内容
      * @param recipientTOEmails 接受邮件地址
-     * @throws Exception
+     * @return $Result 结构体
      */
-    public $Mail send(String title, String text, String... recipientTOEmails) throws Exception {
+    public $Result send(String title, String text, String... recipientTOEmails)  {
+        $Result rs = $.result();
 
-        // 设置环境信息
-        Session session = Session.getInstance(getMailProperties(), new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(username, password);
-            }
-        });
-        // 创建邮件对象
-        Message msg = new MimeMessage(session);
+        try {
 
-        msg.setSubject(title);
-        // 设置邮件内容
-        msg.setText(text);
+            // 设置环境信息
+            Session session = Session.getInstance(getMailProperties(), new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(username, password);
+                }
+            });
+            // 创建邮件对象
+            Message msg = new MimeMessage(session);
 
-        // 设置发件人
-        msg.setFrom(new InternetAddress(senderEmail));
+            msg.setSubject(title);
+            // 设置邮件内容
+            msg.setText(text);
 
-        boolean isRecipientEmpty = $.isEmptyOrNull(recipientTOEmails);
-        String _recipientTOEmails = $.string.join((isRecipientEmpty ? this.recipientTOEmails : recipientTOEmails), ",");
-        String _recipientCCEmails = $.string.join((isRecipientEmpty ? recipientCCEmails : null), ",");
-        String _recipientBCCEmails = $.string.join((isRecipientEmpty ? recipientBCCEmails : null), ",");
+            // 设置发件人
+            msg.setFrom(new InternetAddress(senderEmail));
 
-        if($.isEmptyOrNull(_recipientTOEmails)) return this;
-        // 设置发送人
-        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(_recipientTOEmails));
+            boolean isRecipientEmpty = $.isEmptyOrNull(recipientTOEmails);
+            String _recipientTOEmails = $.string.join((isRecipientEmpty ? this.recipientTOEmails : recipientTOEmails), ",");
+            String _recipientCCEmails = $.string.join((isRecipientEmpty ? recipientCCEmails : null), ",");
+            String _recipientBCCEmails = $.string.join((isRecipientEmpty ? recipientBCCEmails : null), ",");
 
-        // 抄送人
-        if(!$.isEmptyOrNull(_recipientCCEmails)) msg.setRecipients(Message.RecipientType.CC, InternetAddress.parse(_recipientCCEmails));
+            if($.isEmptyOrNull(_recipientTOEmails)) return rs;
+            // 设置发送人
+            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(_recipientTOEmails));
 
-        // 暗送人
-        if(!$.isEmptyOrNull(_recipientBCCEmails)) msg.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(_recipientBCCEmails));
+            // 抄送人
+            if(!$.isEmptyOrNull(_recipientCCEmails)) msg.setRecipients(Message.RecipientType.CC, InternetAddress.parse(_recipientCCEmails));
 
-        // 记录日志
-        $.info(
-                String.format("向 [ %s ] 发送邮件，抄送 [%s]，暗送 [%s], \r\n内容 [ %s ]",
-                        _recipientTOEmails,
-                        _recipientCCEmails,
-                        _recipientBCCEmails,
-                        msg)
-                );
-        Transport.send(msg);
-        return this;
+            // 暗送人
+            if(!$.isEmptyOrNull(_recipientBCCEmails)) msg.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(_recipientBCCEmails));
+
+            // 记录日志
+            rs.addMessage($.info(
+                    String.format("向 [ %s ] 发送邮件，抄送 [%s]，暗送 [%s], \r\n内容 [ %s ]",
+                            _recipientTOEmails,
+                            _recipientCCEmails,
+                            _recipientBCCEmails,
+                            msg)
+            ));
+            Transport.send(msg);
+
+        } catch (AddressException e) {
+            rs.addError($.exception(e));
+        } catch (MessagingException e) {
+            rs.addError($.exception(e));
+        }
+
+        return rs;
     }
 
     /**
      * 封装环境变量信息
-     * @return
+     * @return Properties 文件对象
      */
     private Properties getMailProperties(){
         Properties props = new Properties(); // 环境变量信息
 
-        try {
-            props.setProperty("mail.debug", String.valueOf(isDebug()));
-            props.setProperty("mail.smtp.auth", String.valueOf(isAuth()));
-            props.setProperty("mail.host", getHost());
-            props.setProperty("mail.transport.protocol", getProtocol());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        props.setProperty("mail.debug", String.valueOf(isDebug()));
+        props.setProperty("mail.smtp.auth", String.valueOf(isAuth()));
+        props.setProperty("mail.host", getHost());
+        props.setProperty("mail.transport.protocol", getProtocol());
 
         return props;
     }

@@ -1,7 +1,11 @@
 package com.ailbb.ajj.entity;
 
+import com.ailbb.ajj.$;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Wz on 6/22/2018.
@@ -14,13 +18,13 @@ public class $Result {
     /**状态*/
     private $Status status = $Status.$DEFAULT;
     /**数据*/
-    private Object data = new Object();
+    private Object data = "";
     /**标题*/
     private String title = "";
     /**请求信息*/
     private List<String> message = new ArrayList<>();
     /**错误信息*/
-    private List<String> error = new ArrayList<>();
+    private List<Exception> error = new ArrayList<>();
     /**备注*/
     private String remark = "";
 
@@ -57,11 +61,11 @@ public class $Result {
         return this;
     }
 
-    public List<String> getError() {
+    public List<Exception> getError() {
         return error;
     }
 
-    public $Result setError(List<String> error) {
+    public $Result setError(List<Exception> error) {
         this.error = error;
         return this;
     }
@@ -102,13 +106,74 @@ public class $Result {
         return this;
     }
 
-    public $Result addMessage(String message) {
-        this.message.add(message);
+    public $Result addMessage(String... messages) {
+        for(String m : messages)
+            this.message.add(m);
+
         return this;
     }
 
-    public $Result addError(String error) {
-        this.error.add(error);
+    public $Result addError(Exception... exceptions) {
+        this.setSuccess(false);
+        for(Exception e : exceptions) {
+            this.error.add(e);
+            this.addMessage(e.getMessage());
+        }
+        return this;
+    }
+
+    public String getDataToString() {
+        try {
+            return $.str(data);
+        } catch (Exception e) {
+            addError(e).setData("");
+            return "";
+        }
+    }
+
+    public List<Object> getDataToList() {
+        try {
+            return ((ArrayList<Object>)this.data);
+        } catch (Exception e) {
+            List<Object> edata = new ArrayList<Object>();
+            addError(e).setData(edata);
+            return edata;
+        }
+    }
+
+    public Map<String, Object> getDataToMap() {
+        try {
+            return ((HashMap<String, Object>)this.data);
+        } catch (Exception e) {
+            Map<String, Object> edata = new HashMap<String, Object>();
+            addError(e).setData(edata);
+            return edata;
+        }
+    }
+
+    public $Result addData(String... datas) {
+        if($.isEmptyOrNull(this.data)) this.data = "";
+
+        for(String d : datas)
+            this.data += d;
+
+        return this;
+    }
+
+    public $Result addData(Object... objects) {
+        if($.isEmptyOrNull(this.data)) this.data = new ArrayList<Object>();
+
+        for(Object o : objects)
+            ((ArrayList<Object>)this.data).add(o);
+
+        return this;
+    }
+
+    public $Result addData(String key, Object value) {
+        if($.isEmptyOrNull(this.data)) this.data = new HashMap<String, Object>();
+
+        ((HashMap<String, Object>)this.data).put(key, value);
+
         return this;
     }
 

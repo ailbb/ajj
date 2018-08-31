@@ -77,8 +77,8 @@ public class $Url {
 
     /**
      * 获取根节点
-     * @param url
-     * @return
+     * @param url 解析的url
+     * @return 返回根路径
      */
     public String base(URL url) {
         return concat(url.getHost(), ":" ,url.getPort());

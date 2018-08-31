@@ -21,8 +21,8 @@ public class $Unit {
 
     /**
      * byte to anything
-     * @param num
-     * @return
+     * @param num double
+     * @return 格式化后的数据
      */
     public String convert(double num) {
         return convert(num, $BYTE);
@@ -30,8 +30,8 @@ public class $Unit {
 
     /**
      * byte to anything
-     * @param num
-     * @return
+     * @param num double
+     * @return 格式化后的数据
      */
     public String convert(double num, String unit) {
         if(isEmptyOrNull(unit)) return convert(num);

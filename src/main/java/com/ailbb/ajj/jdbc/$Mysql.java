@@ -2,6 +2,7 @@ package com.ailbb.ajj.jdbc;
 
 import com.ailbb.ajj.$;
 import com.ailbb.ajj.entity.$JDBCConnConfiguration;
+import com.ailbb.ajj.entity.$Result;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -35,23 +36,29 @@ public class $Mysql {
      * @param sql
      * @return
      */
-    public $Mysql run(String sql) {
+    public $Result run(String sql) {
         return run(sql, new ArrayList<>());
     }
 
     /**
      * 执行sql
-     * @param sql
+     * @param sql 执行sql
      * @return
      */
-    public $Mysql run(String sql, List<Object> list) {
-        jdbcTemplate.update(sql,  new PreparedStatementSetter() {
-            public void setValues(PreparedStatement ps) throws SQLException {
-                for(int i=list.size(); i-->0;) ps.setObject(i+1, list.get(i));
-            }
-        });
+    public $Result run(String sql, List<Object> list)  {
+        $Result rs = $.result();
 
-        return this;
+        try {
+            rs.setData(jdbcTemplate.update(sql,  new PreparedStatementSetter() {
+                public void setValues(PreparedStatement ps) throws SQLException {
+                    for(int i=0; i<list.size(); i++) ps.setObject(i+1, list.get(i));
+                }
+            }));
+        } catch (Exception e) {
+            rs.addError($.exception(e));
+        }
+
+        return rs;
     }
 
     /**

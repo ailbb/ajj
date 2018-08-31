@@ -2,6 +2,7 @@ package com.ailbb.ajj.date;
 
 import com.ailbb.ajj.$;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -39,20 +40,16 @@ public class $Date {
         return new SimpleDateFormat(patten).format(isEmptyOrNull(date) ? new Date() : date[date.length-1]);
     }
 
-    public Date parse(String date, String... patten) {
-        try {
-            return new SimpleDateFormat(lastDef("YYYY-MM-dd HH:mm:ss", patten)).parse(date);
-        } catch (Exception e) {
-            $.exception(e);
-            return null;
-        }
+    public Date parse(String date, String... patten) throws ParseException {
+        return new SimpleDateFormat(lastDef("YYYY-MM-dd HH:mm:ss", patten)).parse(date);
     }
 
     /**
      * 前移后移计算时间
-     * @param date
-     * @param num
-     * @return
+     * @param date date
+     * @param num how long
+     * @param types types
+     * @return date
      */
     public Date date(Date date, long num, String... types){
         if(null == date) date = new Date();
@@ -70,7 +67,7 @@ public class $Date {
         return date;
     }
 
-    public Date date(String date, long num, String... types){
+    public Date date(String date, long num, String... types) throws ParseException {
         return date(parse(date), num, types);
     }
 

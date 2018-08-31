@@ -13,43 +13,23 @@ import java.util.Map;
  */
 public class $Json {
     public String toJsonString(Object object){
-        try {
-            return JSONObject.fromObject(object).toString();
-        } catch (Exception e) {
-            return "{}";
-        }
+        return JSONObject.fromObject(object).toString();
     }
 
     public String toJsonString(List<Object> map){
-        try {
-            return JSONArray.fromObject(map).toString();
-        } catch (Exception e) {
-            return "[]";
-        }
+        return JSONArray.fromObject(map).toString();
     }
 
     public Map<String, Object> toJsonObject(Object object){
-        try {
-            return JSONObject.fromObject(object);
-        } catch (Exception e) {
-            return new HashMap<>();
-        }
+        return JSONObject.fromObject(object);
     }
 
     public List<Object> toJsonArray(Object object){
-        try {
-            return JSONArray.fromObject(object);
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
+        return JSONArray.fromObject(object);
     }
 
     public Object toBean(Object object, Class c){
-        try {
-            return JSONObject.toBean(JSONObject.fromObject(object), c);
-        } catch (Exception e) {
-            return null;
-        }
+        return JSONObject.toBean(JSONObject.fromObject(object), c);
     }
 
 }

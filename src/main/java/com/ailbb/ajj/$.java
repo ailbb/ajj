@@ -18,7 +18,6 @@ import com.ailbb.ajj.unit.$Unit;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,6 +25,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -36,7 +37,7 @@ public class $ {
     public static String $NAME = "";
     public static String $ROOT = "/" + $NAME;
     
-    public static final long $TIMEOUT = 100000;
+    public static final int $TIMEOUT = 100000;
     public static final String $PROXY_PATH = "ajj.json";
 
     public static Map<String, Proxy> $PROXY = new HashMap<String, Proxy>();
@@ -94,79 +95,79 @@ public class $ {
 
      //* Http area
 
-    public static String get(String url){
+    public static $Result get(String url)  {
         return http.get(url);
     }
 
-    public static String post(String url){
+    public static $Result post(String url)  {
         return http.post(url);
     }
 
-    public static JSONObject getJSON(String url){
+    public static JSONObject getJSON(String url)  {
         return http.getJSON(url);
     }
 
-    public static JSONObject getJSONObject(String url){
+    public static JSONObject getJSONObject(String url)  {
         return http.getJSONObject(url);
     }
 
-    public static JSONArray getJSONArray(String url){
+    public static JSONArray getJSONArray(String url)  {
         return http.getJSONArray(url);
     }
 
-    public static String ajax(String url){
+    public static $Result ajax(String url)  {
         return http.ajax(url);
     }
 
-    public static String get(Ajax ajax){
+    public static $Result get(Ajax ajax)  {
         return http.get(ajax);
     }
 
-    public static String post(Ajax ajax){
+    public static $Result post(Ajax ajax)  {
         return http.post(ajax);
     }
 
-    public static JSONObject getJSON(Ajax ajax){
+    public static JSONObject getJSON(Ajax ajax)  {
         return http.getJSON(ajax);
     }
 
-    public static JSONObject getJSONObject(Ajax ajax) {
+    public static JSONObject getJSONObject(Ajax ajax)  {
         return http.getJSONObject(ajax);
     }
 
-    public static JSONArray getJSONArray(Ajax ajax) {
+    public static JSONArray getJSONArray(Ajax ajax)  {
         return http.getJSONArray(ajax);
     }
 
-    public static String getIp(String... name){
-        return http.getIp(name);
-    }
-
-    public static InetAddress getInetAddress(String... name) {
-        return http.getInetAddress(name);
-    }
-
-    public static String ajax(Ajax ajax) {
+    public static $Result ajax(Ajax ajax)  {
         return http.ajax(ajax);
     }
 
-    private static String sendGet(Ajax ajax) throws Exception {
+    private static $Result sendGet(Ajax ajax)  {
         return http.sendGet(ajax);
     }
 
-    private static String sendPost(Ajax ajax) throws Exception {
+    private static $Result sendPost(Ajax ajax)  {
         return http.sendPost(ajax);
     }
 
-    public static String redirect(HttpServletResponse response, String url) throws ServletException, IOException {
+    public static String getIp(String... name) throws UnknownHostException {
+        return http.getIp(name);
+    }
+
+    public static InetAddress getInetAddress(String... name) throws UnknownHostException {
+        return http.getInetAddress(name);
+    }
+
+    public static $Result redirect(HttpServletResponse response, String url)  {
         return http.redirect(response, url);
     }
 
-    public static String reforward(HttpServletRequest request, HttpServletResponse response, String url) throws ServletException, IOException {
+    public static $Result reforward(HttpServletRequest request, HttpServletResponse response, String url)  {
         return http.reforward(request, response, url);
     }
 
-    public static Object getRequestBody(HttpServletRequest request) {
+    public static Object getRequestBody(HttpServletRequest request) throws IOException {
         return http.getRequestBody(request);
     }
 
@@ -178,15 +179,15 @@ public class $ {
         return http.getCookie(request, key);
     }
 
-    public static boolean send(HttpServletResponse response, Object object) {
+    public static $Result send(HttpServletResponse response, Object object)  {
         return http.send(response, object);
     }
 
-    public static boolean sendJSONP(HttpServletResponse response, String callback, Object object) {
+    public static $Result sendJSONP(HttpServletResponse response, String callback, Object object)  {
         return http.sendJSONP(response, callback, object);
     }
 
-    public static boolean sendVelocity(HttpServletRequest request, HttpServletResponse response, String relPath, JSONObject object) {
+    public static $Result sendVelocity(HttpServletRequest request, HttpServletResponse response, String relPath, JSONObject object)  {
         return velocity.sendVelocity(request, response, relPath, object);
     }
 
@@ -207,43 +208,43 @@ public class $ {
     }
 
      //* file area
-    public static String read(InputStream is) {
+    public static $Result read(InputStream is)  {
        return file.read(is);
     }
 
-    public static String zip(String path, String... paths){
+    public static $Result zip(String path, String... paths)  {
         return file.zip(path, paths);
     }
 
-    public static String zip(String path, List<String> paths){
+    public static $Result zip(String path, List<String> paths)  {
         return file.zip(path, paths);
     }
 
-    public static String zip(String path, boolean isDelete, String... paths) {
+    public static $Result zip(String path, boolean isDelete, String... paths)  {
         return file.zip(path, isDelete, paths);
     }
 
-    public static String zip(String path, boolean isDelete, List<String> paths) {
+    public static $Result zip(String path, boolean isDelete, List<String> paths)  {
         return file.zip(path, isDelete, paths);
     }
 
-    public static String readFile(String path) {
+    public static $Result readFile(String path)  {
         return file.readFile(path);
     }
 
-    public static String writeFile(String path, Object... object) {
+    public static $Result writeFile(String path, Object... object)  {
         return file.writeFile(path, object);
     }
 
-    public static String writeFile(String path, boolean isAppend, Object... object) {
+    public static $Result writeFile(String path, boolean isAppend, Object... object)  {
         return file.writeFile(path, isAppend, object);
     }
 
-    public static void copyFile(String sourcePath, String destPath) {
+    public static void copyFile(String sourcePath, String destPath)  {
         file.copyFile(sourcePath, destPath);
     }
 
-    public static void copyFile(String sourcePath, String destPath, boolean isReplace) {
+    public static void copyFile(String sourcePath, String destPath, boolean isReplace)  {
         file.copyFile(sourcePath, destPath, isReplace);
     }
 
@@ -289,7 +290,7 @@ public class $ {
         return date.format(patten, d);
     }
 
-    public static Date parse(String d, String... patten) {
+    public static Date parse(String d, String... patten) throws ParseException {
         return date.parse(d, patten);
     }
 
@@ -369,6 +370,10 @@ public class $ {
         return string.last(strs);
     }
 
+    public static String last(Object... strs) {
+        return string.last(strs);
+    }
+
     public static String lastDef(String def, String... strs) {
         return string.lastDef(def, strs);
     }
@@ -418,29 +423,35 @@ public class $ {
         return system.system();
     }
 
+    //* system
+
+    public static $Result resultIf($Result rs1, $Result rs2){
+        return rs1.isSuccess() ? rs1 : rs2;
+    }
+
     //* log
 
-    public static boolean exception(Exception... e){
+    public static Exception exception(Exception... e){
         return logger.exception(e);
     }
 
-    public static boolean error(Object... o){
+    public static String error(Object... o){
         return logger.error(o);
     }
 
-    public static boolean warn(Object... o){
+    public static String warn(Object... o){
         return logger.warn(o);
     }
 
-    public static boolean info(Object... o){
+    public static String info(Object... o){
         return logger.info(o);
     }
 
-    public static boolean log(Object... o){
+    public static String log(Object... o){
         return logger.log(o);
     }
 
-    public static boolean sout(Object... o){
+    public static String sout(Object... o){
         return logger.sout(o);
     }
 

@@ -1,6 +1,7 @@
 package com.ailbb.ajj.file;
 
 import com.ailbb.ajj.$;
+import com.ailbb.ajj.entity.$Result;
 
 import java.io.*;
 import java.util.Arrays;
@@ -18,13 +19,13 @@ public class $Zip {
      * 压缩文件
      * @param path 生成目录
      * @param paths 文件目录
-     * @return
+     * @return $Result
      */
-    public String compress(String path, String... paths) {
+    public $Result compress(String path, String... paths)  {
         return compress(path, false, Arrays.asList(paths));
     }
 
-    public String compress(String path, List<String> paths) {
+    public $Result compress(String path, List<String> paths)  {
         return compress(path, false, paths);
     }
 
@@ -32,13 +33,22 @@ public class $Zip {
      * 压缩文件
      * @param path 生成目录
      * @param paths 文件目录
-     * @return
+     * @return $Result
      */
-    public String compress(String path, boolean isDelete, String... paths) {
+    public $Result compress(String path, boolean isDelete, String... paths)  {
         return compress(path, isDelete, Arrays.asList(paths));
     }
 
-    public String compress(String path, boolean isDelete, List<String> paths) {
+    /**
+     *
+     * 压缩文件
+     * @param path 生成目录
+     * @param isDelete 遇到同名是否删除
+     * @param paths 文件目录
+     * @return $Result
+     */
+    public $Result compress(String path, boolean isDelete, List<String> paths)  {
+        $Result rs = $.result();
         ZipOutputStream zipOut = null;
         path = $.getPath(path);
 
@@ -53,20 +63,20 @@ public class $Zip {
                 compress(file.getPath(), "/", zipOut, isDelete, $.getFile(p)); // 要被压缩的文件夹
             }
 
-            $.info(String.format("Write Zip file：%s", path));
+            rs.addMessage($.info(String.format("Write Zip file：%s", path)));
 
-            return path;
-        } catch (Exception e) {
-            e.printStackTrace();
+            return rs.setData(path);
+        } catch (FileNotFoundException e) {
+            rs.addError($.exception(e));
         } finally {
             try {
                 if(zipOut != null) zipOut.close();
-            } catch (Exception e2) {
-                e2.printStackTrace();
+            } catch (IOException e) {
+                rs.addError($.exception(e)).setSuccess(true);
             }
         }
 
-        return null;
+        return rs;
     }
 
     /**
@@ -76,10 +86,11 @@ public class $Zip {
      * @param zipOut 压缩文件流
      * @param isDelete 是否压缩完毕后删除原文件
      * @param files 文件数
-     * @return
-     * @throws Exception
+     * @return $Result
      */
-    private void compress(String filePath, String parentPath, ZipOutputStream zipOut, boolean isDelete, File... files) throws Exception {
+    private $Result compress(String filePath, String parentPath, ZipOutputStream zipOut, boolean isDelete, File... files)  {
+        $Result rs = $.result();
+
         for(File file : files) {
             if(file.isDirectory()){
                 compress(filePath, parentPath + file.getName() + "/", zipOut, isDelete, file.listFiles());
@@ -97,12 +108,20 @@ public class $Zip {
                     in.close();
 
                     if(isDelete) file.delete();
-                } catch (Exception e) {
-                    throw e;
+                } catch (FileNotFoundException e) {
+                    rs.addError($.exception(e));
+                } catch (IOException e) {
+                    rs.addError($.exception(e));
                 } finally {
-                    if(in != null) in.close();
+                    try {
+                        if(in != null) in.close();
+                    } catch (IOException e) {
+                        $.warn(e);
+                    }
                 }
             }
         }
+
+        return rs;
     }
 }

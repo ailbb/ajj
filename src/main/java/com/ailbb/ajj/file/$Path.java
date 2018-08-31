@@ -9,7 +9,7 @@ import static com.ailbb.ajj.$.*;
  */
 public class $Path {
     public String getPath(String path){
-        String pr = null;
+        String pr = "";
 
         if(isEmptyOrNull(path)) path = "/";
 
@@ -25,21 +25,27 @@ public class $Path {
             if(isEmptyOrNull(pr))
                 pr = rel(Thread.currentThread().getContextClassLoader().getResource("").getPath(), path);
         } catch (Exception e) {
-            String udir = System.getProperty(System.getProperty("user.dir"));
+            String userdir = System.getProperty(System.getProperty("user.dir"));
             String uclasspath = System.getProperty(System.getProperty("java.class.path"));
 
-            if(-1 == uclasspath.indexOf(udir)) {
-                pr = udir + "/" + uclasspath;
-            } else {
-                pr = uclasspath;
+            if(!isEmptyOrNull(userdir)) pr = userdir;
+
+            if(!$.isEmptyOrNull(uclasspath)) {
+                if(!$.isEmptyOrNull(pr) && -1 == uclasspath.indexOf(pr))
+                    pr =  pr + "/" + uclasspath;
+                else
+                    pr = uclasspath;
             }
 
-            if(-1 != pr.indexOf("jar")) {
-                pr = pr + "!/";
+            if(!isEmptyOrNull(pr)){
+                if(-1 != pr.indexOf("jar"))
+                    pr = pr + "!/";
+
+                pr = rel(pr, path);
             }
         }
 
-        return isEmptyOrNull(pr) ? rel(path) : rel(pr);
+        return isEmptyOrNull(pr) ? rel(path) : pr;
     }
 
     public String getPath(Class clazz){

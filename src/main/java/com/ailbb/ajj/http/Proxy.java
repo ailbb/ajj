@@ -78,7 +78,7 @@ public class Proxy {
                     try {
                         Thread.sleep($TIMEOUT);
                     } catch (InterruptedException e) {
-                        warn(e);
+                        exception(e);
                         break;
                     }
                 }

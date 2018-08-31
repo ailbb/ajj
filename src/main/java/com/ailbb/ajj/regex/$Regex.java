@@ -69,9 +69,9 @@ public class $Regex {
 
     /**
      * 拾取文本
-     * @param pattern
-     * @param text
-     * @return
+     * @param pattern 正则表达式
+     * @param text 文本对象
+     * @return 拾取的文本
      */
     public String pickup(String pattern, String text){
         List<String> list = regex(pattern, text);

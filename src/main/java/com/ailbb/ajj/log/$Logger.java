@@ -2,6 +2,7 @@ package com.ailbb.ajj.log;
 
 import static com.ailbb.ajj.$.*;
 
+import com.ailbb.ajj.$;
 import com.ailbb.ajj.exception.$Exception;
 
 /**
@@ -9,35 +10,36 @@ import com.ailbb.ajj.exception.$Exception;
  */
 public class $Logger {
 
-    public boolean exception(Exception... e){
+    public Exception exception(Exception... e){
         for(Exception ei : e) ei.printStackTrace();
-        return false;
+        return isEmptyOrNull(e) ? null : e[e.length-1];
     }
 
-    public boolean error(Object... o){
+    public String error(Object... o){
         for(Object oi : o) exception(new $Exception(String.format("[ERROR]\t%s", oi)));
-        return false;
+        return $.last(o);
     }
 
-    public boolean warn(Object... o){
+    public String warn(Object... o){
         for(Object oi : o) sout(String.format("[WARNING]\t%s", oi));
-        return false;
+        return $.last(o);
     }
 
-    public boolean info(Object... o){
+    public String info(Object... o){
         for(Object oi : o) sout(String.format("[INFO]\t%s", oi));
-        return true;
+        return $.last(o);
     }
 
-    public boolean log(Object... o){
+    public String log(Object... o){
         for(Object oi : o) sout(String.format("[LOG]\t%s", oi));
-        return true;
+        return $.last(o);
     }
 
-    public boolean sout(Object... o){
+    public String sout(Object... o){
         for(Object oi : o)
             System.out.println(now("s") + "\t" + oi.toString());
-        return true;
+
+        return $.last(o);
     }
 
 }

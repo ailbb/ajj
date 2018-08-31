@@ -1,6 +1,7 @@
 package com.ailbb.ajj.file;
 
-import java.util.Arrays;
+import com.ailbb.ajj.entity.$Result;
+
 import java.util.List;
 
 /**
@@ -10,28 +11,28 @@ public class $Compress {
     public $Zip zip = new $Zip();
 
     // 压缩
-    public String compress(String path, String... paths) {
-        return null;
+    public $Result compress(String path, String... paths) {
+        return zip.compress(path, paths);
     }
 
     // 压缩
-    public String compress(String path, List<String> paths) {
-        return null;
-    }
-
-    public String zip(String path, String... paths) {
+    public $Result compress(String path, List<String> paths) {
         return zip.compress(path, paths);
     }
 
-    public String zip(String path, List<String> paths) {
+    public $Result zip(String path, String... paths)  {
         return zip.compress(path, paths);
     }
 
-    public String zip(String path, boolean isDelete, String... paths) {
+    public $Result zip(String path, List<String> paths)  {
+        return zip.compress(path, paths);
+    }
+
+    public $Result zip(String path, boolean isDelete, String... paths)  {
         return zip.compress(path, isDelete, paths);
     }
 
-    public String zip(String path, boolean isDelete, List<String> paths) {
+    public $Result zip(String path, boolean isDelete, List<String> paths)  {
         return zip.compress(path, isDelete, paths);
     }
 }

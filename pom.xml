@@ -6,7 +6,7 @@
 
     <groupId>com.ailbb</groupId>
     <artifactId>ajj</artifactId>
-    <version>1.9-SNAPSHOT</version>
+    <version>1.10-SNAPSHOT</version>
 
     <packaging>jar</packaging>
 
@@ -233,5 +233,17 @@
             <version>${version.spring}</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.2.2</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpcore -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>4.2.2</version>
+        </dependency>
     </dependencies>
 </project>

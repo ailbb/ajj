@@ -1,21 +1,26 @@
 package com.ailbb.ajj.http;
 
 import com.ailbb.ajj.$;
+import com.ailbb.ajj.entity.$Result;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.URL;
+import java.io.*;
+import java.net.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,28 +39,38 @@ public class $Http {
     public static final String $GET = "GET";
     public static final String $POST = "POST";
 
-    public String redirect(HttpServletResponse response, String url) throws ServletException, IOException {
-        response.sendRedirect(url);
-        return url;
+    public $Result redirect(HttpServletResponse response, String url)  {
+        $Result rs = $.result();
+        try {
+            response.sendRedirect(url);
+            rs.setData(url);
+        } catch (IOException e) {
+            rs.addError($.exception(e));
+        }
+        return rs;
     }
 
-    public String reforward(HttpServletRequest request, HttpServletResponse response, String url) throws ServletException, IOException {
-        request.getRequestDispatcher(url).forward(request,response);
-        return url;
+    public $Result reforward(HttpServletRequest request, HttpServletResponse response, String url)  {
+        $Result rs = $.result();
+        try {
+            request.getRequestDispatcher(url).forward(request,response);
+            rs.setData(url);
+        } catch (ServletException e) {
+            rs.addError($.exception(e));
+        } catch (IOException e) {
+            rs.addError($.exception(e));
+        }
+        return rs;
     }
 
-    public Object getRequestBody(HttpServletRequest request) {
+    public String getRequestBody(HttpServletRequest request) throws IOException {
         StringBuffer result = new StringBuffer();
         String str;
         BufferedReader br = null;
-        try {
-            br = request.getReader();
+        br = request.getReader();
 
-            while((str = br.readLine()) != null){
-                result.append(str);
-            }
-        } catch (Exception e) {
-            exception(e);
+        while((str = br.readLine()) != null){
+            result.append(str);
         }
 
         return result.toString();
@@ -63,22 +78,18 @@ public class $Http {
 
     /**
      * 获取cookie
-     * @param request
-     * @return
+     * @param request request对象
+     * @return cookie集合
      */
     public Cookie[] getCookie(HttpServletRequest request){
-        try {
-            return request.getCookies();
-        } catch (Exception e) {
-            return null;
-        }
+        return request.getCookies();
     }
 
     /**
      * 获取指定cookie
-     * @param request
-     * @param key
-     * @return
+     * @param request request对象
+     * @param key cookie的key
+     * @return cookie的value
      */
     public String getCookie(HttpServletRequest request, String key){
         for(Cookie c : getCookie(request)) {
@@ -92,43 +103,50 @@ public class $Http {
 
     /**
      * 封装发送Result对象jsonp消息
-     * @param response
-     * @param object
+     * @param response response对象体
+     * @param callback 回调方法
+     * @param data 需要发送的数据对象
+     * @return $Result
      */
-    public boolean sendJSONP(HttpServletResponse response, String callback, Object object) {
-        return send(response, String.format("%s(%s)", callback, object));
+    public $Result sendJSONP(HttpServletResponse response, String callback, Object data)  {
+        return send(response, String.format("%s(%s)", callback, data));
     }
 
     /**
      * 发送json消息
-     * @param response
-     * @param object
+     * @param response response对象体
+     * @param data 需要发送的数据对象
      */
-    public boolean send(HttpServletResponse response, Object object) {
+    public $Result send(HttpServletResponse response, Object data)  {
+        $Result rs = $.result();
+
         response.setHeader("Content-type", "text/html;charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
 
         PrintWriter out = null;
         try {
             out = response.getWriter();
-            out.print(object);
+            out.print(data);
             out.flush();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+            rs.setData(data);
+        } catch (IOException e) {
+            rs.addError($.exception(e));
         } finally {
-            if(null != out) out.close();
+            try {
+                if(null != out) out.close();
+            } catch (Exception e) {
+                rs.addError($.exception(e));
+            }
         }
 
-        return true;
+        return rs;
     }
 
-    public String ajax(final Ajax ajax) {
-        String data = null;
+    public $Result ajax(final Ajax ajax)  {
+        $Result rs = $.result();
 
         if(null == ajax.getUrl()) {
-            error(String.format("request $url is null! [%s]", ajax));
-            return data;
+            return rs.setSuccess(false).addMessage(error(String.format("request $url is null! [%s]", ajax)));
         }
 
         if(ajax.isAsync()) {
@@ -139,58 +157,59 @@ public class $Http {
                 }
             }).start();
 
-            return data;
+            return rs;
         } else {
             Ajax.Callback callback = ajax.getCallback();
 
             try {
-                info("-----------------------");
+                rs.addMessage(info("-----------------------"));
 
-                info(String.format("Send %s request：%s", ajax.getType(), ajax.getUrl()));
+                rs.addMessage(info(String.format("Send %s request：%s", ajax.getType(), ajax.getUrl())));
 
-                info(String.format("Send %s Data：%s", ajax.getType(), $.simple(ajax.getData())));
+                rs.addMessage(info(String.format("Send %s Data：%s", ajax.getType(), $.simple(ajax.getData()))));
 
-                data = ajax.getType().equals($GET) ? sendGet(ajax) : sendPost(ajax);
+                rs = ajax.getType().equals($GET) ? sendGet(ajax) : sendPost(ajax);
 
-                info(String.format("Get %s Data：%s", ajax.getType(), $.simple(data)));
+                rs.addMessage(info(String.format("Get %s Data：%s", ajax.getType(), $.simple(rs.getData()))));
 
-                if(null != callback) callback.complete(data);
-                if(null != callback) callback.success(data);
+                if(null != callback) callback.complete(rs);
+                if(null != callback) callback.success(rs);
 
             } catch (Exception e) {
-                error(e);
+                if(null != callback) callback.error(rs.addError($.exception(e)));
 
-                if(null != callback) callback.error(e.toString());
+                throw e;
             }
 
-            return data;
+            return rs;
         }
     }
 
-    public String sendGet(Ajax ajax) throws Exception {
+    public $Result sendGet(Ajax ajax)  {
         return sendRequest(ajax.setType($GET));
     }
 
-    public String sendPost(Ajax ajax) throws Exception {
+    public $Result sendPost(Ajax ajax)  {
         return sendRequest(ajax.setType($POST));
     }
 
     /**
      * 发送请求
-     * @param ajax
-     * @return
-     * @throws Exception
+     * @param ajax ajax 请求对象
+     * @return $Result 结构体
      */
-    public String sendRequest(Ajax ajax) throws Exception {
-        PrintWriter out = null;
+    public $Result sendRequest(Ajax ajax)  {
+        OutputStreamWriter out = null;
         BufferedReader in = null;
-        String result = "";
+        InputStream ins = null;
+        StringBuffer result = new StringBuffer();
+        $Result rs = $.result();
 
         try {
             String requestUrl = ajax.getUrl();
 
-            // 如果是get请求，在链接内添加内容
-            if(ajax.getType().equalsIgnoreCase($GET) && ajax.getData() != null) {
+            // 在链接内添加内容
+            if(ajax.getData() != null) {
                 requestUrl += "?";
 
                 for(Object o : ajax.getData().keySet()) {
@@ -211,13 +230,15 @@ public class $Http {
             conn.setDoOutput(true); // 允许连接提交信息
             conn.setDoInput(true);
             conn.setUseCaches(false);
-            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            conn.setRequestProperty("User-Agent","Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET CLR 1.1.4322; .NET4.0C; .NET4.0E)");
-            conn.setRequestProperty("Accept-Language","zh-CN");
-            conn.setRequestProperty("Accept-Encoding","gzip, deflate");
+            conn.setConnectTimeout(ajax.getTimeout());
+            conn.setReadTimeout(ajax.getTimeout());
+            conn.setInstanceFollowRedirects(true);
+            conn.setRequestProperty("accept", "*/*");
+            conn.setRequestProperty("connection", "Keep-Alive");
+            conn.setRequestProperty("Content-Type","application/json; charset=UTF-8");
 
             if(!$.isEmptyOrNull(localCookie)) {
-                $.info("set-cookie：" + localCookie);
+                rs.addMessage($.info("set-cookie：" + localCookie));
                 conn.setRequestProperty("Cookie", localCookie); // 设置发送的cookie
             }
 
@@ -226,10 +247,10 @@ public class $Http {
 
             if(ajax.getType().equalsIgnoreCase($POST) && ajax.getData() != null) {
                 // 获取URLConnection对象对应的输出流
-                out = new PrintWriter(conn.getOutputStream());
+                out = new OutputStreamWriter(conn.getOutputStream(), "utf-8");
                 // 发送请求参数
                 if (null != ajax.getData() && !ajax.getData().isNullObject()) {
-                    out.print(ajax.getData().toString());
+                    out.append(ajax.getData().toString());
                 }
                 // flush输出流的缓冲
                 out.flush();
@@ -243,99 +264,96 @@ public class $Http {
             }
 
             // 定义BufferedReader输入流来读取URL的响应
-            in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            if (conn.getResponseCode() == HttpURLConnection.HTTP_OK
+                    || conn.getResponseCode() == HttpURLConnection.HTTP_CREATED
+                    || conn.getResponseCode() == HttpURLConnection.HTTP_ACCEPTED) {
+                ins =  conn.getInputStream();
+            } else {
+                ins = conn.getErrorStream();
+            }
+            // 定义BufferedReader输入流来读取URL的响应
+            in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
             String line;
             while ((line = in.readLine()) != null) {
-                result += line;
+                result.append(line);
             }
-
             conn.disconnect(); // 断开连接
-        } catch (Exception e) {
-            throw e;
+        } catch (UnsupportedEncodingException e) {
+            rs.addError(exception(e));
+        } catch (ProtocolException e) {
+            rs.addError(exception(e));
+        } catch (MalformedURLException e) {
+            rs.addError(exception(e));
+        } catch (IOException e) {
+            rs.addError(exception(e));
         } finally {  //使用finally块来关闭输出流、输入流
             try{
                 if(out!=null) out.close();
                 if(in!=null) in.close();
-            } catch(IOException ex){
-                warn(ex);
+            } catch (IOException ex){
+                rs.addError(exception(ex));
             }
         }
 
-        return result;
+        return rs.setData(result.toString());
     }
 
-    public String getIp(String... name){
+    public String getIp(String... name) throws UnknownHostException {
         InetAddress inetAddress = getInetAddress(last(name));
 
         return null == inetAddress ? "localhost" : inetAddress.getHostAddress();
     }
 
-    public InetAddress getInetAddress(String... name) {
-        try {
-            if(isEmptyOrNull(name)) {
-                return InetAddress.getLocalHost();
-            } else {
-                return InetAddress.getByName(last(name));
-            }
-        } catch (Exception e) {
-            error(e);
+    public InetAddress getInetAddress(String... name) throws UnknownHostException {
+        if(isEmptyOrNull(name)) {
+            return InetAddress.getLocalHost();
+        } else {
+            return InetAddress.getByName(last(name));
         }
-
-        return null;
     }
 
-    public String get(String url){
+    public $Result get(String url)  {
         return get(new Ajax(url));
     }
 
-    public String post(String url){
+    public $Result post(String url)  {
         return post(new Ajax(url));
     }
 
-    public JSONObject getJSON(String url){
-        return getJSON(new Ajax(url));
-    }
-
-    public JSONObject getJSONObject(String url){
-        return getJSONObject(new Ajax(url));
-    }
-
-    public JSONArray getJSONArray(String url){
-        return getJSONArray(new Ajax(url));
-    }
-
-    public String ajax(String url){
-        return ajax(new Ajax(url));
-    }
-
-    public String get(Ajax ajax){
+    public $Result get(Ajax ajax)  {
         return ajax(ajax.setType($GET));
     }
 
-    public String post(Ajax ajax){
+    public $Result post(Ajax ajax)  {
         return ajax(ajax.setType($POST));
     }
 
-    public JSONObject getJSON(Ajax ajax){
+    public $Result ajax(String url)  {
+        return ajax(new Ajax(url));
+    }
+
+    public JSONObject getJSON(String url)  {
+        return getJSON(new Ajax(url));
+    }
+
+    public JSONObject getJSONObject(String url)  {
+        return getJSONObject(new Ajax(url));
+    }
+
+    public JSONArray getJSONArray(String url)  {
+        return getJSONArray(new Ajax(url));
+    }
+
+    public JSONObject getJSON(Ajax ajax)  {
         return getJSONObject(ajax.setType($GET));
     }
 
-    public JSONObject getJSONObject(Ajax ajax) {
-        try {
-            return JSONObject.fromObject(ajax(ajax.setType($GET)));
-        } catch (Exception e) {
-            error(e);
-            return null;
-        }
+    public JSONObject getJSONObject(Ajax ajax)  {
+        return JSONObject.fromObject(ajax(ajax.setType($GET)).getData());
     }
 
-    public JSONArray getJSONArray(Ajax ajax) {
-        try {
-            return JSONArray.fromObject(ajax(ajax.setType($GET)));
-        } catch (Exception e) {
-            error(e);
-            return null;
-        }
+    public JSONArray getJSONArray(Ajax ajax)  {
+        return JSONArray.fromObject(ajax(ajax.setType($GET)).getData());
     }
 
 }

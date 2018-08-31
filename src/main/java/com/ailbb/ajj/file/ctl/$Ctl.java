@@ -4,6 +4,7 @@ import com.ailbb.ajj.$;
 import com.ailbb.ajj.entity.$Progress;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -20,14 +21,14 @@ public class $Ctl {
 
     String discarded_1 = "";
 
-    public $Ctl parse(File _file){
-        return parse($.file.readFile(_file));
+    public $Ctl parse(File _file)  {
+        return parse($.file.readFile(_file).getDataToString());
     }
 
     /**
      * 格式化ctl内容
-     * @param context
-     * @return
+     * @param context 格式化的文本
+     * @return ctl对象
      */
     public $Ctl parse(String context){
         $Progress p_option = $.progress();
@@ -108,7 +109,7 @@ public class $Ctl {
         if(progress.setRunning(!progress.isEnd()).isEnd()) return progress;
         String[] splits = row.split("\\s+");
         String sep = $.regex.pickup("'", ".+", "'", splits[3]);
-        String val = $.string.join("\\x", sep, 2); // infile * "str X'03fe0d0a'"，提取''号内的数据，添加分隔符
+        String val = "\\x" + $.string.join("\\x", sep, 2); // infile * "str X'03fe0d0a'"，提取''号内的数据，添加分隔符
 
         progress.getResult().setData(val);
 
@@ -133,7 +134,7 @@ public class $Ctl {
         String version = $.regex.pickup("_V", ".+$", null, table);
         table = table.replaceAll("_V.+$", "");
         String sep = $.regex.pickup("'", ".+", "'", row);
-        String val = $.string.join("\\x", sep , 2); // infile * "str X'03fe0d0a'"，提取''号内的数据，添加分隔符
+        String val = "\\x" + $.string.join("\\x", sep , 2); // infile * "str X'03fe0d0a'"，提取''号内的数据，添加分隔符
 
         progress.getResult().setData(val);
 

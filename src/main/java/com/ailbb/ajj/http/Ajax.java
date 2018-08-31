@@ -1,6 +1,9 @@
 package com.ailbb.ajj.http;
 
+import com.ailbb.ajj.entity.$Result;
 import net.sf.json.JSONObject;
+
+import java.net.UnknownHostException;
 
 import static com.ailbb.ajj.$.*;
 
@@ -11,7 +14,7 @@ public class Ajax {
     private String url;
     private boolean async = false;
     private String type = $Http.$GET;
-    private long timeout = $TIMEOUT;
+    private int timeout = $TIMEOUT;
     private JSONObject data;
     private Proxy proxy;
 
@@ -28,7 +31,11 @@ public class Ajax {
 
         if(this.getProxy() == null) {
             warn("Proxy is null! Use default config!");
-            ip = getIp();
+            try {
+                ip = getIp();
+            } catch (UnknownHostException e) {
+                ip = "127.0.0.1";
+            }
             port = $Http.$PORT;
         } else {
             ip = this.getProxy().getIp();
@@ -70,11 +77,11 @@ public class Ajax {
         return this;
     }
 
-    public long getTimeout() {
+    public int getTimeout() {
         return timeout;
     }
 
-    public Ajax setTimeout(long timeout) {
+    public Ajax setTimeout(int timeout) {
         this.timeout = timeout;
         return this;
     }
@@ -110,9 +117,9 @@ public class Ajax {
      * Thread callback
      */
     public interface Callback {
-        void complete(String data);
-        void success(String data);
-        void error(String data);
+        void complete($Result result);
+        void success($Result result);
+        void error($Result result);
     }
 
     @Override

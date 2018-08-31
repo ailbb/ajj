@@ -53,9 +53,9 @@ public class $String {
         int i=0;
 
         for(String s : str.split("")) {
-            if(++i % length == 0)
-                sb.append(key);
             sb.append(s);
+            if(++i % length == 0 && i != str.length())
+                sb.append(key);
         }
 
         return sb.toString();
@@ -74,6 +74,10 @@ public class $String {
     }
 
     public String last(String... strs) {
+        return lastDef(null, strs);
+    }
+
+    public String last(Object... strs) {
         return lastDef(null, strs);
     }
 
@@ -123,16 +127,12 @@ public class $String {
 
     /**
      * 文本简化
-     * @param data
-     * @return
+     * @param data 数据文本
+     * @return 100字内的缩写
      */
     public String simple(Object data) {
-        try {
-            String str = data.toString();
-            if(str.length() > 100) str = str.substring(0, 100) + "......";
-            return str;
-        } catch (Exception e) {
-            return e.getMessage();
-        }
+        String str = $.str(data);
+        if(str.length() > 100) str = str.substring(0, 100) + "......";
+        return str;
     }
 }

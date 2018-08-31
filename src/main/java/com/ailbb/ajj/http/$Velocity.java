@@ -1,6 +1,7 @@
 package com.ailbb.ajj.http;
 
 import com.ailbb.ajj.$;
+import com.ailbb.ajj.entity.$Result;
 import net.sf.json.JSONObject;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -20,12 +21,15 @@ public class $Velocity {
 
     /**
      * 将数据通过模板方式转向打印
-     * @param request
-     * @param response
-     * @param relPath
-     * @param object
+     * @param request 对象
+     * @param response 对象
+     * @param relPath 摸板路径
+     * @param object 数据对象
      */
-    public boolean sendVelocity(HttpServletRequest request, HttpServletResponse response, String relPath, JSONObject object) {
+    public $Result sendVelocity(HttpServletRequest request, HttpServletResponse response, String relPath, JSONObject object)  {
+        $Result rs = $.result();
+        PrintWriter pw = null;
+
         try {
             // 初始化模板引擎
             VelocityEngine ve = new VelocityEngine();
@@ -43,15 +47,22 @@ public class $Velocity {
             // 转换对象
             VelocityContext ctx = new VelocityContext(object);
 
-            PrintWriter pw = response.getWriter();
+            pw = response.getWriter();
             t.merge(ctx, pw);
             pw.flush();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+
+            rs.setData(object);
+        } catch (IOException e) {
+            rs.addError($.exception(e));
+        } finally {
+            try {
+                if(null != pw) pw.close();
+            } catch (Exception e) {
+                rs.addError($.exception(e));
+            }
         }
 
-        return true;
+        return rs;
     }
 
 }

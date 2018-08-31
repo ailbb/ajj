@@ -20,23 +20,18 @@ public class $Properties {
 
     /**
      * 获取文件
-     * @param path
-     * @return
+     * @param path 文件路径，相对路径/绝对路径
+     * @return 文件对象
      */
-    public Properties getProperties(String path) {
-        try {
-            Properties prop = new Properties();
-            prop.load(getInputStream(path));
-            propertiesMap.put(path, prop);
-            return prop;
-        } catch (Exception e) {
-            $.exception(e);
-            return null;
-        }
+    public Properties getProperties(String path) throws IOException {
+        Properties prop = new Properties();
+        prop.load(getInputStream(path));
+        propertiesMap.put(path, prop);
+        return prop;
     }
 
-    public String getProperty(String path, String name) {
-        return $.isEmptyOrNull(propertiesMap.get(path)) ? null : propertiesMap.get(path).getProperty(name);
+    public String getProperty(String path, String name) throws IOException {
+        return $.isEmptyOrNull(propertiesMap.get(path)) ? getProperties(path).getProperty(name) : propertiesMap.get(path).getProperty(name);
     }
 
     public String getProperty(String name) {
