@@ -5,15 +5,6 @@ import com.ailbb.ajj.entity.$Result;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.util.EntityUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -63,14 +54,18 @@ public class $Http {
         return rs;
     }
 
-    public String getRequestBody(HttpServletRequest request) throws IOException {
+    public String getRequestBody(HttpServletRequest request) {
         StringBuffer result = new StringBuffer();
-        String str;
-        BufferedReader br = null;
-        br = request.getReader();
+        try {
+            String str;
+            BufferedReader br = null;
+            br = request.getReader();
 
-        while((str = br.readLine()) != null){
-            result.append(str);
+            while((str = br.readLine()) != null){
+                result.append(str);
+            }
+        } catch (Exception e) {
+            $.warn(e);
         }
 
         return result.toString();
@@ -174,7 +169,6 @@ public class $Http {
 
                 if(null != callback) callback.complete(rs);
                 if(null != callback) callback.success(rs);
-
             } catch (Exception e) {
                 if(null != callback) callback.error(rs.addError($.exception(e)));
 
@@ -201,7 +195,6 @@ public class $Http {
     public $Result sendRequest(Ajax ajax)  {
         OutputStreamWriter out = null;
         BufferedReader in = null;
-        InputStream ins = null;
         StringBuffer result = new StringBuffer();
         $Result rs = $.result();
 
@@ -209,7 +202,7 @@ public class $Http {
             String requestUrl = ajax.getUrl();
 
             // 在链接内添加内容
-            if(ajax.getData() != null) {
+            if(ajax.getType().equalsIgnoreCase($GET) && ajax.getData() != null) {
                 requestUrl += "?";
 
                 for(Object o : ajax.getData().keySet()) {
@@ -227,20 +220,28 @@ public class $Http {
 
             // 设置通用的请求属性
             conn.setRequestMethod(ajax.getType().equalsIgnoreCase($GET) ? $GET : $POST);
+
             conn.setDoOutput(true); // 允许连接提交信息
             conn.setDoInput(true);
             conn.setUseCaches(false);
+            conn.setInstanceFollowRedirects(true);
+
             conn.setConnectTimeout(ajax.getTimeout());
             conn.setReadTimeout(ajax.getTimeout());
-            conn.setInstanceFollowRedirects(true);
+
             conn.setRequestProperty("accept", "*/*");
             conn.setRequestProperty("connection", "Keep-Alive");
-            conn.setRequestProperty("Content-Type","application/json; charset=UTF-8");
+            conn.setRequestProperty("Content-Type", ajax.getType().equalsIgnoreCase($POST) ? "application/json; charset=UTF-8" : "application/x-www-form-urlencoded; charset=UTF-8");
 
             if(!$.isEmptyOrNull(localCookie)) {
                 rs.addMessage($.info("set-cookie：" + localCookie));
                 conn.setRequestProperty("Cookie", localCookie); // 设置发送的cookie
             }
+
+            if(!isEmptyOrNull(ajax.getProperty()))
+                for(String key : ajax.getProperty().keySet() )
+                    conn.setRequestProperty(key, ajax.getProperty().get(key));
+
 
             // 建立实际的连接
             conn.connect();
@@ -250,7 +251,7 @@ public class $Http {
                 out = new OutputStreamWriter(conn.getOutputStream(), "utf-8");
                 // 发送请求参数
                 if (null != ajax.getData() && !ajax.getData().isNullObject()) {
-                    out.append(ajax.getData().toString());
+                    out.write(ajax.getData().toString());
                 }
                 // flush输出流的缓冲
                 out.flush();
@@ -263,14 +264,6 @@ public class $Http {
                 cookies.put(baseUrl, localCookie);
             }
 
-            // 定义BufferedReader输入流来读取URL的响应
-            if (conn.getResponseCode() == HttpURLConnection.HTTP_OK
-                    || conn.getResponseCode() == HttpURLConnection.HTTP_CREATED
-                    || conn.getResponseCode() == HttpURLConnection.HTTP_ACCEPTED) {
-                ins =  conn.getInputStream();
-            } else {
-                ins = conn.getErrorStream();
-            }
             // 定义BufferedReader输入流来读取URL的响应
             in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
             String line;

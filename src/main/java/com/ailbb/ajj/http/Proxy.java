@@ -2,6 +2,7 @@ package com.ailbb.ajj.http;
 
 import static com.ailbb.ajj.$.*;
 
+import com.ailbb.ajj.entity.$Result;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -58,7 +59,7 @@ public class Proxy {
 
     private static boolean initProxy(final String $PATH) {
         try {
-            JSONArray ja = JSONArray.fromObject(readFile($PATH));
+            JSONArray ja = JSONArray.fromObject(readFile($PATH).getData());
 
             $PROXY.clear();
 

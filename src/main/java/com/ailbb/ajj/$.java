@@ -70,6 +70,7 @@ public class $ {
     public static $Integer integer = new $Integer();
     public static $Object object = new $Object();
     public static $List list = new $List();
+    public static $Bean bean = new $Bean();
 
     // system
     public static $System system = new $System();
@@ -167,7 +168,7 @@ public class $ {
         return http.reforward(request, response, url);
     }
 
-    public static Object getRequestBody(HttpServletRequest request) throws IOException {
+    public static Object getRequestBody(HttpServletRequest request) {
         return http.getRequestBody(request);
     }
 

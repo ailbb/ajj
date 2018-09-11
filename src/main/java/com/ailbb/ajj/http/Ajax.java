@@ -4,6 +4,7 @@ import com.ailbb.ajj.entity.$Result;
 import net.sf.json.JSONObject;
 
 import java.net.UnknownHostException;
+import java.util.Map;
 
 import static com.ailbb.ajj.$.*;
 
@@ -17,6 +18,7 @@ public class Ajax {
     private int timeout = $TIMEOUT;
     private JSONObject data;
     private Proxy proxy;
+    private Map<String, String> property;
 
     private Callback callback;
 
@@ -48,6 +50,14 @@ public class Ajax {
         );
 
         this.setData(JSONObject.fromObject(this));
+    }
+
+    public Map<String, String> getProperty() {
+        return property;
+    }
+
+    public void setProperty(Map<String, String> property) {
+        this.property = property;
     }
 
     public String getUrl() {

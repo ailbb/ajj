@@ -119,9 +119,7 @@ public class $String {
 
     public String fill(Object str, int length, String fill, boolean isAfter) {
         String s = $.str(str);
-        while (length > s.length()) {
-            s = isAfter ? (s + fill) : fill + s;
-        }
+        while((s = isAfter ? (s + fill) : fill + s).length() != length);
         return s;
     }
 
@@ -132,7 +130,6 @@ public class $String {
      */
     public String simple(Object data) {
         String str = $.str(data);
-        if(str.length() > 100) str = str.substring(0, 100) + "......";
-        return str;
+        return str.length() > 100 ? (str.substring(0, 100) + "......") : str;
     }
 }

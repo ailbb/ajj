@@ -126,7 +126,6 @@ public class $Result {
         try {
             return $.str(data);
         } catch (Exception e) {
-            addError(e).setData("");
             return "";
         }
     }
@@ -135,9 +134,7 @@ public class $Result {
         try {
             return ((ArrayList<Object>)this.data);
         } catch (Exception e) {
-            List<Object> edata = new ArrayList<Object>();
-            addError(e).setData(edata);
-            return edata;
+            return new ArrayList<Object>();
         }
     }
 
@@ -145,9 +142,7 @@ public class $Result {
         try {
             return ((HashMap<String, Object>)this.data);
         } catch (Exception e) {
-            Map<String, Object> edata = new HashMap<String, Object>();
-            addError(e).setData(edata);
-            return edata;
+            return new HashMap<String, Object>();
         }
     }
 
