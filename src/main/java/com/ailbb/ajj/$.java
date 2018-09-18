@@ -70,6 +70,7 @@ public class $ {
     public static $Integer integer = new $Integer();
     public static $Object object = new $Object();
     public static $List list = new $List();
+    public static $Map map = new $Map();
     public static $Bean bean = new $Bean();
 
     // system
@@ -273,6 +274,10 @@ public class $ {
         return path.getPath(p);
     }
 
+    public static String getPath(String... ps){
+        return path.getPath(ps);
+    }
+
     public static String getRootPath(){
         return path.getRootPath();
     }
@@ -285,6 +290,14 @@ public class $ {
 
     public static String now(String... ns){
         return date.now(ns);
+    }
+
+    public static long timeclock(){
+        return date.timeclock();
+    }
+
+    public static long timeclock(int tag){
+        return date.timeclock(tag);
     }
 
     public static String format(String patten, Date... d){

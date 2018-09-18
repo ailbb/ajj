@@ -51,8 +51,11 @@ public class Proxy {
         if(!inited){
             info("Use default file.");
             String p = path.getPath(Proxy.class); // 默认获取类文件目录
-            int pIndex = p.lastIndexOf("com/ailbb");
-            if(-1 !=pIndex) p = p.substring(0, pIndex);
+            // /D:/Z/Code/java/java-ee/Share/sharepro/code/web-service/sharepro/target/sharepro/WEB-INF/lib/ajj-1.9-SNAPSHOT.jar!/com/ailbb/ajj/http/
+            String search = "jar!/";
+            int pIndex = p.lastIndexOf(search);
+            if(-1 == pIndex) pIndex = p.lastIndexOf(search = "classes/");
+            if(-1 != pIndex) p = p.substring(0, pIndex + search.length());
             initProxy(rel(p, $PROXY_PATH));
         }
     }

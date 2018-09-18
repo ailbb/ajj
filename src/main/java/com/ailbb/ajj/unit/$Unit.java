@@ -8,16 +8,16 @@ import static com.ailbb.ajj.$.*;
 public class $Unit {
 
     // units
-    public final String $BYTE = "BYTE";
-    public final String $KB = "KB";
-    public final String $MB = "MB";
-    public final String $GB = "GB";
-    public final String $TB = "TB";
-    public final String $PB = "PB";
-    public final String $EB = "EB";
-    public final String $ZB = "ZB";
-    public final String $YB = "$YB";
-    public final String $BB = "BB";
+    public static final String $BYTE = "BYTE";
+    public static final String $KB = "KB";
+    public static final String $MB = "MB";
+    public static final String $GB = "GB";
+    public static final String $TB = "TB";
+    public static final String $PB = "PB";
+    public static final String $EB = "EB";
+    public static final String $ZB = "ZB";
+    public static final String $YB = "$YB";
+    public static final String $BB = "BB";
 
     /**
      * byte to anything

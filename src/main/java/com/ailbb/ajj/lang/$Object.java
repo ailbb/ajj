@@ -10,7 +10,7 @@ public class $Object {
     public boolean isEmptyOrNull(Object... o){
         if(null == o || o.length == 0) return true;
         for(java.lang.Object oi : o)
-            if(null == oi || String.valueOf(oi).trim().length() == 0 || "null".equals(String.valueOf(oi).trim().toLowerCase())) return true;
+            if($.str(oi).replaceAll("\\[|\\]|\\{|\\}", "").equals("")) return true;
         return false;
     }
 

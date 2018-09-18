@@ -28,8 +28,8 @@ public class $Mysql {
      */
     private $JDBCConnConfiguration connConfiguration; // 连接配置信息
     private JdbcTemplate jdbcTemplate; // 生成的连接
-    public final String $DRIVER = "com.mysql.jdbc.Driver";
-    public final int $PORT = 3306;
+    public static final String $DRIVER = "com.mysql.jdbc.Driver";
+    public static final int $PORT = 3306;
 
     /**
      * 执行sql

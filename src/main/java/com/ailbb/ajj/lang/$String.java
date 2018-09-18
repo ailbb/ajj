@@ -4,9 +4,12 @@ import com.ailbb.ajj.$;
 
 import static com.ailbb.ajj.$.*;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Wz on 6/20/2018.
@@ -90,7 +93,7 @@ public class $String {
     }
 
     public String str(Object object){
-        return isEmptyOrNull(object) ? "" : String.valueOf(object);
+        return String.valueOf(object).trim().replaceAll("^(null|NULL)$","");
     }
 
     public String concat(Object... objects){
@@ -99,10 +102,8 @@ public class $String {
         return p.toString();
     }
 
-    public String trim(String str){
-        if(null == str) return null;
-
-        return str.replaceAll("^\\s+|\\s+$", "");
+    public String trim(Object object){
+        return $.str(object).trim();
     }
 
     public String fillBrefore(Object str, int length, String fill) {
@@ -132,4 +133,27 @@ public class $String {
         String str = $.str(data);
         return str.length() > 100 ? (str.substring(0, 100) + "......") : str;
     }
+
+    // 处理科学计数法与普通计数法的字符串显示，尽最大努力保持精度
+    public String getStringOfDouble(double d) {
+        String doubleStr = $.str(d);
+        int indexOfE = doubleStr.indexOf('E');
+        int indexOfPoint = doubleStr.indexOf('.');
+        if (-1 != indexOfE) {
+            // 小数部分
+            BigInteger xs = new BigInteger(doubleStr.substring(indexOfPoint
+                    + BigInteger.ONE.intValue(), indexOfE));
+            // 指数
+            int pow = Integer.valueOf(doubleStr.substring(indexOfE
+                    + BigInteger.ONE.intValue()));
+            int xsLen = xs.toByteArray().length;
+            int scale = xsLen - pow > 0 ? xsLen - pow : 0;
+            doubleStr = String.format("%." + scale + "f", d);
+        } else {
+            if($.test(".0+$", doubleStr)) return doubleStr.replace(".0", "");
+        }
+
+        return doubleStr;
+    }
+
 }

@@ -2,15 +2,28 @@ package com.ailbb.ajj.file;
 
 import com.ailbb.ajj.$;
 import com.ailbb.ajj.entity.$Result;
+import com.ailbb.ajj.file.csv.$CSV;
 import com.ailbb.ajj.file.ctl.$Ctl;
+import com.ailbb.ajj.file.excel.$Excel;
 import com.ailbb.ajj.file.properties.$Properties;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import static com.ailbb.ajj.$.*;
 
 import java.io.*;
 import java.net.URL;
 import java.nio.channels.FileChannel;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Wz on 6/20/2018.
@@ -18,7 +31,11 @@ import java.util.List;
 public class $File {
     public $Path path = new $Path();
 
+    public $Excel excel = new $Excel();
+
     public $Ctl ctl = new $Ctl();
+
+    public $CSV csv = new $CSV();
 
     public $Properties properties = new $Properties();
 
@@ -103,6 +120,35 @@ public class $File {
         return rs;
     }
 
+    public $File writeFile(InputStream input, String path) throws IOException {
+        //只能获取单input为单文件上传
+        OutputStream output = null;
+        try {
+            writeFile(input,  output = new FileOutputStream($.getPath(path)));
+        } catch (IOException e) {
+            throw e;
+        } finally {
+            closeStearm(input).closeStearm(output);
+        }
+        return this;
+    }
+
+    public $File writeFile(InputStream input, OutputStream output) throws IOException {
+        //只能获取单input为单文件上传
+        try {
+            byte[] buf = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = input.read(buf)) > 0) {
+                output.write(buf, 0, bytesRead);
+            }
+        } catch (IOException e) {
+            throw e;
+        } finally {
+            closeStearm(input).closeStearm(output);
+        }
+        return this;
+    }
+
     public $Result writeFile(String path, Object... object)  {
         return writeFile(path, false, object);
     }
@@ -144,18 +190,16 @@ public class $File {
         return copyFile(sourcePath, destPath, false);
     }
 
-    public $Result copyFile(String sourcePath, String destPath, boolean isReplace)  {
+    public $Result copyFile(File file, String destPath)  {
+        return copyFile(file, destPath, false);
+    }
+
+    public $Result copyFile(File sfile, String destPath, boolean isReplace)  {
         $Result rs = $.result();
-
-        if(!isExists(sourcePath)) return rs;
-
-        // format path
-        sourcePath = getPath(sourcePath);
-        destPath = getPath(destPath);
-        File sfile = getFile(sourcePath);
         File dfile = getFile(destPath);
+        String sourcePath = sfile.getPath();
 
-        if(!isFile(sourcePath)) {
+        if(!sfile.isFile()) {
             if(!dfile.exists()) dfile.mkdirs();
 
             for(String s: sfile.list()) {
@@ -188,6 +232,14 @@ public class $File {
         return rs.addData("sourcePath", sourcePath).addData("destPath", destPath).addData("isReplace", isReplace);
     }
 
+    public $Result copyFile(String sourcePath, String destPath, boolean isReplace)  {
+        $Result rs = $.result();
+
+        if(!isExists(sourcePath)) return rs;
+
+        return copyFile(getFile(sourcePath), destPath, isReplace);
+    }
+
     public boolean isFile(String path){
         return getFile(path).isFile();
     }
@@ -198,6 +250,117 @@ public class $File {
 
     public File getFile(String path){
         return new File(getPath(path));
+    }
+
+    public String getFileType(File file){
+        return getFileType(file.getName());
+    }
+
+    public String getFileType(String fileName){
+        if($.isEmptyOrNull(fileName)) return null;
+
+        String[] fileNameSplit = fileName.split("\\.");
+
+        return fileNameSplit.length > 1 ? fileNameSplit[fileNameSplit.length-1] : null;
+    }
+
+    public $Result uploadFile(HttpServletRequest request) {
+        return uploadFile(request, null);
+    }
+
+    public $Result uploadFile(HttpServletRequest request, String path) {
+        return uploadFile(request, null, path, null);
+    }
+
+    /**
+     * 通用解析器
+     * @param request 上传请求
+     * @param response
+     * @param path 上传路径
+     * @param type 筛选文件类型
+     * @return
+     */
+    public $Result uploadFile(HttpServletRequest request, HttpServletResponse response, String path, String type) {
+        if($.isEmptyOrNull(path)) path = getPath($.concat(getRootPath(), "/upload", "/", $.now("nm")));
+        $Result rs = $.result();
+
+        ///处理中文乱码问题
+        try {
+            if(!$.isEmptyOrNull(response)) response.setContentType("text/html;charset=utf-8");
+            request.setCharacterEncoding("utf-8");
+        } catch (UnsupportedEncodingException e) {
+            rs.addError(exception(e));
+        }
+
+        //检查请求是否是multipart/form-data类型
+        if(!ServletFileUpload.isMultipartContent(request)){  //不是multipart/form-data类型
+            return rs.setSuccess(false).addMessage("Form type is not equals multipart/form-data!");
+        }
+
+        // 针对spring封装后的解析器
+        if(request instanceof MultipartHttpServletRequest) {
+            // 将当前上下文初始化给 CommonsMutipartResolver （多部分解析器）
+            // 将request变成多部分request
+            MultipartHttpServletRequest multiRequest = (MultipartHttpServletRequest) request;
+            // 获取multiRequest 中所有的文件名
+            Iterator iter = multiRequest.getFileNames();
+
+            while (iter.hasNext()) {
+                List<MultipartFile> multi_file = multiRequest.getFiles(iter.next().toString());
+                for (MultipartFile file : multi_file) {
+                    rs.concat(uploadFile(((CommonsMultipartFile) file).getFileItem(), path, type));
+                }
+            }
+        } else {
+            //创建上传所需要的两个对象
+            DiskFileItemFactory factory = new DiskFileItemFactory();
+            //解析器依赖于工厂
+            ServletFileUpload sfu = new ServletFileUpload(factory);
+            //创建容器来接受解析的内容
+            List<FileItem> items;
+
+            //将上传的文件信息放入容器中
+            try {
+                items = sfu.parseRequest(request);
+            } catch (FileUploadException e) {
+                return rs.addError(exception(e));
+            }
+
+            //遍历容器,处理解析的内容;封装两个方法，一个处理普通表单域，一个处理文件的表单域
+            for(FileItem item : items){
+                rs.concat(uploadFile(item, path, type));
+            }
+        }
+
+        return rs;
+    }
+
+    public $Result uploadFile(FileItem item, String path, String type){
+        $Result rs = mkdir(path);
+        $FileInfo fi = new $FileInfo(item);
+        $.timeclock();
+
+        if(item.isFormField()){
+            // 打印文件信息
+            info(String.format("Upload info：%s, Value: %s", fi.getFieldName(), fi.getContent()));
+        } else {
+            String fileName = fi.getFileName();  //得到上传文件的文件名
+
+            if(!$.isEmptyOrNull(fileName) && !$.isEmptyOrNull(type) && !fi.getType().startsWith(type)){
+                return rs.addMessage(false, "Type is not equals：" + type);
+            }
+
+            try {
+                //写入服务器或者磁盘
+                item.write(fi.initFile(new File($.getPath(path, fileName))).getFile());
+                //向控制台打印文件信息
+                info(String.format("Upload file：%s, Size: %s, RunTime：%s ms", fileName, fi.getSize(), fi.setRunTime($.timeclock()).getRunTime()));
+            } catch (Exception e) {
+                return rs.addError(exception(e));
+            }
+        }
+
+        return rs.setData(fi);
     }
 
     public InputStream getInputStream(String path) throws IOException {
@@ -218,6 +381,23 @@ public class $File {
         return is;
     }
 
+    public List[] parseHeaderAndData(List list){
+        List<Object> headers = new ArrayList<>();
+        List<List<Object>> datas = new ArrayList<>();
+
+        for(Object o : list) {
+            try {
+                Map<String,Object> map = (Map<String,Object>)o;
+                if($.isEmptyOrNull(headers)) for(String k: map.keySet()) headers.add(k);
+                datas.add($.list.toList(map.values()));
+            } catch (Exception e) {
+                datas.add((List<Object>)o);
+            }
+        }
+
+        return new List[]{headers, datas};
+    }
+
     public $Result mkdir(String... path) {
         $Result rs = $.result();
 
@@ -233,4 +413,16 @@ public class $File {
         return rs;
     }
 
+    public $File closeStearm(AutoCloseable closeable){
+        if(null != closeable)
+            try {
+                closeable.close();
+            } catch (IOException e) {
+                $.exception(e);
+            } catch (Exception e) {
+                $.exception(e);
+            }
+
+        return this;
+    }
 }

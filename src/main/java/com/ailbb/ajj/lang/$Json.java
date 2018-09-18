@@ -1,7 +1,10 @@
 package com.ailbb.ajj.lang;
 
+import com.ailbb.ajj.$;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import net.sf.json.JsonConfig;
+import net.sf.json.processors.JsDateJsonBeanProcessor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,19 +16,35 @@ import java.util.Map;
  */
 public class $Json {
     public String toJsonString(Object object){
-        return JSONObject.fromObject(object).toString();
+        return toJsonObject(object).toString();
     }
 
     public String toJsonString(List<Object> map){
-        return JSONArray.fromObject(map).toString();
+        return toJsonArray(map).toString();
     }
 
     public Map<String, Object> toJsonObject(Object object){
-        return JSONObject.fromObject(object);
+        JsonConfig jsonConfig = new JsonConfig();
+        jsonConfig.registerJsonBeanProcessor(java.sql.Date.class, new JsDateJsonBeanProcessor());
+
+        try {
+            return JSONObject.fromObject(object);
+        } catch (Exception e) {
+            $.warn(e);
+            return JSONObject.fromObject(object, jsonConfig);
+        }
     }
 
     public List<Object> toJsonArray(Object object){
-        return JSONArray.fromObject(object);
+        JsonConfig jsonConfig = new JsonConfig();
+        jsonConfig.registerJsonBeanProcessor(java.sql.Date.class, new JsDateJsonBeanProcessor());
+
+        try {
+            return JSONArray.fromObject(object);
+        } catch (Exception e) {
+            $.warn(e);
+            return JSONArray.fromObject(object, jsonConfig);
+        }
     }
 
     public Object toBean(Object object, Class c){

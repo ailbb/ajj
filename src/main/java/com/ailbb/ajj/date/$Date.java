@@ -4,7 +4,9 @@ import com.ailbb.ajj.$;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static com.ailbb.ajj.$.*;
 
@@ -12,6 +14,7 @@ import static com.ailbb.ajj.$.*;
  * Created by Wz on 6/20/2018.
  */
 public class $Date {
+    private List<Long> tcache = new ArrayList<>();
 
     public String now(String... ns){
         String n = lastDef("s", ns);
@@ -75,4 +78,29 @@ public class $Date {
         return date(new Date(), num, types);
     }
 
+    /**
+     * 计时器
+     * @return
+     */
+    public long timeclock() {
+        return timeclock(0);
+    }
+    /**
+     * 计时器
+     * @param tag 下标
+     * @return
+     */
+    public long timeclock(int tag) {
+        long now = System.currentTimeMillis();
+        int cSize = tcache.size();
+        boolean isEnd = tag == 0 && cSize != 0; // 当不为空时候，结束
+
+        try {
+            return cSize != 0 ? ( tag > 0 && tag < cSize ? tcache.get(tag) - tcache.get(tag - 1) : now - tcache.get(isEnd ? tag : cSize-1) ) : 0; // 如果tag大于已缓存大小，则移动下标到末尾
+        } finally {
+            if(isEnd) tcache.clear(); // 开始/结束 标识为0 清空缓存
+
+            tcache.add(now);
+        }
+    }
 }

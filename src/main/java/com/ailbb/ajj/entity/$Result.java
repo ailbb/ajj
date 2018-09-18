@@ -11,22 +11,15 @@ import java.util.Map;
  * Created by Wz on 6/22/2018.
  */
 public class $Result {
-    /**是否成功*/
-    private boolean success = $Status.$DEFAULT.isSuccess();
-    /**状态码*/
-    private int code = $Status.$DEFAULT.getCode();
-    /**状态*/
-    private $Status status = $Status.$DEFAULT;
-    /**数据*/
-    private Object data = "";
-    /**标题*/
-    private String title = "";
-    /**请求信息*/
-    private List<String> message = new ArrayList<>();
-    /**错误信息*/
-    private List<Exception> error = new ArrayList<>();
-    /**备注*/
-    private String remark = "";
+    private boolean success = $Status.$DEFAULT.isSuccess(); // 是否成功
+    private List<String> message = new ArrayList<>(); // 请求信息
+    private List<Exception> error = new ArrayList<>(); // 错误信息
+    private int code = $Status.$DEFAULT.getCode(); // 状态码
+    private $Status status = $Status.$DEFAULT; // 状态
+    private String type = "object"; // 数据类型有默认值
+    private Object data = ""; // 数据
+    private String title = ""; // 标题
+    private String remark = ""; // 备注
 
     public $Result() {}
 
@@ -106,6 +99,15 @@ public class $Result {
         return this;
     }
 
+    public $Result addMessage(boolean isSuccess, String... messages) {
+        this.setSuccess(isSuccess);
+
+        for(String m : messages)
+            this.message.add(m);
+
+        return this;
+    }
+
     public $Result addMessage(String... messages) {
         for(String m : messages)
             this.message.add(m);
@@ -172,15 +174,72 @@ public class $Result {
         return this;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public $Result setType(String type) {
+        this.type = type;
+        return this;
+    }
+
+    public $Result concat($Result result) {
+        this.getMessage().containsAll(result.getMessage());
+        this.getError().containsAll(result.getError());
+
+        if(!success) return this;
+
+        setSuccess(result.isSuccess());
+        setCode(result.getCode());
+        setStatus(result.getStatus());
+        setType(result.getType());
+        setTitle(result.getTitle());
+        setRemark(result.getRemark());
+
+
+        Object s = getData();
+        Object d = result.getData();
+
+        try {
+            if(s instanceof List) {
+                if(d  instanceof List && (!$.isEmptyOrNull(s) || !$.isEmptyOrNull(d)))
+                    ((List) s).containsAll((List)d);
+                else if(!$.isEmptyOrNull(d))
+                    ((List) s).add(d);
+
+                setType("list");
+            } else if(d instanceof List) {
+                if(!$.isEmptyOrNull(s)) ((List) d).add(s);
+                return setType("list").setData(d);
+            } else if(s instanceof Map && d  instanceof Map) {
+                if(!$.isEmptyOrNull(s) || !$.isEmptyOrNull(d))
+                    ((Map) s).putAll((Map) d);
+                setType("map");
+            } else
+                throw new RuntimeException();
+        } catch (Exception e) {
+            List<Object> list = new ArrayList<Object>(){{
+                if(!$.isEmptyOrNull(s)) add(s);
+                if(!$.isEmptyOrNull(d)) add(d);
+            }};
+
+            if(!$.isEmptyOrNull(list)) setType("list").setData(list);
+        }
+
+        return this;
+    }
+
     @Override
     public String toString() {
         return "$Result{" +
                 "success=" + success +
-                ", code=" + code +
-                ", status=" + status +
-                ", data=" + data +
                 ", message=" + message +
                 ", error=" + error +
+                ", code=" + code +
+                ", status=" + status +
+                ", type='" + type + '\'' +
+                ", data=" + data +
+                ", title='" + title + '\'' +
                 ", remark='" + remark + '\'' +
                 '}';
     }

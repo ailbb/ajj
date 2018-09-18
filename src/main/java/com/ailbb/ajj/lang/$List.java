@@ -1,7 +1,11 @@
 package com.ailbb.ajj.lang;
 
+import com.ailbb.ajj.$;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import static com.ailbb.ajj.$.*;
 
@@ -25,4 +29,17 @@ public class $List {
         return li;
     }
 
+    public <T> List<T> collectionToList(Collection<T> collections){
+        List<T> list = new ArrayList<T>();
+        for(T o : collections) list.add(o);
+        return list;
+    }
+
+    public <T> List<T> setToList(Set<T> sets){
+        return collectionToList(sets);
+    }
+
+    public <T> List<T> toList(Collection<T> collections){
+        return collectionToList(collections);
+    }
 }
