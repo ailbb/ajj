@@ -6,6 +6,7 @@ import static com.ailbb.ajj.$.*;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -156,4 +157,7 @@ public class $String {
         return doubleStr;
     }
 
+    public <T> T[] subCollection(T[] ts, int startIndex, int endIndex){
+        return $.list.listToArray(Arrays.asList(ts).subList(startIndex, endIndex));
+    }
 }

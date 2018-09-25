@@ -2,10 +2,7 @@ package com.ailbb.ajj.lang;
 
 import com.ailbb.ajj.$;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.ailbb.ajj.$.*;
 
@@ -41,5 +38,17 @@ public class $List {
 
     public <T> List<T> toList(Collection<T> collections){
         return collectionToList(collections);
+    }
+
+    public <T> T[] toArray(Collection<T> lists){
+        return listToArray(lists);
+    }
+
+    public <T> List<T> arrayToList(T[] arrays){
+        return Arrays.asList(arrays);
+    }
+
+    public <T> T[] listToArray(Collection<T> lists){
+        return (T[])lists.toArray();
     }
 }

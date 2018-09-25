@@ -197,12 +197,16 @@ public class $ {
         return url.url(u);
     }
 
-    public static String parameterStr(Map<String, String[]>... map){
-        return url.parameterStr(map);
+    public static String getParameterStr(Map<String, String[]>... map){
+        return url.getParameterStr(map);
     }
 
-    public static String parameterStr(Object... objects){
-        return url.parameterStr(objects);
+    public static String getParameterStr(Object... objects){
+        return url.getParameterStr(objects);
+    }
+
+    public static String getParameterStr(HttpServletRequest request){
+        return url.getParameterStr(request);
     }
 
     public static String rel(String... path){

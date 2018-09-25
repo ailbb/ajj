@@ -4,6 +4,8 @@ import com.ailbb.ajj.$;
 import com.sun.corba.se.spi.ior.ObjectKey;
 import net.sf.json.JSONObject;
 
+import javax.servlet.http.HttpServletRequest;
+
 import static com.ailbb.ajj.$.*;
 
 import java.net.URL;
@@ -54,7 +56,7 @@ public class $Url {
         return p;
     }
 
-    public String parameterStr(Map<String, String[]>... map){
+    public String getParameterStr(Map<String, String[]>... map){
         List<String> li = new ArrayList<String>();
         for(Map<String, String[]> m : map) {
             for(String key : m.keySet()) {
@@ -64,7 +66,7 @@ public class $Url {
         return join(li, "&");
     }
 
-    public String parameterStr(Object... objects){
+    public String getParameterStr(Object... objects){
         List<String> li = new ArrayList<String>();
         for(Object o : objects) {
             Map<String, Object> ok = JSONObject.fromObject(o);
@@ -73,6 +75,10 @@ public class $Url {
             }
         }
         return join(li, "&");
+    }
+
+    public String getParameterStr(HttpServletRequest request){
+        return getParameterStr(request.getParameterMap());
     }
 
     /**
