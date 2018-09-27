@@ -14,37 +14,42 @@ import static com.ailbb.ajj.$.*;
  * Created by Wz on 6/20/2018.
  */
 public class $Date {
+    public $Cron cron = new $Cron();
     private List<Long> tcache = new ArrayList<>();
 
     public String now(String... ns){
         String n = lastDef("s", ns);
 
-        if(n.equals("y")) return format("YYYY"); // stand
-        if(n.equals("M")) return format("YYYY-MM"); // stand
-        if(n.equals("d")) return format("YYYY-MM-dd"); // stand
-        if(n.equals("h")) return format("YYYY-MM-dd HH"); // stand
-        if(n.equals("m")) return format("YYYY-MM-dd HH:mm"); // stand
-        if(n.equals("s")) return format("YYYY-MM-dd HH:mm:ss"); // stand
-        if(n.equals("ss")) return format("YYYY-MM-dd HH:mm:ss.S"); // stand millisecond
+        if(n.equals("y")) return format("yyyy"); // stand
+        if(n.equals("M")) return format("yyyy-MM"); // stand
+        if(n.equals("d")) return format("yyyy-MM-dd"); // stand
+        if(n.equals("h")) return format("yyyy-MM-dd HH"); // stand
+        if(n.equals("m")) return format("yyyy-MM-dd HH:mm"); // stand
+        if(n.equals("s")) return format("yyyy-MM-dd HH:mm:ss"); // stand
+        if(n.equals("ss")) return format("yyyy-MM-dd HH:mm:ss.S"); // stand millisecond
 
-        if(n.equals("n")) return format("YYYYMMddHHmmss"); // number
-        if(n.equals("ny")) return format("YYYY"); // number millisecond
-        if(n.equals("nM")) return format("YYYYMM"); // number millisecond
-        if(n.equals("nd")) return format("YYYYMMdd"); // number millisecond
-        if(n.equals("nh")) return format("YYYYMMddHH"); // number millisecond
-        if(n.equals("nm")) return format("YYYYMMddHHmm"); // number millisecond
-        if(n.equals("ns")) return format("YYYYMMddHHmmss"); // number millisecond
-        if(n.equals("nss")) return format("YYYYMMddHHmmssS"); // number millisecond
+        if(n.equals("n")) return format("yyyyMMddHHmmss"); // number
+        if(n.equals("ny")) return format("yyyy"); // number millisecond
+        if(n.equals("nM")) return format("yyyyMM"); // number millisecond
+        if(n.equals("nd")) return format("yyyyMMdd"); // number millisecond
+        if(n.equals("nh")) return format("yyyyMMddHH"); // number millisecond
+        if(n.equals("nm")) return format("yyyyMMddHHmm"); // number millisecond
+        if(n.equals("ns")) return format("yyyyMMddHHmmss"); // number millisecond
+        if(n.equals("nss")) return format("yyyyMMddHHmmssS"); // number millisecond
 
-        return format("YYYY-MM-dd HH:mm:ss");
+        return format("yyyy-MM-dd HH:mm:ss");
     }
 
     public String format(String patten, Date... date){
         return new SimpleDateFormat(patten).format(isEmptyOrNull(date) ? new Date() : date[date.length-1]);
     }
 
+    public String format(Date... date){
+        return format("yyyy-MM-dd HH:mm:ss", date);
+    }
+
     public Date parse(String date, String... patten) throws ParseException {
-        return new SimpleDateFormat(lastDef("YYYY-MM-dd HH:mm:ss", patten)).parse(date);
+        return new SimpleDateFormat(lastDef("yyyy-MM-dd HH:mm:ss", patten)).parse(date);
     }
 
     /**

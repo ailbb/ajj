@@ -308,6 +308,10 @@ public class $ {
         return date.format(patten, d);
     }
 
+    public static String format(Date... d){
+        return date.format(d);
+    }
+
     public static Date parse(String d, String... patten) throws ParseException {
         return date.parse(d, patten);
     }

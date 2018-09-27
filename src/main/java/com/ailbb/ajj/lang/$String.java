@@ -156,8 +156,4 @@ public class $String {
 
         return doubleStr;
     }
-
-    public <T> T[] subCollection(T[] ts, int startIndex, int endIndex){
-        return $.list.listToArray(Arrays.asList(ts).subList(startIndex, endIndex));
-    }
 }

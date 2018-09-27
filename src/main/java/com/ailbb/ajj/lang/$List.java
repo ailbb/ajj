@@ -2,6 +2,7 @@ package com.ailbb.ajj.lang;
 
 import com.ailbb.ajj.$;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 import static com.ailbb.ajj.$.*;
@@ -40,15 +41,49 @@ public class $List {
         return collectionToList(collections);
     }
 
-    public <T> T[] toArray(Collection<T> lists){
+    public <T> Object[] toArray(Collection<T> lists){
         return listToArray(lists);
+    }
+
+    public <T> Object[] toArray(Collection<T> lists, T[] types){
+        return listToArray(lists, types);
     }
 
     public <T> List<T> arrayToList(T[] arrays){
         return Arrays.asList(arrays);
     }
 
-    public <T> T[] listToArray(Collection<T> lists){
-        return (T[])lists.toArray();
+    public <T> Object[] listToArray(Collection<T> lists){
+        return lists.toArray();
+    }
+
+    public <T> T[] listToArray(Collection<T> lists, T[] types){
+        return lists.toArray(types);
+    }
+
+    public <T> T[] subCollection(T[] ts, int startIndex, int endIndex){
+        return $.list.listToArray(arrayToList(ts).subList(startIndex, endIndex), newArray(ts));
+    }
+
+    /**
+     * 拷贝一个新数组
+     * @param reference
+     * @param length
+     * @param <T>
+     * @return
+     */
+    public static <T> T[] newArray(T[] reference, int length) {
+        Class<?> type = reference.getClass().getComponentType();
+        return  (T[]) Array.newInstance(type, length);
+    }
+
+    /**
+     * 拷贝一个新数组
+     * @param reference
+     * @param <T>
+     * @return
+     */
+    public static <T> T[] newArray(T[] reference) {
+        return newArray(reference, 0);
     }
 }
