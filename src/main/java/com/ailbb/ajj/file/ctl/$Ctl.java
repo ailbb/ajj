@@ -75,7 +75,7 @@ public class $Ctl {
             ));
         }
 
-        if(-1 != row.indexOf(")")) {
+        if($.test("\\)$", $.string.trim(row))) {
             this.setOptions(list);
             progress.setEnd(true);
         }
@@ -171,7 +171,7 @@ public class $Ctl {
             ));
         }
 
-        if(-1 != row.indexOf(")")) {
+        if($.test("\\)$", $.string.trim(row))) {
             this.setFields(list);
             progress.setEnd(true);
         }
