@@ -41,30 +41,22 @@ public class $Yml {
 
 
 
-    public static void iteratorYml(Properties prop, Map map,String key){
+    public Properties iteratorYml(Properties prop, Map map,String key){
         Iterator iterator = map.entrySet().iterator();
+
         while(iterator.hasNext()){
             Map.Entry entry = (Map.Entry) iterator.next();
             Object key2 = entry.getKey();
             Object value = entry.getValue();
 
             if(value instanceof LinkedHashMap){
-                if(key==null){
-                    iteratorYml(prop, (Map)value,key2.toString());
-                }else{
-                    iteratorYml(prop, (Map)value,key+"."+key2.toString());
-                }
+                iteratorYml(prop, (Map)value,key==null ? $.str(key2) : (key+"."+$.str(key2)));
+            } else {
+                prop.setProperty(key==null ? $.str(key2) : (key+"."+$.str(key2)), $.str(value));
             }
 
-            if(value instanceof String){
-                if(key==null){
-                    prop.setProperty(key2.toString(), value.toString());
-                }
-                if(key!=null){
-                    prop.setProperty(key+"."+key2.toString(), value.toString());
-                }
-            }
         }
 
+        return prop;
     }
 }
