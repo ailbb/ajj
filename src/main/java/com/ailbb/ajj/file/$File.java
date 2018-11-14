@@ -6,6 +6,7 @@ import com.ailbb.ajj.file.csv.$CSV;
 import com.ailbb.ajj.file.ctl.$Ctl;
 import com.ailbb.ajj.file.excel.$Excel;
 import com.ailbb.ajj.file.properties.$Properties;
+import com.ailbb.ajj.file.yml.$Yml;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -13,7 +14,6 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +31,8 @@ import java.util.*;
 public class $File {
     public $Path path = new $Path();
 
+    public $FileConfigure configure = new $FileConfigure();
+
     public $Excel excel = new $Excel();
 
     public $Ctl ctl = new $Ctl();
@@ -38,6 +40,8 @@ public class $File {
     public $CSV csv = new $CSV();
 
     public $Properties properties = new $Properties();
+
+    public $Yml yml = new $Yml();
 
     public $Compress compress = new $Compress();
 
@@ -379,6 +383,10 @@ public class $File {
         if(null == is) throw new FileNotFoundException(path);
 
         return is;
+    }
+
+    public InputStream getResourceAsStream(String path) {
+        return Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
     }
 
     public List[] parseHeaderAndData(List list){

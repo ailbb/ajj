@@ -12,6 +12,7 @@ import com.ailbb.ajj.log.$Logger;
 import com.ailbb.ajj.mail.$Mail;
 import com.ailbb.ajj.regex.$Regex;
 import com.ailbb.ajj.sys.$System;
+import com.ailbb.ajj.test.$Test;
 import com.ailbb.ajj.thread.$Thread;
 import com.ailbb.ajj.unit.$Charset;
 import com.ailbb.ajj.unit.$Unit;
@@ -59,6 +60,9 @@ public class $ {
 
     // regex
     public static $Regex regex = new $Regex();
+
+    // regex
+    public static $Test test = new $Test();
 
     // unit
     public static $Unit unit = new $Unit();
@@ -284,6 +288,10 @@ public class $ {
 
     public static String getRootPath(){
         return path.getRootPath();
+    }
+
+    public static String getWebRootPath(){
+        return path.getWebRootPath();
     }
 
     public String getRelativePath(String _path){

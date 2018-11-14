@@ -26,8 +26,16 @@ public class Ajax {
         this.setUrl(url);
     }
 
+    public Ajax(String url, JSONObject data){
+        this.setUrl(url).setData(data);
+    }
+
     public Ajax(String serverName, String requestMapping){
-        this.setProxy($PROXY.get(serverName));
+        this(serverName, requestMapping, null);
+    }
+
+    public Ajax(String serverName, String requestMapping, JSONObject data){
+        this.setProxy($PROXY.get(serverName)).setData(data);
         String ip;
         int port;
 
@@ -56,8 +64,9 @@ public class Ajax {
         return property;
     }
 
-    public void setProperty(Map<String, String> property) {
+    public Ajax setProperty(Map<String, String> property) {
         this.property = property;
+        return this;
     }
 
     public String getUrl() {

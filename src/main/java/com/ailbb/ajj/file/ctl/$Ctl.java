@@ -163,7 +163,7 @@ public class $Ctl {
             progress.getResult().setData(list);
         }
 
-        if(!$.test("\\(|\\)", row)) {
+        if(!$.test("^\\(|\\)$", $.string.trim(row))) {
             String[] strs = $.string.trim(row.replaceAll(",$","")).split("\\s+|\\|");
             list.add(new $Field(
                     $.string.trim(strs[0]),

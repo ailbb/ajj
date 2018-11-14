@@ -26,8 +26,8 @@ public class $String {
         for(Object l : list) {
             if(null != l) sb.append(l);
             if(++i != list.size())  {
-                if(!isEmptyOrNull(u)) {
-                    for (Object ui: u) sb.append(ui);
+                if(null != u) {
+                    for (Object ui: u) sb.append(null == ui ? "," : ui);
                 } else sb.append(",");
             }
 

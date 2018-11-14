@@ -1,6 +1,7 @@
 package com.ailbb.ajj.file;
 
 import com.ailbb.ajj.$;
+import jdk.nashorn.internal.runtime.linker.Bootstrap;
 
 import static com.ailbb.ajj.$.*;
 
@@ -25,7 +26,7 @@ public class $Path {
             currpath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
         } catch (Exception e) {
             String userdir = System.getProperty(System.getProperty("user.dir"));
-            String uclasspath = System.getProperty(System.getProperty("java.class.path"));
+            String uclasspath = System.getProperty(System.getProperty("java.class.PathPatten"));
 
             if(!isEmptyOrNull(userdir)) currpath = userdir;
 
@@ -37,7 +38,8 @@ public class $Path {
             }
         }
 
-        return isEmptyOrNull(currpath) ? rel(path) : rel(subRootPath(currpath), path);
+
+        return isEmptyOrNull(currpath) ? rel(path) : rel(subRootPath(currpath, 1), path);
     }
 
     public String getPath(String... paths){
@@ -47,6 +49,8 @@ public class $Path {
     }
 
     public String getPath(Class clazz){
+        if($.isEmptyOrNull(clazz)) clazz = Bootstrap.class;
+
         return clazz.getResource("").getPath().replaceFirst("file:", "");
     }
 
@@ -55,23 +59,70 @@ public class $Path {
     }
 
     public String getRootPath(Class clazz){
-        return subRootPath(null == clazz ? getPath("") : getPath(clazz)); // 获取当前类所处的位置
+        return subRootPath(null == clazz ? getPath("") : getPath(clazz), 1); // 获取当前类所处的位置
     }
 
-    private String subRootPath(String path){
-        try {
-            int jarIndex = path.lastIndexOf("\\.jar!/"); // jar包内
-            int webInfIndex = path.lastIndexOf("WEB-INF"); // web-inf目录下
-            int classesIndex = path.lastIndexOf("classes"); // 编译环境下
+    public String getWebRootPath(){
+        return getWebRootPath(null);
+    }
 
-            if(-1 != webInfIndex) { // 如果在web-inf目录下，说明在在lib目录，则根目录为web-inf上级目录
-                path = path.substring(0, webInfIndex);
-            } else if(-1 != classesIndex) { // 如果为classes下，则将classes当作根目录
-                path = path.substring(0, classesIndex + "classes".length());
-            } else if(-1 != jarIndex) { // 如果在jar包内，则将jar包所处位置当作根目录
-                path = path.substring(0, jarIndex + "\\.jar!/".length());
+    public String getWebRootPath(Class clazz){
+        return subRootPath(null == clazz ? getPath("") : getPath(clazz), 2); // 获取当前类所处的位置
+    }
+
+    private String subRootPath(String path, int type){
+        try {
+            PathPatten[] paths = new PathPatten[0];
+
+            switch (type) {
+                case 1: // 1，jar包工程
+                    paths = new PathPatten[]{
+                            new PathPatten(1, "/WEB-INF/"),
+                            new PathPatten(2, "/classes/"),
+                            new PathPatten(2, "\\.jar!/")
+                    };
+                    break;
+                case 2: // 2，web工程
+                    paths = new PathPatten[]{
+                            new PathPatten(2, "/webapp/"),
+                            new PathPatten(2, "/web/"),
+                            new PathPatten(2, "/webContent/"),
+                    };
+                    break;
+                default:
+                    break;
             }
 
+            for(PathPatten p : paths) {
+                int index = path.lastIndexOf(p.getPatten());
+
+                if(-1 != index) {
+                    path = path.substring(0, p.getType() == 1 ? index : (index + p.getPatten().length()));
+                    break;
+                }
+
+                // 如果是web路径，且没有找到，则遍历目录下的web文件夹
+                if(type == 2) {
+                    String tempPath = getPath(path + "/");
+
+                    // 先找同级
+                    tempPath = tempPath.substring(0, tempPath.lastIndexOf("/"));
+                    tempPath = tempPath.substring(0, tempPath.lastIndexOf("/") + 1) + p.getPatten();
+
+                    if($.isExists(tempPath)) {
+                        path = tempPath;
+                        break;
+                    }
+
+                    // 再找下级
+                    tempPath = path + "/" + p.getPatten();
+
+                    if($.isExists(tempPath)) {
+                        path = tempPath;
+                        break;
+                    }
+                }
+            }
         } catch (Exception e) {
             $.warn(e);
         }
@@ -91,6 +142,34 @@ public class $Path {
         if(!relPath.startsWith(rootPath)) return path;
 
         return relPath.substring(rootPath.length());
+    }
+
+    private static class PathPatten {
+        int type; // 1表示截取之前的，2表示截取之后的
+        String patten;
+
+        public PathPatten(int type, String patten) {
+            this.type = type;
+            this.patten = patten;
+        }
+
+        public int getType() {
+            return type;
+        }
+
+        public PathPatten setType(int type) {
+            this.type = type;
+            return this;
+        }
+
+        public String getPatten() {
+            return patten;
+        }
+
+        public PathPatten setPatten(String patten) {
+            this.patten = patten;
+            return this;
+        }
     }
 
 }

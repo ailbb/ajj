@@ -21,24 +21,27 @@ public class Proxy {
         return serverName;
     }
 
-    public void setServerName(String serverName) {
+    public Proxy setServerName(String serverName) {
         this.serverName = serverName;
+        return this;
     }
 
     public String getIp() {
         return ip;
     }
 
-    public void setIp(String ip) {
+    public Proxy setIp(String ip) {
         this.ip = ip;
+        return this;
     }
 
     public int getPort() {
         return port;
     }
 
-    public void setPort(int port) {
+    public Proxy setPort(int port) {
         this.port = port;
+        return this;
     }
 
     public static void init(){
@@ -51,7 +54,6 @@ public class Proxy {
         if(!inited){
             info("Use default file.");
             String p = path.getPath(Proxy.class); // 默认获取类文件目录
-            // /D:/Z/Code/java/java-ee/Share/sharepro/code/web-service/sharepro/target/sharepro/WEB-INF/lib/ajj-1.9-SNAPSHOT.jar!/com/ailbb/ajj/http/
             String search = "jar!/";
             int pIndex = p.lastIndexOf(search);
             if(-1 == pIndex) pIndex = p.lastIndexOf(search = "classes/");
