@@ -249,7 +249,13 @@ public class $File {
     }
 
     public boolean isExists(String path){
-        return getFile(path).exists();
+        try {
+            getInputStream(path).close();
+        } catch (IOException e) {
+            return false;
+        }
+
+        return true;
     }
 
     public File getFile(String path){
@@ -372,8 +378,6 @@ public class $File {
 
         path = getPath(path);
 
-        info(String.format("Read file：%s", path));
-
         if(test("\\.jar!", path)) { // 如果内容在jar包内，则用流去读取
             is = new URL("jar:file:" + path).openConnection().getInputStream();
         } else {
@@ -381,6 +385,8 @@ public class $File {
         }
 
         if(null == is) throw new FileNotFoundException(path);
+
+        info(String.format("Read file：%s", path));
 
         return is;
     }

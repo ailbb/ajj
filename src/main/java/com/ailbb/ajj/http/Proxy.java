@@ -2,7 +2,6 @@ package com.ailbb.ajj.http;
 
 import static com.ailbb.ajj.$.*;
 
-import com.ailbb.ajj.entity.$Result;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -46,7 +45,6 @@ public class Proxy {
 
     public static void init(){
         boolean inited = false;
-
         info("Ajj init...");
 
         if(new File(getPath($PROXY_PATH)).exists()) inited = initProxy($PROXY_PATH);
@@ -60,6 +58,8 @@ public class Proxy {
             if(-1 != pIndex) p = p.substring(0, pIndex + search.length());
             initProxy(rel(p, $PROXY_PATH));
         }
+
+        tomcat.init(); // 初始化tomcat内容
     }
 
     private static boolean initProxy(final String $PATH) {

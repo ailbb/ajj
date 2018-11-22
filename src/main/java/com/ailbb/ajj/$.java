@@ -14,6 +14,7 @@ import com.ailbb.ajj.regex.$Regex;
 import com.ailbb.ajj.sys.$System;
 import com.ailbb.ajj.test.$Test;
 import com.ailbb.ajj.thread.$Thread;
+import com.ailbb.ajj.tomcat.$Tomcat;
 import com.ailbb.ajj.unit.$Charset;
 import com.ailbb.ajj.unit.$Unit;
 import net.sf.json.JSONArray;
@@ -54,6 +55,9 @@ public class $ {
 
     // date
     public static $Date date = new $Date();
+
+    // date
+    public static $Tomcat tomcat = new $Tomcat();
 
     // thread
     public static $Thread thread = new $Thread();
@@ -292,6 +296,10 @@ public class $ {
 
     public static String getWebRootPath(){
         return path.getWebRootPath();
+    }
+
+    public static String getWebRootPath(Class clazz){
+        return path.getWebRootPath(clazz);
     }
 
     public String getRelativePath(String _path){
