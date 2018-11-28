@@ -16,33 +16,6 @@ public class Proxy {
     private String ip;
     private int port;
 
-    public String getServerName() {
-        return serverName;
-    }
-
-    public Proxy setServerName(String serverName) {
-        this.serverName = serverName;
-        return this;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public Proxy setIp(String ip) {
-        this.ip = ip;
-        return this;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public Proxy setPort(int port) {
-        this.port = port;
-        return this;
-    }
-
     public static void init(){
         boolean inited = false;
         info("Ajj init...");
@@ -94,5 +67,29 @@ public class Proxy {
         return true;
     }
 
+
+    public String getServerName() {
+        return serverName;
+    }
+
+    public void setServerName(String serverName) {
+        this.serverName = serverName;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
 }
 

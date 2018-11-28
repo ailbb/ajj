@@ -94,7 +94,7 @@ public class $String {
     }
 
     public String str(Object object){
-        return String.valueOf(object).trim().replaceAll("^(null|NULL)$","");
+        return String.valueOf(object).trim().replaceAll("^(null|NULL|undefined|UNDEFINED|NaN)$","");
     }
 
     public String concat(Object... objects){
@@ -104,7 +104,7 @@ public class $String {
     }
 
     public String trim(Object object){
-        return $.str(object).trim();
+        return $.str(object).trim().replaceAll("^\\s+|\\s+$", "");
     }
 
     public String fillBrefore(Object str, int length, String fill) {

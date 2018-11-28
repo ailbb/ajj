@@ -420,6 +420,8 @@ public class $ {
         return string.lastDef(def, strs);
     }
 
+    public static boolean isBaseType(Object... o) { return  object.isBaseType(o); }
+
     public static boolean isEmptyOrNull(Object... o){
         return object.isEmptyOrNull(o);
     }
@@ -447,7 +449,7 @@ public class $ {
         return json.toJsonArray(object);
     }
 
-    public static Map<String, Object> toJsonObject(Object object){
+    public static JSONObject toJsonObject(Object object){
         return json.toJsonObject(object);
     }
 

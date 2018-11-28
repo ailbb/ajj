@@ -115,7 +115,7 @@ public class $Http {
     public $Result send(HttpServletResponse response, Object data)  {
         $Result rs = $.result();
 
-        response.setHeader("Content-type", "text/html;charset=UTF-8");
+        response.setHeader("Content-type", String.format("text/%s;charset=UTF-8", $.isBaseType($.json.tryToJsonObject(data)) ? "html" : "json"));
         response.setCharacterEncoding("UTF-8");
 
         PrintWriter out = null;
