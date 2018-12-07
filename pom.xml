@@ -6,7 +6,7 @@
 
     <groupId>com.ailbb</groupId>
     <artifactId>ajj</artifactId>
-    <version>1.9-SNAPSHOT</version>
+    <version>1.5</version>
 
     <packaging>jar</packaging>
 
