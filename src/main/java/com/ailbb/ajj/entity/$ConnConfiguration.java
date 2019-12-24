@@ -2,11 +2,15 @@ package com.ailbb.ajj.entity;
 
 import com.ailbb.ajj.$;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Wz on 8/21/2018.
  */
 public class $ConnConfiguration {
     private String ip;
+    private List<String> ips = new ArrayList<>();
     private int port;
     private String username;
     private String password;
@@ -36,7 +40,32 @@ public class $ConnConfiguration {
     }
 
     public $ConnConfiguration setIp(String ip) {
-        this.ip = ip;
+        this.ip = $.string.trim(ip);
+        return this;
+    }
+
+    public $ConnConfiguration setIp(List<String> ips) {
+        this.ips.clear();
+        for(String ip: ips) {
+            this.ips.add($.string.trim(ip));
+        }
+        return this;
+    }
+
+    public $ConnConfiguration setIp(String[] ips) {
+        this.ips.clear();
+        for(String ip: ips) {
+            this.ips.add($.string.trim(ip));
+        }
+        return this;
+    }
+
+    public List<String> getIps() {
+        return ips;
+    }
+
+    public $ConnConfiguration setIps(List<String> ips) {
+        this.ips = ips;
         return this;
     }
 

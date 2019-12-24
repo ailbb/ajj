@@ -12,7 +12,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.ailbb.ajj.$.*;
@@ -138,6 +140,10 @@ public class $Http {
     }
 
     public $Result ajax(final Ajax ajax)  {
+        return ajax(ajax, false);
+    }
+
+    public $Result ajax(final Ajax ajax, boolean isClearSession)  {
         $Result rs = $.result();
 
         if(null == ajax.getUrl()) {
@@ -161,9 +167,9 @@ public class $Http {
 
                 rs.addMessage(info(String.format("Send %s request：%s", ajax.getType(), ajax.getUrl())));
 
-                rs.addMessage(info(String.format("Send %s Data：%s", ajax.getType(), $.simple(ajax.getData()))));
+                rs.addMessage(info(String.format("Send %s Data：%s", ajax.getType(), $.simple(ajax.getParams()))));
 
-                rs = ajax.getType().equals($GET) ? sendGet(ajax) : sendPost(ajax);
+                rs = ajax.getType().equals($GET) ? sendGet(ajax, isClearSession) : sendPost(ajax, isClearSession);
 
                 rs.addMessage(info(String.format("Get %s Data：%s", ajax.getType(), $.simple(rs.getData()))));
 
@@ -187,12 +193,46 @@ public class $Http {
         return sendRequest(ajax.setType($POST));
     }
 
+    public $Result sendGet(Ajax ajax, boolean isClearSession)  {
+        return sendRequest(ajax.setType($GET), isClearSession);
+    }
+
+    public $Result sendPost(Ajax ajax, boolean isClearSession)  {
+        return sendRequest(ajax.setType($POST), isClearSession);
+    }
+
+    public String toHttpParams(JSONObject jo) {
+        List<String> list = new ArrayList<>();
+
+        for(Object o : jo.keySet()) {
+            Object v = jo.get(o);
+            if(null != v && !(v instanceof JSONNull)) {
+                try {
+                    list.add(String.format("%s=%s", o, URLEncoder.encode($.str(v), "UTF-8")));
+                } catch (UnsupportedEncodingException e) {
+                    list.add(String.format("%s=%s", o, $.str(v)));
+                }
+            }
+        }
+
+        return $.join(list, "&");
+    }
+
     /**
      * 发送请求
      * @param ajax ajax 请求对象
      * @return $Result 结构体
      */
     public $Result sendRequest(Ajax ajax)  {
+        return sendRequest(ajax, false);
+    }
+
+    /**
+     * 发送请求
+     * @param ajax ajax 请求对象
+     * @return $Result 结构体
+     */
+    public $Result sendRequest(Ajax ajax, boolean isClearSession)  {
         OutputStreamWriter out = null;
         BufferedReader in = null;
         StringBuffer result = new StringBuffer();
@@ -202,14 +242,8 @@ public class $Http {
             String requestUrl = ajax.getUrl();
 
             // 在链接内添加内容
-            if(ajax.getType().equalsIgnoreCase($GET) && ajax.getData() != null) {
-                requestUrl += "?";
-
-                for(Object o : ajax.getData().keySet()) {
-                    Object ad = ajax.getData().get(o);
-                    if(null != ad && !(ad instanceof JSONNull)) requestUrl += String.format("%s=%s&", o, ad);
-                }
-                requestUrl = requestUrl.substring(0, requestUrl.length()-1);
+            if(ajax.getParams() != null) {
+                requestUrl += "?" + toHttpParams(ajax.getParams());
             }
 
             URL realUrl = new URL(requestUrl);
@@ -224,18 +258,22 @@ public class $Http {
             conn.setDoOutput(true); // 允许连接提交信息
             conn.setDoInput(true);
             conn.setUseCaches(false);
-            conn.setInstanceFollowRedirects(true);
+
+            conn.setInstanceFollowRedirects(isClearSession ? true : false); // 防止因为跳转引起的模拟登录异常 !! 关键 !!
 
             conn.setConnectTimeout(ajax.getTimeout());
             conn.setReadTimeout(ajax.getTimeout());
 
-            conn.setRequestProperty("accept", "*/*");
-            conn.setRequestProperty("connection", "Keep-Alive");
-            conn.setRequestProperty("Content-Type", ajax.getType().equalsIgnoreCase($POST) ? "application/json; charset=UTF-8" : "application/x-www-form-urlencoded; charset=UTF-8");
+            conn.setRequestProperty("Accept", "*/*");
+            conn.setRequestProperty("Connection", "Keep-Alive");
+            conn.setRequestProperty("Content-Type", ajax.getType().equalsIgnoreCase($POST) ? "application/x-www-form-urlencoded; charset=UTF-8" : "application/json; charset=UTF-8" );
 
-            if(!$.isEmptyOrNull(localCookie)) {
+            if(!isClearSession && !$.isEmptyOrNull(localCookie)) {
                 rs.addMessage($.info("set-cookie：" + localCookie));
                 conn.setRequestProperty("Cookie", localCookie); // 设置发送的cookie
+            } else {
+                rs.addMessage($.info("clear cookie"));
+                conn.setRequestProperty("Cookie", null); // 设置发送的cookie
             }
 
             if(!isEmptyOrNull(ajax.getProperty()))
@@ -250,8 +288,8 @@ public class $Http {
                 // 获取URLConnection对象对应的输出流
                 out = new OutputStreamWriter(conn.getOutputStream(), "utf-8");
                 // 发送请求参数
-                if (null != ajax.getData() && !ajax.getData().isNullObject()) {
-                    out.write(ajax.getData().toString());
+                if (!$.isEmptyOrNull(ajax.getData())) {
+                    out.write($.str(ajax.getData()));
                 }
                 // flush输出流的缓冲
                 out.flush();
@@ -264,12 +302,23 @@ public class $Http {
                 cookies.put(baseUrl, localCookie);
             }
 
+            rs.addMessage($.info("http-status：" + conn.getResponseCode()));
+
+            String line;
+            // 定义BufferedReader输入流来读取URL的响应
+            if(null != conn.getErrorStream()) {
+                in = new BufferedReader(new InputStreamReader(conn.getErrorStream(), "utf-8"));
+                while ((line = in.readLine()) != null) {
+                    rs.addMessage(line);
+                }
+            }
+
             // 定义BufferedReader输入流来读取URL的响应
             in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
-            String line;
             while ((line = in.readLine()) != null) {
                 result.append(line);
             }
+
             conn.disconnect(); // 断开连接
         } catch (UnsupportedEncodingException e) {
             rs.addError(exception(e));
@@ -291,10 +340,15 @@ public class $Http {
         return rs.setData(result.toString());
     }
 
-    public String getIp(String... name) throws UnknownHostException {
-        InetAddress inetAddress = getInetAddress(last(name));
+    public String getIp(String... name) {
+        try {
+            InetAddress inetAddress = getInetAddress(last(name));
 
-        return null == inetAddress ? "localhost" : inetAddress.getHostAddress();
+            return null == inetAddress ? "localhost" : inetAddress.getHostAddress();
+        } catch (Exception e) {
+            $.warn(e);
+            return "";
+        }
     }
 
     public InetAddress getInetAddress(String... name) throws UnknownHostException {
@@ -309,16 +363,42 @@ public class $Http {
         return get(new Ajax(url));
     }
 
+    public $Result get(String url, boolean isClearSession)  {
+        return get(new Ajax(url), isClearSession);
+    }
+
     public $Result post(String url)  {
         return post(new Ajax(url));
+    }
+
+    public $Result post(String url, boolean isClearSession)  {
+        return post(new Ajax(url), isClearSession);
     }
 
     public $Result get(Ajax ajax)  {
         return ajax(ajax.setType($GET));
     }
 
+    public $Result get(Ajax ajax, boolean isClearSession)  {
+        return ajax(ajax.setType($GET), isClearSession);
+    }
+
     public $Result post(Ajax ajax)  {
         return ajax(ajax.setType($POST));
+    }
+
+    public $Result post(Ajax ajax, boolean isClearSession)  {
+        return ajax(ajax.setType($POST), isClearSession);
+    }
+
+    public $Http login(Ajax ajax) {
+        post(ajax);
+        return this;
+    }
+
+    public $Http login(String url, JSONObject jo) {
+        login(new Ajax(url).setData(toHttpParams(jo)));
+        return this;
     }
 
     public $Result ajax(String url)  {

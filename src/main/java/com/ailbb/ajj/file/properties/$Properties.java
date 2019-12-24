@@ -5,6 +5,7 @@ import com.ailbb.ajj.file.yml.$Yml;
 
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -38,16 +39,30 @@ public class $Properties {
     }
 
     public String getProperty(String path, String name) {
-        return $.isEmptyOrNull(propertiesMap.get(path)) ? getProperties(path).getProperty(name) : propertiesMap.get(path).getProperty(name);
+        return $.isEmptyOrNull(propertiesMap.get(path)) ? getProperty(getProperties(path), name) : getProperty(propertiesMap.get(path), name);
+    }
+
+    public String getProperty(Properties pro, String name) {
+        String values = pro.getProperty(name);
+
+        if(!$.isEmptyOrNull(values) && $.str(values).contains("${")) {
+            List<String> regexs = $.regex("\\$\\{[^\\]]+\\}", values);
+            for(String r: regexs) {
+                values = values.replace(r, getProperty(pro, r.replaceAll("^\\$\\{|\\}$", "")));
+            }
+        }
+
+        return values;
     }
 
     public String getProperty(String name) {
         for(String key: propertiesMap.keySet()) {
-            String value = propertiesMap.get(key).getProperty(name);
+            String value = getProperty(propertiesMap.get(key), name);
             if(!$.isEmptyOrNull(value)) return value;
         }
 
         return null;
     }
+
 
 }

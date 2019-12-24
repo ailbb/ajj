@@ -82,7 +82,7 @@ public class $Mysql {
         this.connConfiguration = connConfiguration;
         
         DriverManagerDataSource dataSource=new DriverManagerDataSource();
-        dataSource.setDriverClassName($.notNull(connConfiguration.getDriver()));
+        dataSource.setDriverClassName($.lastDef($DRIVER, connConfiguration.getDriver()));
         dataSource.setUrl(
                 !$.isEmptyOrNull(connConfiguration.getUrl()) ? connConfiguration.getUrl() :
                         String.format("jdbc:mysql://%s:%s/%s?useUnicode=true&characterEncoding=utf8&allowMultiQueries\\=true", $.notNull(connConfiguration.getIp()), $.notNull(connConfiguration.getPort()), $.notNull(connConfiguration.getDatabase()))

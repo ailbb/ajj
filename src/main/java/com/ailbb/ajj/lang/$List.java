@@ -61,6 +61,14 @@ public class $List {
         return lists.toArray(types);
     }
 
+    /**
+     * 包含开头，不包含结尾
+     * @param ts
+     * @param startIndex
+     * @param endIndex
+     * @param <T>
+     * @return
+     */
     public <T> T[] subCollection(T[] ts, int startIndex, int endIndex){
         return $.list.listToArray(arrayToList(ts).subList(startIndex, endIndex), newArray(ts));
     }

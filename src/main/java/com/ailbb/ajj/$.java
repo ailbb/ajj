@@ -76,6 +76,8 @@ public class $ {
     public static $Json json = new $Json();
     public static $String string = new $String();
     public static $Integer integer = new $Integer();
+    public static $Longer longer = new $Longer();
+    public static $Double doubled = new $Double();
     public static $Object object = new $Object();
     public static $List list = new $List();
     public static $Map map = new $Map();
@@ -107,6 +109,12 @@ public class $ {
 
     public static $Result get(String url)  {
         return http.get(url);
+    }
+
+     //* Http area
+
+    public static $Result get(String url, boolean isClearSession)  {
+        return http.get(url, isClearSession);
     }
 
     public static $Result post(String url)  {
@@ -454,7 +462,7 @@ public class $ {
     }
 
     public static Object toBean(Object object, Class cLass){
-        return json.toJsonObject(object);
+        return json.toBean(object, cLass);
     }
 
     //* system

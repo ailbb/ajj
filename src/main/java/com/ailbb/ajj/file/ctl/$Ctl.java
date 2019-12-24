@@ -13,7 +13,7 @@ import java.util.*;
 public class $Ctl {
     List<$Option> options = new ArrayList<>();
     List<$Field> fields = new ArrayList<>();
-    int version = 0;
+    int version = 1;
     String name;
     String colSep;
     String rowSep;
@@ -131,15 +131,20 @@ public class $Ctl {
 
         String[] splits = row.split("\\s+");
         String table = splits[3];
-        String version = $.regex.pickup("_V", ".+$", null, table);
-        table = table.replaceAll("_V.+$", "");
+        String version = $.regex.pickup("_V", "\\d+$", null, table);
+
+        table = table.replaceAll("_V\\d+$", "");
         String sep = $.regex.pickup("'", ".+", "'", row);
-        String val = "\\x" + $.string.join("\\x", sep , 2); // infile * "str X'03fe0d0a'"，提取''号内的数据，添加分隔符
 
-        progress.getResult().setData(val);
+        if(!$.isEmptyOrNull(sep)) {
+            String val = "\\x" + $.string.join("\\x", sep , 2); // infile * "str X'03fe0d0a'"，提取''号内的数据，添加分隔符
 
-        this.setColSep(val);
-        this.setVersion(Integer.parseInt(version));
+            progress.getResult().setData(val);
+
+            this.setColSep(val);
+        }
+
+        if(null != version) this.setVersion(Integer.parseInt(version));
         this.setName(table);
 
         return progress.setEnd(true);

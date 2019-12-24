@@ -67,6 +67,7 @@ public class $Excel {
 
         try {
             $.timeclock();
+            boolean hasHeaders = !$.isEmptyOrNull(headers); // 是否指定标题
             is = new FileInputStream(fi.getFile());
             Workbook workBook = version == 2003 ? new HSSFWorkbook(is) : new XSSFWorkbook(is);
 
@@ -77,7 +78,7 @@ public class $Excel {
 
                 List list = new ArrayList();
 
-                for (int rowNum = 1; rowNum <= sheet.getLastRowNum(); rowNum++) {
+                for (int rowNum = 1, lastRowNum = sheet.getLastRowNum() ; rowNum <= lastRowNum; rowNum++) {
                     Row row = sheet.getRow(rowNum);
                     if (row == null || dataIndexRow > rowNum)  continue;
 
@@ -85,20 +86,20 @@ public class $Excel {
                     Map<String, Object> rowDataMap = new HashMap<>();
 
                     // 循环列Cell
-                    for (int cellNum = 0; cellNum < row.getLastCellNum(); cellNum++) {
+                    for (int cellNum = 0, lastCellNum = hasHeaders ? headers.size() : row.getLastCellNum(); cellNum < lastCellNum; cellNum++) {
                         Cell cell = row.getCell(cellNum);
 
                         // 如果有中间处理器，则进行处理
                         Object cellValue = !$.isEmptyOrNull(interlayer) ? interlayer.doAs(sheetName, rowNum, cellNum, getCellObjectValue(cell)) : getCellObjectValue(cell);
 
-                        if($.isEmptyOrNull(headers)) {
-                            rowDataList.add(cellValue);
-                        } else {
+                        if(hasHeaders) {
                             rowDataMap.put(headers.get(cellNum), cellValue);
+                        } else {
+                            rowDataList.add(cellValue);
                         }
                     }
 
-                    list.add($.isEmptyOrNull(headers) ? rowDataList : rowDataMap);
+                    list.add(hasHeaders ? rowDataMap : rowDataList);
                 }
 
                 datas.put(sheet.getSheetName(), list);

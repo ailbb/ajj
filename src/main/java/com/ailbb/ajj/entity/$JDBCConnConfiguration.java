@@ -20,6 +20,22 @@ public class $JDBCConnConfiguration extends $ConnConfiguration {
         return this;
     }
 
+    public $JDBCConnConfiguration init(String ipOrUrl, String username,String password) {
+        init(ipOrUrl,username,password,null);
+        return this;
+    }
+
+    public $JDBCConnConfiguration init(String ipOrUrl, String username,String password, String type) {
+        if(ipOrUrl.startsWith("jdbc"))
+            this.setUrl(ipOrUrl);
+        else
+            this.setIp(ipOrUrl);
+
+        this.setUsername(username).setPassword(password);
+        this.init("mysql");
+        return this;
+    }
+
     public String getUrl() {
         return url;
     }
@@ -46,5 +62,6 @@ public class $JDBCConnConfiguration extends $ConnConfiguration {
         this.database = database;
         return this;
     }
+
 
 }

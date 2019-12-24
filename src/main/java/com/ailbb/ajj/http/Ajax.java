@@ -16,7 +16,8 @@ public class Ajax {
     private boolean async = false;
     private String type = $Http.$GET;
     private int timeout = $TIMEOUT;
-    private JSONObject data;
+    private JSONObject params;
+    private Object data;
     private Proxy proxy;
     private Map<String, String> property;
 
@@ -26,16 +27,16 @@ public class Ajax {
         this.setUrl(url);
     }
 
-    public Ajax(String url, JSONObject data){
-        this.setUrl(url).setData(data);
+    public Ajax(String url, JSONObject params){
+        this.setUrl(url).setParams(params);
     }
 
     public Ajax(String serverName, String requestMapping){
         this(serverName, requestMapping, null);
     }
 
-    public Ajax(String serverName, String requestMapping, JSONObject data){
-        this.setProxy($PROXY.get(serverName)).setData(data);
+    public Ajax(String serverName, String requestMapping, JSONObject params){
+        this.setProxy($PROXY.get(serverName)).setParams(params);
         String ip;
         int port;
 
@@ -57,7 +58,7 @@ public class Ajax {
                         + String.format("/%s/%s", serverName, requestMapping).replaceAll("//+", "/")
         );
 
-        this.setData(JSONObject.fromObject(this));
+        this.setParams(JSONObject.fromObject(this));
     }
 
     public Map<String, String> getProperty() {
@@ -105,11 +106,20 @@ public class Ajax {
         return this;
     }
 
-    public JSONObject getData() {
+    public JSONObject getParams() {
+        return params;
+    }
+
+    public Ajax setParams(JSONObject params) {
+        this.params = params;
+        return this;
+    }
+
+    public Object getData() {
         return data;
     }
 
-    public Ajax setData(JSONObject data) {
+    public Ajax setData(Object data) {
         this.data = data;
         return this;
     }
@@ -148,6 +158,7 @@ public class Ajax {
                 ", async=" + async +
                 ", type='" + type + '\'' +
                 ", timeout=" + timeout +
+                ", params=" + params +
                 ", data=" + data +
                 ", proxy=" + proxy +
                 ", callback=" + callback +

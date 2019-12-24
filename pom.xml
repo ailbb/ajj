@@ -6,7 +6,7 @@
 
     <groupId>com.ailbb</groupId>
     <artifactId>ajj</artifactId>
-    <version>1.5</version>
+    <version>1.9-SNAPSHOT</version>
 
     <packaging>jar</packaging>
 
@@ -135,6 +135,8 @@
         <version.snakeyaml.yaml>1.23</version.snakeyaml.yaml>
 
         <version.selenium.firefox>3.141.0</version.selenium.firefox>
+        <version.jdom2>2.0.6</version.jdom2>
+        <version.httpclient>4.5.10</version.httpclient>
     </properties>
 
     <dependencies>
@@ -229,6 +231,20 @@
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>${version.snakeyaml.yaml}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.jdom/jdom2 -->
+        <dependency>
+            <groupId>org.jdom</groupId>
+            <artifactId>jdom2</artifactId>
+            <version>${version.jdom2}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${version.httpclient}</version>
         </dependency>
 
     </dependencies>

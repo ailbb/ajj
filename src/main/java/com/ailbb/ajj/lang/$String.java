@@ -44,7 +44,7 @@ public class $String {
 
         for(Object l : list) {
             if(null != l) sb.append(l);
-            if(++i != list.length)  if(!isEmptyOrNull(u)) {
+            if(++i != list.length)  if(null != u) {
                 for (Object ui: u) sb.append(ui);
             }
         }

@@ -22,7 +22,7 @@ public class $Url {
     public String url(String url) {
         if(isEmptyOrNull(url)) return url;
 
-        if(url.startsWith($Http.$HTTP) || url.startsWith($Http.$HTTPS)) {
+        if(url.startsWith($Http.$HTTP) || url.startsWith($Http.$HTTPS) || url.toUpperCase().startsWith($Http.$HTTP) || url.toUpperCase().startsWith($Http.$HTTPS)) {
             url = url.replaceAll("/+|\\+", "/").replaceAll(":/+", "://");
         } else {
             return url(concat($Http.$HTTP, "://", url));

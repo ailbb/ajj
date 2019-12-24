@@ -87,7 +87,7 @@ public class $Json {
             propertyFilter = new PropertyFilter() {
                 @Override
                 public boolean apply(Object o, String key, Object value) {
-                    if($.isEmptyOrNull(key) || $.isEmptyOrNull(value)) return true;
+                    if($.str(key).equals("") || $.str(value).equals("")) return true;
                     return false;
                 }
             };

@@ -14,6 +14,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
+import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -81,6 +82,10 @@ public class $File {
         }
     }
 
+    public String readStr(InputStream is)  {
+        return read(is).getDataToString();
+    }
+
     public $Result read(InputStream is)  {
         return read(is, charset.UTF8);
     }
@@ -129,6 +134,9 @@ public class $File {
         OutputStream output = null;
         try {
             writeFile(input,  output = new FileOutputStream($.getPath(path)));
+        } catch (FileNotFoundException e) {
+            $.mkdir(path);
+            return writeFile(input, path);
         } catch (IOException e) {
             throw e;
         } finally {
@@ -248,6 +256,10 @@ public class $File {
         return getFile(path).isFile();
     }
 
+    public boolean isDirectory(String path){
+        return getFile(path).isDirectory();
+    }
+
     public boolean isExists(String path){
         try {
             getInputStream(path).close();
@@ -318,7 +330,7 @@ public class $File {
             while (iter.hasNext()) {
                 List<MultipartFile> multi_file = multiRequest.getFiles(iter.next().toString());
                 for (MultipartFile file : multi_file) {
-                    rs.concat(uploadFile(((CommonsMultipartFile) file).getFileItem(), path, type));
+                    rs.concat(uploadFile(file, path, type));
                 }
             }
         } else {
@@ -343,6 +355,37 @@ public class $File {
         }
 
         return rs;
+    }
+
+    public $Result uploadFile(MultipartFile file, String path, String type){
+        try {
+            if(file instanceof CommonsMultipartFile) {
+                return uploadFile(((CommonsMultipartFile) file).getFileItem(), path, type);
+            }
+        } catch (Exception e) {
+            $.warn(e);
+        }
+
+        $Result rs = mkdir(path);
+        $FileInfo fi = new $FileInfo(file);
+        $.timeclock();
+
+        String fileName = fi.getFileName();  //得到上传文件的文件名
+
+        if(!$.isEmptyOrNull(fileName) && !$.isEmptyOrNull(type) && !fi.getType().startsWith(type)){
+            return rs.addMessage(false, "Type is not equals：" + type);
+        }
+
+        try {
+            //写入服务器或者磁盘
+            file.transferTo(fi.initFile(new File($.getPath(path, fileName))).getFile());
+            //向控制台打印文件信息
+            info(String.format("Upload file：%s, Size: %s, RunTime：%s ms", fileName, fi.getSize(), fi.setRunTime($.timeclock()).getRunTime()));
+        } catch (Exception e) {
+            return rs.addError(exception(e));
+        }
+
+        return rs.setData(fi);
     }
 
     public $Result uploadFile(FileItem item, String path, String type){
@@ -410,6 +453,20 @@ public class $File {
         }
 
         return new List[]{headers, datas};
+    }
+
+    public $Result delete(String... path) {
+        $Result rs = $.result();
+
+        for(String p : path) {
+            File file = new File(getPath(p));
+            if(!file.exists()) {
+                rs.addMessage(info(String.format("Delete directory：%s", p)));
+                file.deleteOnExit();
+            }
+        }
+
+        return rs;
     }
 
     public $Result mkdir(String... path) {

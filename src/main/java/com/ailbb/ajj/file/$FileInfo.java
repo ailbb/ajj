@@ -3,6 +3,7 @@ package com.ailbb.ajj.file;
 import com.ailbb.ajj.$;
 import org.apache.commons.fileupload.FileItem;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.io.File;
 
@@ -10,15 +11,21 @@ import java.io.File;
  * Created by Wz on 9/12/2018.
  */
 public class $FileInfo {
-    private String fileName;
+    private MultipartFile multipartFile;
     private FileItem fileItem;
     private File file;
+
+    private String fileName;
     private String fieldName;
+
+    private String type;
     private long size;
+
     private String path;
     private String relativePath;
-    private String type;
+
     private Object content = "";
+
     private long runTime;
 
     public $FileInfo() {}
@@ -31,20 +38,8 @@ public class $FileInfo {
         initFile(file);
     }
 
-    public $FileInfo initFileItem(FileItem item) {
-        try {
-            this.setFileItem(item)
-                .setFileName(item.getName())
-                .setType(item.getContentType())
-                .setSize(item.getSize());
-        } catch (Exception e) {}
-
-        try {
-            return setFieldName(item.getFieldName())
-                .setContent(item.getString("utf-8"));
-        } catch (Exception e) {}
-
-        return this;
+    public $FileInfo(MultipartFile file) {
+        initMultipartFile(file);
     }
 
     public $FileInfo initFile(File file) {
@@ -55,6 +50,36 @@ public class $FileInfo {
             .setSize(file.length())
             .setType($.file.getFileType(file))
         ;
+    }
+
+    public $FileInfo initMultipartFile(MultipartFile file) {
+        try {
+            if(file instanceof CommonsMultipartFile) {
+                return initFileItem(((CommonsMultipartFile) file).getFileItem());
+            }
+        } catch (Exception e) { $.warn(e); }
+
+        return setMultipartFile(file)
+                .setFileName(file.getOriginalFilename())
+                .setType($.file.getFileType(file.getOriginalFilename()))
+                .setSize(file.getSize())
+                ;
+    }
+
+    public $FileInfo initFileItem(FileItem item) {
+        try {
+            this.setFileItem(item)
+                    .setFileName(item.getName())
+                    .setType(item.getContentType())
+                    .setSize(item.getSize());
+        } catch (Exception e) {}
+
+        try {
+            return setFieldName(item.getFieldName())
+                    .setContent(item.getString("utf-8"));
+        } catch (Exception e) {}
+
+        return this;
     }
 
     public long getRunTime() {
@@ -144,6 +169,15 @@ public class $FileInfo {
 
     public $FileInfo setRelativePath(String relativePath) {
         this.relativePath = relativePath;
+        return this;
+    }
+
+    public MultipartFile getMultipartFile() {
+        return multipartFile;
+    }
+
+    public $FileInfo setMultipartFile(MultipartFile multipartFile) {
+        this.multipartFile = multipartFile;
         return this;
     }
 }

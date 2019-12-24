@@ -36,6 +36,10 @@ public class $Status {
 
     public $Status() {}
 
+    public $Status(int code) {
+        this.code = code;
+    }
+
     public $Status(boolean success, int code, String message, String tag) {
         this.success = success;
         this.code = code;

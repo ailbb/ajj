@@ -124,6 +124,15 @@ public class $Result {
         return this;
     }
 
+    public $Result addError(String... errors) {
+        this.setSuccess(false);
+        for(String e : errors) {
+            this.addMessage(e);
+        }
+
+        return this;
+    }
+
     public String getDataToString() {
         try {
             return $.str(data);
@@ -158,6 +167,14 @@ public class $Result {
     }
 
     public $Result addData(Object... objects) {
+        return putData(objects);
+    }
+
+    public $Result addDataList(Object... objects) {
+        return putData(objects);
+    }
+
+    public $Result putData(Object... objects) {
         if($.isEmptyOrNull(this.data)) this.data = new ArrayList<Object>();
 
         for(Object o : objects)
@@ -184,8 +201,8 @@ public class $Result {
     }
 
     public $Result concat($Result result) {
-        this.getMessage().containsAll(result.getMessage());
-        this.getError().containsAll(result.getError());
+        this.getMessage().addAll(result.getMessage());
+        this.getError().addAll(result.getError());
 
         if(!success) return this;
 
@@ -203,7 +220,7 @@ public class $Result {
         try {
             if(s instanceof List) {
                 if(d  instanceof List && (!$.isEmptyOrNull(s) || !$.isEmptyOrNull(d)))
-                    ((List) s).containsAll((List)d);
+                    ((List) s).addAll((List)d);
                 else if(!$.isEmptyOrNull(d))
                     ((List) s).add(d);
 

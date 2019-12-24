@@ -16,8 +16,6 @@ public class $Path {
     public String getPath(String path){
         String currpath = "";
 
-        if(isEmptyOrNull(path = $.str(path))) path = "/";
-
         if(system().equals("windows")) {
             if(test("^[A-Za-z]:", path) || test("/[A-Za-z]:", path)  ) currpath = rel("/", path);
         } else {
@@ -33,6 +31,19 @@ public class $Path {
         }
 
         return isEmptyOrNull(currpath) ? rel(path) : rel(subRootPath(currpath, 1), path);
+    }
+
+    public String getDirPath(String path){
+        File file = $.file.getFile(path);
+
+        if(!$.isEmptyOrNull(file)) {
+            path = getPath(file.getPath());
+
+            if(file.isFile())
+                path = path.substring(0, path.lastIndexOf("/"));
+        }
+
+        return path;
     }
 
     public String getPath(String... paths){
