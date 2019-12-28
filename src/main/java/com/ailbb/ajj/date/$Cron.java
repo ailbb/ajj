@@ -1,5 +1,6 @@
 package com.ailbb.ajj.date;
 
+import com.ailbb.ajj.$;
 import org.springframework.scheduling.support.CronSequenceGenerator;
 
 import java.util.ArrayList;
@@ -22,7 +23,15 @@ public class $Cron {
     }
 
     public $Cron init(String patten){
-        this.cronSequenceGenerator = new CronSequenceGenerator(this.patten = patten);
+        List<String> corn = new ArrayList<>();
+
+        for(String c : patten.split("\\s+")) {
+            corn.add(c.replace("0/0", "0"));
+        }
+
+        if(corn.size() > 6) corn = corn.subList(0,6);
+
+        this.cronSequenceGenerator = new CronSequenceGenerator(this.patten = $.string.join(corn, " "));
         return this;
     }
 
