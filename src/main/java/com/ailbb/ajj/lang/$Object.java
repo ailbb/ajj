@@ -2,6 +2,8 @@ package com.ailbb.ajj.lang;
 
 import com.ailbb.ajj.$;
 
+import static com.ailbb.ajj.$.isEmptyOrNull;
+
 /**
  * Created by Wz on 6/20/2018.
  */
@@ -36,6 +38,14 @@ public class $Object {
         }
 
         return false;
+    }
+
+    public <T> T  last(T... strs) {
+        return lastDef(null, strs);
+    }
+
+    public <T> T  lastDef(T def, T... strs) {
+        return (isEmptyOrNull(strs) || isEmptyOrNull(strs[strs.length-1])) ? def : strs[strs.length-1];
     }
 
     public String notNull(Object o, String... message) {

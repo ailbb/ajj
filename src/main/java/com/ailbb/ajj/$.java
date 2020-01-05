@@ -412,20 +412,16 @@ public class $ {
         return string.firstDef(def, strs);
     }
 
-    public static String last(String... strs) {
+    public static <T> T  last(T... strs) {
+        return object.last(strs);
+    }
+
+    public static String lastStr(Object... strs) {
         return string.last(strs);
     }
 
-    public static String last(Object... strs) {
-        return string.last(strs);
-    }
-
-    public static String lastDef(String def, String... strs) {
-        return string.lastDef(def, strs);
-    }
-
-    public static String lastDef(Object def, Object... strs) {
-        return string.lastDef(def, strs);
+    public static <T> T  lastDef(T def, T... strs) {
+        return object.lastDef(def, strs);
     }
 
     public static boolean isBaseType(Object... o) { return  object.isBaseType(o); }

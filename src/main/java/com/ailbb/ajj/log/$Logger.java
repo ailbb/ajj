@@ -17,29 +17,29 @@ public class $Logger {
 
     public String error(Object... o){
         for(Object oi : o) exception(new $Exception(String.format("[ERROR]\t%s", oi)));
-        return $.last(o);
+        return $.lastStr(o);
     }
 
     public String warn(Object... o){
         for(Object oi : o) sout(String.format("[WARNING]\t%s", oi));
-        return $.last(o);
+        return $.lastStr(o);
     }
 
     public String info(Object... o){
         for(Object oi : o) sout(String.format("[INFO]\t%s", oi));
-        return $.last(o);
+        return $.lastStr(o);
     }
 
     public String log(Object... o){
         for(Object oi : o) sout(String.format("[LOG]\t%s", oi));
-        return $.last(o);
+        return $.lastStr(o);
     }
 
     public String sout(Object... o){
         for(Object oi : o)
             System.out.println(now("s") + "\t" + oi.toString());
 
-        return $.last(o);
+        return $.lastStr(o);
     }
 
 }
