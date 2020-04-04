@@ -12,10 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.ailbb.ajj.$.*;
 
@@ -70,7 +67,7 @@ public class $Http {
             $.warn(e);
         }
 
-        return result.toString();
+        return $.isEmptyOrNull(result.toString()) ? getParameterJSONStr(request) : result.toString();
     }
 
     /**
@@ -185,6 +182,20 @@ public class $Http {
         }
     }
 
+    public boolean isJSON(Object str)  {
+        try {
+            JSONObject.fromObject(str);
+            return true;
+        } catch (Exception e) {
+            try {
+                JSONArray.fromObject(str);
+                return true;
+            } catch (Exception e1) {}
+        }
+
+        return false;
+    }
+
     public $Result sendGet(Ajax ajax)  {
         return sendRequest(ajax.setType($GET));
     }
@@ -266,7 +277,7 @@ public class $Http {
 
             conn.setRequestProperty("Accept", "*/*");
             conn.setRequestProperty("Connection", "Keep-Alive");
-            conn.setRequestProperty("Content-Type", ajax.getType().equalsIgnoreCase($POST) ? "application/x-www-form-urlencoded; charset=UTF-8" : "application/json; charset=UTF-8" );
+            conn.setRequestProperty("Content-Type", ajax.getType().equalsIgnoreCase($POST) && !isJSON(ajax.getData()) ? "application/x-www-form-urlencoded; charset=UTF-8" : "application/json; charset=UTF-8" );
 
             if(!isClearSession && !$.isEmptyOrNull(localCookie)) {
                 rs.addMessage($.info("set-cookie：" + localCookie));
@@ -429,4 +440,25 @@ public class $Http {
         return JSONArray.fromObject(ajax(ajax.setType($GET)).getData());
     }
 
+    public String getParameterJSONStr(HttpServletRequest request){
+        return getParameterJSONMap(request).toString();
+    }
+
+    public JSONObject getParameterJSONMap(HttpServletRequest request){
+        Map<String,Object> maps = new HashMap<>();
+        return getParameterJSONMap(request.getParameterMap());
+    }
+    public String getParameterJSONStr(Map<String, String[]>... map){
+        return getParameterJSONMap(map).toString();
+    }
+
+    public JSONObject getParameterJSONMap(Map<String, String[]>... map){
+        Map<String,Object> maps = new HashMap<>();
+        for(Map<String, String[]> m : map) {
+            for(String key : m.keySet()) {
+                maps.put(key, isEmptyOrNull(m.get(key)) ? "null" : join(Arrays.asList(m.get(key))));
+            }
+        }
+        return JSONObject.fromObject(maps);
+    }
 }

@@ -18,7 +18,7 @@ public class Proxy {
 
     public static void init(){
         boolean inited = false;
-        info("Ajj init...");
+        info("AJJ init...");
 
         if(new File(getPath($PROXY_PATH)).exists()) inited = initProxy($PROXY_PATH);
 

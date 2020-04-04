@@ -11,6 +11,8 @@ import com.ailbb.ajj.lang.*;
 import com.ailbb.ajj.log.$Logger;
 import com.ailbb.ajj.mail.$Mail;
 import com.ailbb.ajj.regex.$Regex;
+import com.ailbb.ajj.server.$Server;
+import com.ailbb.ajj.server.Host;
 import com.ailbb.ajj.sys.$System;
 import com.ailbb.ajj.test.$Test;
 import com.ailbb.ajj.thread.$Thread;
@@ -46,6 +48,7 @@ public class $ {
 
     // http
     public static $Http http = new $Http();
+    public static $Server server = new $Server();
     public static $Url url = new $Url();
     public static $Velocity velocity = new $Velocity();
 
@@ -167,6 +170,10 @@ public class $ {
 
     private static $Result sendPost(Ajax ajax)  {
         return http.sendPost(ajax);
+    }
+
+    public Map<String, Host> getHosts() throws UnknownHostException {
+        return server.getHosts();
     }
 
     public static String getIp(String... name) throws UnknownHostException {
