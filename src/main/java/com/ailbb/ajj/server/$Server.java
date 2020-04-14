@@ -10,7 +10,19 @@ import java.util.Map;
  * Created by Wz on 4/4/2020.
  */
 public class $Server {
+    public Map<String,Host> getHostsIp(){
+        return getHosts("ip");
+    }
+
+    public Map<String,Host> getHostsByName(){
+        return getHosts("host");
+    }
+
     public Map<String,Host> getHosts(){
+        return getHosts("host");
+    }
+
+    public Map<String,Host> getHosts(String type){
         File fl = new File("/etc/hosts");
         File fw = new File("C:\\Windows\\System32\\drivers\\etc\\hosts");
 
@@ -18,6 +30,10 @@ public class $Server {
     }
 
     public Map<String,Host> getHosts(File f){
+        return getHosts(f, "host");
+    }
+
+    public Map<String,Host> getHosts(File f, String type){
         Map<String,Host> map = new HashMap<>();
 
         try {
@@ -33,7 +49,7 @@ public class $Server {
                     host.setHostName(tt[1]);
                     host.setSimpleName(tt.length == 3 ? tt[2] : tt[1]);
                     host.setIp(tt[0]);
-                    map.put(host.getSimpleName(), host);
+                    map.put(type.toLowerCase().equals("ip") ? host.getIp() : host.getSimpleName(), host);
                 }
             }
         } catch (FileNotFoundException e) {

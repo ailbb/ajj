@@ -172,8 +172,16 @@ public class $ {
         return http.sendPost(ajax);
     }
 
-    public Map<String, Host> getHosts() throws UnknownHostException {
+    public static Map<String, Host> getHosts() {
         return server.getHosts();
+    }
+
+    public static Map<String, Host> getHostsByName() {
+        return server.getHostsByName();
+    }
+
+    public static Map<String, Host> getHostsIp() {
+        return server.getHostsIp();
     }
 
     public static String getIp(String... name) throws UnknownHostException {
