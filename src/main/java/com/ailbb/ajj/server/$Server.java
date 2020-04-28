@@ -26,7 +26,7 @@ public class $Server {
         File fl = new File("/etc/hosts");
         File fw = new File("C:\\Windows\\System32\\drivers\\etc\\hosts");
 
-        return getHosts(fl.exists() ? fl : fw);
+        return getHosts(fl.exists() ? fl : fw, type);
     }
 
     public Map<String,Host> getHosts(File f){
