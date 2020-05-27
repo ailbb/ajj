@@ -284,7 +284,7 @@ public class $Http {
                 conn.setRequestProperty("Cookie", localCookie); // 设置发送的cookie
             } else {
                 rs.addMessage($.info("clear cookie"));
-                conn.setRequestProperty("Cookie", null); // 设置发送的cookie
+                conn.setRequestProperty("Cookie", ""); // 设置发送的cookie，置为null会某些情况引发400错误
             }
 
             if(!isEmptyOrNull(ajax.getProperty()))
