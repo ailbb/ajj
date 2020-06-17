@@ -13,9 +13,7 @@ public class $Double {
     }
 
     public double toDouble(Object o, int index){
-        double d = Double.parseDouble($.str(o));
-
-        BigDecimal b = new BigDecimal(d);
+        BigDecimal b = new BigDecimal(toDouble(o));
         return b.setScale(index, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 }
