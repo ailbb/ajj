@@ -1,5 +1,6 @@
 package com.ailbb.ajj;
 
+import com.ailbb.ajj.encrypt.EncryptUtil;
 import com.ailbb.ajj.jdbc.$JDBC;
 import com.ailbb.ajj.date.$Date;
 import com.ailbb.ajj.entity.$Progress;
@@ -85,6 +86,9 @@ public class $ {
     public static $List list = new $List();
     public static $Map map = new $Map();
     public static $Bean bean = new $Bean();
+
+    // 加密方法
+    public static EncryptUtil encrypt = new EncryptUtil();
 
     // system
     public static $System system = new $System();
