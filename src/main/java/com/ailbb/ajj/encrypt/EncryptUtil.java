@@ -23,8 +23,6 @@ public class EncryptUtil implements EncryptUtilApi {
     public static final String DES = "DES";
     public static final String AES = "AES";
     public static EncryptUtil me;
-//    public static ConcurrentHashMap<String, Cipher> encipherMap = new ConcurrentHashMap<>();
-//    public static ConcurrentHashMap<String, Cipher> decipherMap = new ConcurrentHashMap<>();
     /**
      * 编码格式；默认null为GBK
      */
@@ -40,6 +38,11 @@ public class EncryptUtil implements EncryptUtilApi {
 
     //大批量字符加解密时报 Cipher not initialized
     private static HashMap decryptCipherMap = new HashMap();//解决该问题：https://asuwing712.iteye.com/blog/1553344
+
+    private EncryptUtil() {
+        //单例
+    }
+    AESUtil au = new AESUtil();
 
     public static EncryptUtil getInstance() {
         if (me == null) {
@@ -185,15 +188,14 @@ public class EncryptUtil implements EncryptUtilApi {
     @Override
     public String AESencode(String res, String key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException {
         //return keyGeneratorES(res, AES, key, keysizeAES, true);
-        return AESUtil.getInstance(key).encrypt(res);
+        return au.getInstance(key).encrypt(res);
     }
 
     /**
      */
     @Override
     public String AESdecode(String res, String key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException {
-        //return keyGeneratorES(res, AES, key, keysizeAES, false);
-        return AESUtil.getInstance(key).decrypt(res);
+        return au.getInstance(key).decrypt(res);
     }
 
     /**
@@ -273,12 +275,12 @@ public class EncryptUtil implements EncryptUtilApi {
 
     @Override
     public String AESencode_ex(String res) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException {
-        return EncryptType.AES + "~" + AESUtil.getInstance("BROADTECH").encrypt(res);
+        return EncryptType.AES + "~" + au.getInstance("BROADTECH").encrypt(res);
     }
 
     @Override
     public String AESdecode_ex(String res) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException {
-        return AESUtil.getInstance("BROADTECH").decrypt(res.substring(EncryptType.AES.length() + 1));
+        return au.getInstance("BROADTECH").decrypt(res.substring(EncryptType.AES.length() + 1));
     }
 
     @Override

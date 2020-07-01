@@ -15,7 +15,7 @@ import java.security.SecureRandom;
  */
 public class AESUtil {
     public static final String AES = "AES";
-    public static AESUtil me;
+    public AESUtil me;
     /**编码格式；UTF-8*/
     public String charset = "UTF-8";
     /**AES*/
@@ -25,9 +25,7 @@ public class AESUtil {
     private Cipher decipher;
     private SecretKeySpec sks;
     private String key="AESKEY";
-    private AESUtil(){
-        //单例
-    }
+    public AESUtil(){}
 
     /**
      *
@@ -76,23 +74,20 @@ public class AESUtil {
             decipher = Cipher.getInstance(AES);
             encipher.init(Cipher.ENCRYPT_MODE, sks);
             decipher.init(Cipher.DECRYPT_MODE, sks);
-           // System.out.println("sks:" + sks);
+            // System.out.println("sks:" + sks);
 
 
         }
 
     }
 
-    public static AESUtil getInstance(String strKey) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, UnsupportedEncodingException {
-        if (me==null) {
-            me = new AESUtil();
-
-        }
+    public AESUtil getInstance(String strKey) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, UnsupportedEncodingException {
+        me = new AESUtil();
         me.Init(strKey);
         return me;
     }
 
-    /*
+    /**
      * 加密
      */
     public String encrypt(String strIn) throws BadPaddingException, IllegalBlockSizeException, UnsupportedEncodingException, InvalidKeyException {
