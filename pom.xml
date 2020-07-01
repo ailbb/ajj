@@ -127,7 +127,7 @@
         <version.velocity.tools>2.0</version.velocity.tools>
         <version.mail>1.6.0</version.mail>
 
-        <version.jdbc.mysql>5.1.38</version.jdbc.mysql>
+        <version.jdbc.mysql>8.0.16</version.jdbc.mysql>
 
         <version.fileupload>1.3.1</version.fileupload>
         <version.poi>3.16</version.poi>
