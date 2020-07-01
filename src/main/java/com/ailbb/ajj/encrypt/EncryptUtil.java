@@ -39,9 +39,8 @@ public class EncryptUtil implements EncryptUtilApi {
     //大批量字符加解密时报 Cipher not initialized
     private static HashMap decryptCipherMap = new HashMap();//解决该问题：https://asuwing712.iteye.com/blog/1553344
 
-    private EncryptUtil() {
-        //单例
-    }
+    private EncryptUtil() { }
+
     AESUtil au = new AESUtil();
 
     public static EncryptUtil getInstance() {
