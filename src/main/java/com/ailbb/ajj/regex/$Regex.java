@@ -86,4 +86,25 @@ public class $Regex {
         boolean b1 = str.matches("([1-9]|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])(\\.(\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])){3}");
         return b1;
     }
+
+    public String camel2under(String c)
+    {
+        String separator = "_";
+        c = c.replaceAll("([a-z])([A-Z])", "$1"+separator+"$2").toLowerCase();
+        return c;
+    }
+
+    public String under2camel(String s)
+    {
+        String separator = "_";
+        String under="";
+        s = s.toLowerCase().replace(separator, " ");
+        String sarr[]=s.split(" ");
+        for(int i=0;i<sarr.length;i++)
+        {
+            String w=sarr[i].substring(0,1).toUpperCase()+sarr[i].substring(1);
+            under +=w;
+        }
+        return under;
+    }
 }

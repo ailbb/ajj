@@ -521,4 +521,20 @@ public class $ {
     public static String simple(Object data) {
         return string.simple(data);
     }
+
+    public static String toCameUnder(String c){
+        return toCameUnder(c, true);
+    }
+
+    public static String toCameUnder(String c, boolean type){
+        return type ? regex.camel2under(c) : regex.under2camel(c);
+    }
+
+    public static String camel2under(String c){
+        return regex.camel2under(c);
+    }
+
+    public static String under2camel(String s){
+        return regex.under2camel(s);
+    }
 }
