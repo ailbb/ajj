@@ -475,7 +475,7 @@ public class EncryptUtil implements EncryptUtilApi {
     }
 
     /**
-     *  @Description:自动生成密钥
+     *  自动生成密钥
      */
     public byte[] generateKey()  {
         String key = UUID.randomUUID().toString().replaceAll("-", "");
