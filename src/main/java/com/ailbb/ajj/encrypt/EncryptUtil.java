@@ -3,7 +3,6 @@ package com.ailbb.ajj.encrypt;
 
 import com.ailbb.ajj.$;
 import com.ailbb.ajj.encrypt.util.AESUtil;
-import com.ailbb.ajj.encrypt.util.EncryptType;
 import com.ailbb.ajj.encrypt.util.Sm4Util;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
@@ -12,6 +11,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.security.*;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
@@ -25,26 +25,50 @@ public class EncryptUtil implements EncryptUtilApi {
     public static final String AES = "AES";
     public static final String SM4 = "SM4";
     public static final String staticKey = "AILBB";
-    public static EncryptUtil me;
+    public static Encryption me;
     /**
      * 编码格式；默认null为GBK
      */
     public String charset = "UTF-8";
 
+    private static Map<String, Encryption> cache = new HashMap<>();
+
     //大批量字符加解密时报 Cipher not initialized
     private static HashMap decryptCipherMap = new HashMap();//解决该问题：https://asuwing712.iteye.com/blog/1553344
 
-    private EncryptUtil() { }
+    public EncryptUtil() { }
 
-    AESUtil au = new AESUtil();
-
-    Sm4Util sm4 = new Sm4Util();
-
-    public static EncryptUtil getInstance() {
+    public static Encryption getInstance() {
         if (me == null) {
-            me = new EncryptUtil();
+            try {
+                me = new Sm4Util(Sm4Util.Sm4 + "~"+staticKey); // 默认返回Sm4
+            } catch (Exception e) { $.warn(e); }
         }
         return me;
+    }
+
+    public static Encryption getInstance(String strKey) throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException, UnsupportedEncodingException, NoSuchProviderException, InvalidAlgorithmParameterException {
+        if(null == cache.get(strKey)) {
+            Encryption me = new Sm4Util(strKey);
+            cache.put(strKey, me);
+        }
+
+        return cache.get(strKey);
+    }
+
+    public static Encryption getInstance(String type, String strKey) throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException, UnsupportedEncodingException, NoSuchProviderException, InvalidAlgorithmParameterException {
+        if(null == cache.get(strKey)) {
+            Encryption me = null;
+            if(null == type || type.equalsIgnoreCase(EncryptType.SM4)) {
+                me = new Sm4Util(strKey);
+            } else if(type.equalsIgnoreCase(EncryptType.AES)) {
+                me = new AESUtil(strKey);
+            }
+
+            cache.put(strKey, me);
+        }
+
+        return cache.get(strKey);
     }
 
     /*
@@ -166,29 +190,29 @@ public class EncryptUtil implements EncryptUtilApi {
     /**
      */
     @Override
-    public String AESencode(String res, String key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException {
-        return au.getInstance(key).encrypt(res);
+    public String AESencode(String res, String key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException {
+        return AESUtil.getInstance(key).encrypt(res);
     }
 
     /**
      */
     @Override
-    public String AESdecode(String res, String key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException {
-        return au.getInstance(key).decrypt(res);
+    public String AESdecode(String res, String key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException {
+        return AESUtil.getInstance(key).decrypt(res);
     }
 
     /**
      */
     @Override
     public String SM4encode(String res, String key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException {
-        return sm4.getInstance(key).encrypt(res);
+        return Sm4Util.getInstance(key).encrypt(res);
     }
 
     /**
      */
     @Override
     public String SM4decode(String res, String key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException {
-        return sm4.getInstance(key).decrypt(res);
+        return Sm4Util.getInstance(key).decrypt(res);
     }
 
     /**
@@ -267,13 +291,13 @@ public class EncryptUtil implements EncryptUtilApi {
     }
 
     @Override
-    public String AESencode_ex(String res) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException {
-        return EncryptType.AES + "~" + au.getInstance(staticKey).encrypt(res);
+    public String AESencode_ex(String res) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException {
+        return EncryptType.AES + "~" + AESUtil.getInstance(staticKey).encrypt(res);
     }
 
     @Override
-    public String AESdecode_ex(String res) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException {
-        return au.getInstance(staticKey).decrypt(res.substring(EncryptType.AES.length() + 1));
+    public String AESdecode_ex(String res) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException {
+        return AESUtil.getInstance(staticKey).decrypt(res.substring(EncryptType.AES.length() + 1));
     }
 
     @Override
@@ -323,7 +347,7 @@ public class EncryptUtil implements EncryptUtilApi {
     }
 
     @Override
-    public String AESencode(String res, String key, int pos) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException {
+    public String AESencode(String res, String key, int pos) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException {
         if (pos == 0) {
             return AESencode(res, key);
         }
@@ -336,7 +360,7 @@ public class EncryptUtil implements EncryptUtilApi {
     }
 
     @Override
-    public String AESdecode(String res, String key, int pos) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException {
+    public String AESdecode(String res, String key, int pos) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException {
         if (pos == 0) {
             return AESdecode(res, key);
         }

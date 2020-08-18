@@ -27,8 +27,8 @@ public interface EncryptUtilApi {
     String DESdecode(String res, String key) throws NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, UnsupportedEncodingException, InvalidKeyException;//解密：加密后的字符串和密码
 
     //------AES-------//
-    String AESencode(String res, String key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException;//加密：要加密的字符串和密码
-    String AESdecode(String res, String key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException;//解密：加密后的字符串和密码
+    String AESencode(String res, String key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException;//加密：要加密的字符串和密码
+    String AESdecode(String res, String key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException;//解密：加密后的字符串和密码
 
     //------SM4-------//
     String SM4encode(String res, String key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException;//加密：要加密的字符串和密码
@@ -51,8 +51,8 @@ public interface EncryptUtilApi {
 
     // 固定方式加解密
     String MD5_ex(String res) throws UnsupportedEncodingException, NoSuchAlgorithmException;
-    String AESencode_ex(String res) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException;//加密：要加密的字符串和密码
-    String AESdecode_ex(String res) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException;//解密：加密后的字符串和密码
+    String AESencode_ex(String res) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException;//加密：要加密的字符串和密码
+    String AESdecode_ex(String res) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException;//解密：加密后的字符串和密码
     // 带指定加密位置
     //------MD5-------//
     String MD5(String res, int pos) throws UnsupportedEncodingException, NoSuchAlgorithmException;//要加密的字符串
@@ -69,8 +69,8 @@ public interface EncryptUtilApi {
     String DESdecode(String res, String key, int pos) throws NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, UnsupportedEncodingException, InvalidKeyException;//解密：加密后的字符串和密码
 
     //------AES-------//
-    String AESencode(String res, String key, int pos) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException;//加密：要加密的字符串和密码
-    String AESdecode(String res, String key, int pos) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException;//解密：加密后的字符串和密码
+    String AESencode(String res, String key, int pos) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException;//加密：要加密的字符串和密码
+    String AESdecode(String res, String key, int pos) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException;//解密：加密后的字符串和密码
 
     //------SM4-------//
     String SM4encode(String res, String key, int pos) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException;//加密：要加密的字符串和密码

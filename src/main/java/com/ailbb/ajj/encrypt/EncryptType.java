@@ -1,4 +1,4 @@
-package com.ailbb.ajj.encrypt.util;
+package com.ailbb.ajj.encrypt;
 
 import java.util.ArrayList;
 

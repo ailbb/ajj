@@ -1,13 +1,12 @@
 package com.ailbb.ajj.encrypt.util;
 
 import com.ailbb.ajj.encrypt.EncryptUtil;
+import com.ailbb.ajj.encrypt.Encryption;
 
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
+import java.security.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,8 +14,9 @@ import java.util.Map;
  * AES对称加密
  *
  */
-public class AESUtil {
+public class AESUtil implements Encryption {
     public static final String AES = "AES";
+    public static final String ALGORIGTHM_NAME = "AES";
     /**编码格式；UTF-8*/
     public String charset = "UTF-8";
     /**AES*/
@@ -27,19 +27,11 @@ public class AESUtil {
     private SecretKeySpec sks;
     private String key="AESKEY";
 
-    private static Map<String,AESUtil> cache = new HashMap<>();
+    private static Map<String, AESUtil> cache = new HashMap<>();
 
-    public AESUtil(){}
+    private AESUtil() {}
 
-    /**
-     *
-     * @param strkey
-     * @throws NoSuchAlgorithmException
-     * @throws UnsupportedEncodingException
-     * @throws NoSuchPaddingException
-     * @throws InvalidKeyException
-     */
-    private void Init(String strkey) throws NoSuchAlgorithmException, UnsupportedEncodingException, NoSuchPaddingException, InvalidKeyException {
+    public AESUtil(String strkey) throws NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, UnsupportedEncodingException, NoSuchProviderException, InvalidKeyException {
         if(strkey==null || strkey.length()==0)
         {
             key="AESKEY";
@@ -73,10 +65,9 @@ public class AESUtil {
 
     }
 
-    public AESUtil getInstance(String strKey) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, UnsupportedEncodingException {
+    public static AESUtil getInstance(String strKey) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, UnsupportedEncodingException, NoSuchProviderException, InvalidAlgorithmParameterException {
         if(null == cache.get(strKey)) {
-            AESUtil me = new AESUtil();
-            me.Init(strKey);
+            AESUtil me = new AESUtil(strKey);
             cache.put(strKey, me);
         }
         return cache.get(strKey);

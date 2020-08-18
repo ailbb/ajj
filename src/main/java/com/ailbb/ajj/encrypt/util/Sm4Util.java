@@ -1,6 +1,8 @@
 package com.ailbb.ajj.encrypt.util;
 
 import com.ailbb.ajj.$;
+import com.ailbb.ajj.encrypt.EncryptUtil;
+import com.ailbb.ajj.encrypt.Encryption;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 
@@ -17,8 +19,9 @@ import java.util.Map;
  * SM4对称加密
  *
  */
-public class Sm4Util {
-    public final String ALGORIGTHM_NAME = "SM4";
+public class Sm4Util implements Encryption {
+    public static final String Sm4 = "SM4";
+    public static final String ALGORIGTHM_NAME = "SM4";
     /**
      * 编码格式；UTF-8
      */
@@ -36,29 +39,15 @@ public class Sm4Util {
     public static final String ALGORITHM_NAME_ECB_PADDING = "SM4/ECB/PKCS7Padding";
     public static final String ALGORITHM_NAME_CBC_PADDING = "SM4/CBC/PKCS7Padding";
 
-    private static Map<String,Sm4Util> cache = new HashMap<>();
+    private static Map<String, Sm4Util> cache = new HashMap<>();
 
-    public Sm4Util() {}
+    private Sm4Util() {}
 
-    /**
-     * @param strkey
-     * @throws NoSuchAlgorithmException
-     * @throws UnsupportedEncodingException
-     * @throws NoSuchPaddingException
-     * @throws InvalidKeyException
-     */
-    private void Init(String strkey) throws NoSuchAlgorithmException, UnsupportedEncodingException, NoSuchPaddingException, InvalidKeyException, NoSuchProviderException, InvalidAlgorithmParameterException {
-        Init(strkey, ALGORITHM_NAME_CBC_PADDING);
+    public Sm4Util(String strkey) throws NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, UnsupportedEncodingException, NoSuchProviderException, InvalidKeyException {
+        this(strkey, ALGORITHM_NAME_CBC_PADDING);
     }
 
-      /**
-     * @param strkey
-     * @throws NoSuchAlgorithmException
-     * @throws UnsupportedEncodingException
-     * @throws NoSuchPaddingException
-     * @throws InvalidKeyException
-     */
-    private void Init(String strkey, String ALGORITHM_NAME_PADDING) throws NoSuchAlgorithmException, UnsupportedEncodingException, NoSuchPaddingException, InvalidKeyException, NoSuchProviderException, InvalidAlgorithmParameterException {
+    public Sm4Util(String strkey, String ALGORITHM_NAME_PADDING) throws NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, UnsupportedEncodingException, NoSuchProviderException, InvalidKeyException {
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 
         if (strkey == null || strkey.length() == 0) {
@@ -99,16 +88,16 @@ public class Sm4Util {
 
     }
 
-    public Sm4Util getInstance(String strKey) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, UnsupportedEncodingException, NoSuchProviderException, InvalidAlgorithmParameterException {
+    public static Sm4Util getInstance(String strKey) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, UnsupportedEncodingException, NoSuchProviderException, InvalidAlgorithmParameterException {
         return getInstance(strKey, ALGORITHM_NAME_CBC_PADDING);
     }
 
-    public Sm4Util getInstance(String strKey, String ALGORITHM_NAME_PADDING) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, UnsupportedEncodingException, NoSuchProviderException, InvalidAlgorithmParameterException {
+    public static Sm4Util getInstance(String strKey, String ALGORITHM_NAME_PADDING) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, UnsupportedEncodingException, NoSuchProviderException, InvalidAlgorithmParameterException {
         if(null == cache.get(strKey)) {
-            Sm4Util me = new Sm4Util();
-            me.Init(strKey, ALGORITHM_NAME_PADDING);
+            Sm4Util me = new Sm4Util(strKey, ALGORITHM_NAME_PADDING);
             cache.put(strKey, me);
         }
+
         return cache.get(strKey);
     }
 

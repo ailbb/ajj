@@ -89,7 +89,7 @@ public class $ {
     public static $Bean bean = new $Bean();
 
     // 加密方法
-    public static EncryptUtil encrypt = EncryptUtil.getInstance();
+    public static EncryptUtil encrypt = new EncryptUtil();
 
     // system
     public static $System system = new $System();
