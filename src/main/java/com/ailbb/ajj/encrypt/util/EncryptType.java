@@ -28,9 +28,11 @@ public class EncryptType {
     public static final  String AES="AES";//AESencode(String res,String key)
     public static final  String XOR="XOR";//XORencode(String res,String key)
     public static final  String BASE64="BASE64";//Base64Encode(String res);
+    public static final  String SM4="SM4";//SM4encode(String res,String key,int pos)
     public static final  String AES_EX="AES_EX";//AESencode_ex(String res)
     public static final  String DES_POS="DES_POS";//DESencode(String res,String key,int pos)
     public static final  String AES_POS="AES_POS";//AESencode(String res,String key,int pos)
+    public static final  String SM4_CBC="SM4_CBC";//SM4encode(String res,String key,int pos)
 
 
     //获取没有有解码方法的加密类型
@@ -57,6 +59,7 @@ public class EncryptType {
         arr.add(AES_EX);
         arr.add(DES_POS);
         arr.add(AES_POS);
+        arr.add(SM4_CBC);
         return arr;
     }
 }

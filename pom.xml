@@ -137,6 +137,7 @@
         <version.selenium.firefox>3.141.0</version.selenium.firefox>
         <version.jdom2>2.0.6</version.jdom2>
         <version.httpclient>4.5.10</version.httpclient>
+        <version.bcprov-jdk15on>1.66</version.bcprov-jdk15on>
     </properties>
 
     <dependencies>
@@ -245,6 +246,13 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>${version.httpclient}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15on -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>${version.bcprov-jdk15on}</version>
         </dependency>
 
     </dependencies>

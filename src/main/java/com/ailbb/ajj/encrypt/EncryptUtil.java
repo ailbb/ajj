@@ -1,16 +1,15 @@
 package com.ailbb.ajj.encrypt;
 
 
+import com.ailbb.ajj.$;
 import com.ailbb.ajj.encrypt.util.AESUtil;
 import com.ailbb.ajj.encrypt.util.EncryptType;
+import com.ailbb.ajj.encrypt.util.Sm4Util;
 
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
-import java.security.InvalidKeyException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
+import java.security.*;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -22,6 +21,7 @@ public class EncryptUtil implements EncryptUtilApi {
     public static final String HmacSHA1 = "HmacSHA1";
     public static final String DES = "DES";
     public static final String AES = "AES";
+    public static final String SM4 = "SM4";
     public static EncryptUtil me;
     /**
      * 编码格式；默认null为GBK
@@ -35,6 +35,10 @@ public class EncryptUtil implements EncryptUtilApi {
      * AES
      */
     public int keysizeAES = 128;
+    /**
+     * SM4
+     */
+    public int keysizeSM4 = 128;
 
     //大批量字符加解密时报 Cipher not initialized
     private static HashMap decryptCipherMap = new HashMap();//解决该问题：https://asuwing712.iteye.com/blog/1553344
@@ -42,6 +46,8 @@ public class EncryptUtil implements EncryptUtilApi {
     private EncryptUtil() { }
 
     AESUtil au = new AESUtil();
+
+    Sm4Util sm4 = new Sm4Util();
 
     public static EncryptUtil getInstance() {
         if (me == null) {
@@ -54,30 +60,14 @@ public class EncryptUtil implements EncryptUtilApi {
      * 将二进制转换成16进制
      */
     public static String parseByte2HexStr(byte buf[]) {
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < buf.length; i++) {
-            String hex = Integer.toHexString(buf[i] & 0xFF);
-            if (hex.length() == 1) {
-                hex = '0' + hex;
-            }
-            sb.append(hex.toUpperCase());
-        }
-        return sb.toString();
+        return $.byter.parseByte2HexStr(buf);
     }
 
     /*
      * 将16进制转换为二进制
      */
     public static byte[] parseHexStr2Byte(String hexStr) {
-        if (hexStr.length() < 1)
-            return null;
-        byte[] result = new byte[hexStr.length() / 2];
-        for (int i = 0; i < hexStr.length() / 2; i++) {
-            int high = Integer.parseInt(hexStr.substring(i * 2, i * 2 + 1), 16);
-            int low = Integer.parseInt(hexStr.substring(i * 2 + 1, i * 2 + 2), 16);
-            result[i] = (byte) (high * 16 + low);
-        }
-        return result;
+        return $.byter.parseHexStr2Byte(hexStr);
     }
 
     /**
@@ -111,7 +101,7 @@ public class EncryptUtil implements EncryptUtilApi {
     }
 
     /**
-     * 使用KeyGenerator双向加密，DES/AES，注意这里转化为字符串的时候是将2进制转为16进制格式的字符串，不是直接转，因为会出错
+     * 使用KeyGenerator双向加密，DES/AES/SM4，注意这里转化为字符串的时候是将2进制转为16进制格式的字符串，不是直接转，因为会出错
      */
     private String keyGeneratorES(String res, String algorithm, String key, int keysize, boolean isEncode) throws NoSuchAlgorithmException, UnsupportedEncodingException, NoSuchPaddingException, BadPaddingException, IllegalBlockSizeException, InvalidKeyException {
         KeyGenerator kg = KeyGenerator.getInstance(algorithm);
@@ -186,7 +176,6 @@ public class EncryptUtil implements EncryptUtilApi {
      */
     @Override
     public String AESencode(String res, String key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException {
-        //return keyGeneratorES(res, AES, key, keysizeAES, true);
         return au.getInstance(key).encrypt(res);
     }
 
@@ -195,6 +184,20 @@ public class EncryptUtil implements EncryptUtilApi {
     @Override
     public String AESdecode(String res, String key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException {
         return au.getInstance(key).decrypt(res);
+    }
+
+    /**
+     */
+    @Override
+    public String SM4encode(String res, String key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException {
+        return sm4.getInstance(key).encrypt(res);
+    }
+
+    /**
+     */
+    @Override
+    public String SM4decode(String res, String key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException {
+        return sm4.getInstance(key).decrypt(res);
     }
 
     /**
@@ -355,7 +358,33 @@ public class EncryptUtil implements EncryptUtilApi {
     }
 
     @Override
-    public String crypeEncode(String type, String res, String key, int pos) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException {
+    public String SM4encode(String res, String key, int pos) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException {
+        if (pos == 0) {
+            return SM4encode(res, key);
+        }
+        if (pos < res.length()) {
+            String subend = res.substring(pos);
+            String subbeg = res.substring(0, pos);
+            return subbeg + SM4encode(subend, key);
+        }
+        return res;
+    }
+
+    @Override
+    public String SM4decode(String res, String key, int pos) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException {
+        if (pos == 0) {
+            return SM4decode(res, key);
+        }
+        if (pos < res.length()) {
+            String subend = res.substring(pos);
+            String subbeg = res.substring(0, pos);
+            return subbeg + SM4decode(subend, key);
+        }
+        return res;
+    }
+
+    @Override
+    public String crypeEncode(String type, String res, String key, int pos) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException {
         if (type == null || type.length() == 0) {
             return res;
         }
@@ -363,6 +392,8 @@ public class EncryptUtil implements EncryptUtilApi {
             return DESencode(res, key);
         } else if (EncryptType.AES.compareToIgnoreCase(type) == 0 && key != null && key.length() > 0) {
             return AESencode(res, key);
+        } else if (EncryptType.SM4.compareToIgnoreCase(type) == 0 && key != null && key.length() > 0) {
+            return SM4encode(res, key, pos);
         } else if (EncryptType.XOR.compareToIgnoreCase(type) == 0 && key != null && key.length() > 0) {
             return XORencode(res, key);
         } else if (EncryptType.BASE64.compareToIgnoreCase(type) == 0) {
@@ -395,7 +426,7 @@ public class EncryptUtil implements EncryptUtilApi {
     }
 
     @Override
-    public String crypeDecode(String type, String res, String key, int pos) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException {
+    public String crypeDecode(String type, String res, String key, int pos) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException {
         if (type == null || type.length() == 0) {
             return res;
         }
@@ -403,6 +434,8 @@ public class EncryptUtil implements EncryptUtilApi {
             return DESdecode(res, key);
         } else if (EncryptType.AES.compareToIgnoreCase(type) == 0 && key != null && key.length() > 0) {
             return AESdecode(res, key);
+        } else if (EncryptType.SM4.compareToIgnoreCase(type) == 0 && key != null && key.length() > 0) {
+            return SM4decode(res, key);
         } else if (EncryptType.XOR.compareToIgnoreCase(type) == 0 && key != null && key.length() > 0) {
             return XORdecode(res, key);
         } else if (EncryptType.BASE64.compareToIgnoreCase(type) == 0) {

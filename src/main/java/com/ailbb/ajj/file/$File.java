@@ -308,7 +308,7 @@ public class $File {
 
         ///处理中文乱码问题
         try {
-            if(!$.isEmptyOrNull(response)) response.setContentType("text/html;charset=utf-8");
+            if(!$.isEmptyOrNull(response)) response.setContentType("text/html;ENCODING=utf-8");
             request.setCharacterEncoding("utf-8");
         } catch (UnsupportedEncodingException e) {
             rs.addError(exception(e));

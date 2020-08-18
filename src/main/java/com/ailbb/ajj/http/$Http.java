@@ -114,7 +114,7 @@ public class $Http {
     public $Result send(HttpServletResponse response, Object data)  {
         $Result rs = $.result();
 
-        response.setHeader("Content-type", String.format("text/%s;charset=UTF-8", $.isBaseType($.json.tryToJsonObject(data)) ? "html" : "json"));
+        response.setHeader("Content-type", String.format("text/%s;ENCODING=UTF-8", $.isBaseType($.json.tryToJsonObject(data)) ? "html" : "json"));
         response.setCharacterEncoding("UTF-8");
 
         PrintWriter out = null;
@@ -277,7 +277,7 @@ public class $Http {
 
             conn.setRequestProperty("Accept", "*/*");
             conn.setRequestProperty("Connection", "Keep-Alive");
-            conn.setRequestProperty("Content-Type", ajax.getType().equalsIgnoreCase($POST) && !isJSON(ajax.getData()) ? "application/x-www-form-urlencoded; charset=UTF-8" : "application/json; charset=UTF-8" );
+            conn.setRequestProperty("Content-Type", ajax.getType().equalsIgnoreCase($POST) && !isJSON(ajax.getData()) ? "application/x-www-form-urlencoded; ENCODING=UTF-8" : "application/json; ENCODING=UTF-8" );
 
             if(!isClearSession && !$.isEmptyOrNull(localCookie)) {
                 rs.addMessage($.info("set-cookie：" + localCookie));

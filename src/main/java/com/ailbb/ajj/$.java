@@ -83,6 +83,7 @@ public class $ {
     public static $Longer longer = new $Longer();
     public static $Double doubled = new $Double();
     public static $Object object = new $Object();
+    public static $Byte byter = new $Byte();
     public static $List list = new $List();
     public static $Map map = new $Map();
     public static $Bean bean = new $Bean();

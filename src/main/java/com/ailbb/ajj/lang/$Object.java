@@ -8,7 +8,6 @@ import static com.ailbb.ajj.$.isEmptyOrNull;
  * Created by Wz on 6/20/2018.
  */
 public class $Object {
-
     public boolean isBaseType(Object... o){
         if(isEmptyOrNull(o)) return true;
 
@@ -53,4 +52,6 @@ public class $Object {
 
         return String.valueOf(o);
     }
+
+
 }
