@@ -1,8 +1,6 @@
 package com.ailbb.ajj.encrypt.util;
 
 import com.ailbb.ajj.$;
-import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
-import com.sun.org.apache.xml.internal.security.utils.Base64;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 
@@ -14,10 +12,6 @@ import java.security.*;
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * SM4对称加密
@@ -73,7 +67,7 @@ public class Sm4Util {
         }
         if (sks == null || this.key.compareTo(strkey) != 0) {
             this.key = strkey;
-            KeyGenerator kg = KeyGenerator.getInstance(ALGORIGTHM_NAME);
+            KeyGenerator kg = KeyGenerator.getInstance(ALGORIGTHM_NAME, BouncyCastleProvider.PROVIDER_NAME);
             if($.isEmptyOrNull(ALGORITHM_NAME_PADDING)) ALGORITHM_NAME_PADDING = ALGORITHM_NAME_CBC_PADDING;
             if (keysizeSM4 == 0) {
                 byte[] keyBytes = ENCODING == null ? key.getBytes() : key.getBytes(ENCODING);
@@ -132,23 +126,4 @@ public class Sm4Util {
     public synchronized String decrypt(String strIn) throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException, UnsupportedEncodingException {
         return new String(decipher.doFinal(ByteUtils.fromHexString(strIn)));
     }
-
-    /**
-     *  @Description:自动生成密钥
-     */
-    public byte[] generateKey()  {
-        return generateKey(keysizeSM4);
-    }
-
-    public byte[] generateKey(int keySize) {
-        try {
-            KeyGenerator kg = KeyGenerator.getInstance(ALGORIGTHM_NAME, BouncyCastleProvider.PROVIDER_NAME);
-            kg.init(keySize, new SecureRandom());
-            return kg.generateKey().getEncoded();
-        } catch (Exception e) {
-            $.warn(e);
-            return null;
-        }
-    }
-
 }

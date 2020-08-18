@@ -82,8 +82,8 @@ public interface EncryptUtilApi {
     String crypeDecode(String type, String res, String key, int pos) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException;//解密：加密后的字符串和密码
 
     //加密
-    String crypeEncode(String type, String res) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException;//解密：加密后的字符串和密码
+    String crypeEncode(String type, String res) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException;//解密：加密后的字符串和密码
     //解密
-    String crypeDecode(String type, String res) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException;//解密：加密后的字符串和密码
+    String crypeDecode(String type, String res) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException;//解密：加密后的字符串和密码
 
 }

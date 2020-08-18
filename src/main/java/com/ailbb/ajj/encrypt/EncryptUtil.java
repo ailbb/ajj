@@ -5,6 +5,7 @@ import com.ailbb.ajj.$;
 import com.ailbb.ajj.encrypt.util.AESUtil;
 import com.ailbb.ajj.encrypt.util.EncryptType;
 import com.ailbb.ajj.encrypt.util.Sm4Util;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
@@ -12,6 +13,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.*;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.UUID;
 
 public class EncryptUtil implements EncryptUtilApi {
 
@@ -22,23 +24,12 @@ public class EncryptUtil implements EncryptUtilApi {
     public static final String DES = "DES";
     public static final String AES = "AES";
     public static final String SM4 = "SM4";
+    public static final String staticKey = "AILBB";
     public static EncryptUtil me;
     /**
      * 编码格式；默认null为GBK
      */
     public String charset = "UTF-8";
-    /**
-     * DES
-     */
-    public int keysizeDES = 0;
-    /**
-     * AES
-     */
-    public int keysizeAES = 128;
-    /**
-     * SM4
-     */
-    public int keysizeSM4 = 128;
 
     //大批量字符加解密时报 Cipher not initialized
     private static HashMap decryptCipherMap = new HashMap();//解决该问题：https://asuwing712.iteye.com/blog/1553344
@@ -162,14 +153,14 @@ public class EncryptUtil implements EncryptUtilApi {
      */
     @Override
     public String DESencode(String res, String key) throws NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, UnsupportedEncodingException, InvalidKeyException {
-        return keyGeneratorES(res, DES, key, keysizeDES, true);
+        return keyGeneratorES(res, DES, key, 0, true);
     }
 
     /**
      */
     @Override
     public String DESdecode(String res, String key) throws NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, UnsupportedEncodingException, InvalidKeyException {
-        return keyGeneratorES(res, DES, key, keysizeDES, false);
+        return keyGeneratorES(res, DES, key, 128, false);
     }
 
     /**
@@ -277,12 +268,12 @@ public class EncryptUtil implements EncryptUtilApi {
 
     @Override
     public String AESencode_ex(String res) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException {
-        return EncryptType.AES + "~" + au.getInstance("BROADTECH").encrypt(res);
+        return EncryptType.AES + "~" + au.getInstance(staticKey).encrypt(res);
     }
 
     @Override
     public String AESdecode_ex(String res) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException {
-        return au.getInstance("BROADTECH").decrypt(res.substring(EncryptType.AES.length() + 1));
+        return au.getInstance(staticKey).decrypt(res.substring(EncryptType.AES.length() + 1));
     }
 
     @Override
@@ -452,12 +443,14 @@ public class EncryptUtil implements EncryptUtilApi {
 
 
     @Override
-    public String crypeEncode(String type, String res) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException {
+    public String crypeEncode(String type, String res) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException {
         if (type == null || type.length() == 0 || res == null || res.length() == 0) {
             return res;
         }
         if (EncryptType.AES.compareToIgnoreCase(type) == 0) {
             return AESencode_ex(res);
+        } if (EncryptType.SM4.compareToIgnoreCase(type) == 0) {
+            return SM4encode(res, EncryptUtil.SM4 + "~" + staticKey);
         } else if (EncryptType.MD5.compareToIgnoreCase(type) == 0) {
             return MD5_ex(res);
         }
@@ -466,7 +459,7 @@ public class EncryptUtil implements EncryptUtilApi {
     }
 
     @Override
-    public String crypeDecode(String type, String res) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException {
+    public String crypeDecode(String type, String res) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException {
         if (type == null || type.length() == 0 || res == null || res.length() == 0) {
             return res;
         }
@@ -474,7 +467,31 @@ public class EncryptUtil implements EncryptUtilApi {
             if (res.startsWith(EncryptUtil.AES + "~")) {
                 return AESdecode_ex(res);
             }
+            if (res.startsWith(EncryptUtil.SM4 + "~")) {
+                return SM4decode(res, EncryptUtil.SM4 + "~" + staticKey);
+            }
         }
         return res;
     }
+
+    /**
+     *  @Description:自动生成密钥
+     */
+    public byte[] generateKey()  {
+        String key = UUID.randomUUID().toString().replaceAll("-", "");
+        return key.getBytes();
+    }
+
+    public byte[] generateKey(int keySize, String type) {
+        try {
+            Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+            KeyGenerator kg = KeyGenerator.getInstance(type, BouncyCastleProvider.PROVIDER_NAME);
+            kg.init(keySize, new SecureRandom());
+            return kg.generateKey().getEncoded();
+        } catch (Exception e) {
+            $.warn(e);
+            return generateKey();
+        }
+    }
+
 }
