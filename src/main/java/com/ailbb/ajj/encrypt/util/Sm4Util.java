@@ -12,14 +12,13 @@ import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.security.*;
 import java.security.spec.AlgorithmParameterSpec;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * SM4对称加密
  *
  */
-public class Sm4Util implements Encryption {
+public class Sm4Util extends Encryption {
     public static final String Sm4 = "SM4";
     public static final String ALGORIGTHM_NAME = "SM4";
     /**
@@ -115,4 +114,5 @@ public class Sm4Util implements Encryption {
     public synchronized String decrypt(String strIn) throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException, UnsupportedEncodingException {
         return new String(decipher.doFinal(ByteUtils.fromHexString(strIn)));
     }
+
 }

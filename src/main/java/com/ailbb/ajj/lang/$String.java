@@ -16,7 +16,6 @@ import java.util.regex.Pattern;
  * Created by Wz on 6/20/2018.
  */
 public class $String {
-
     public String join(Collection list, Object... u){
         if(null == list) return null;
 

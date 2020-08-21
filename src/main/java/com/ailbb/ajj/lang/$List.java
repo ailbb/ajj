@@ -57,6 +57,26 @@ public class $List {
         return lists.toArray();
     }
 
+    public <T> long listSUM(Collection<T> lists){
+        long sum = 0;
+        for(T t : lists) {
+            try {
+                sum += longer.toLong(t);
+            } catch (Exception e){}
+        }
+        return sum;
+    }
+
+    public <T> double listAVG(Collection<T> lists){
+        double avg = 0;
+        for(T t : lists) {
+            try {
+                avg += doubled.toDouble(t);
+            } catch (Exception e){}
+        }
+        return avg / lists.size();
+    }
+
     public <T> T[] listToArray(Collection<T> lists, T[] types){
         return lists.toArray(types);
     }

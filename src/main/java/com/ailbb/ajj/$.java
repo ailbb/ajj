@@ -424,6 +424,10 @@ public class $ {
         return string.join(list, u);
     }
 
+    public static String join(Object[] list, Object... u){
+        return string.join(list, u);
+    }
+
     public static String first(String... strs) {
         return string.first(strs);
     }

@@ -10,10 +10,7 @@ import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.security.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 public class EncryptUtil implements EncryptUtilApi {
 
@@ -25,7 +22,11 @@ public class EncryptUtil implements EncryptUtilApi {
     public static final String AES = "AES";
     public static final String SM4 = "SM4";
     public static final String staticKey = "AILBB";
+    public static String nomalPrefix = "#"; // 普通位数前缀
+    public static String encryptionPrefix = "*"; // 加密位数前缀
     public static Encryption me;
+    public static Map<String,EncryptionRule> encodeRuleCache = new HashMap<>(); // 保存缓存的加密规则信息
+    public static Map<String,EncryptionRule> decodeRuleCache = new HashMap<>(); // 保存缓存的解密规则信息
     /**
      * 编码格式；默认null为GBK
      */
@@ -518,4 +519,45 @@ public class EncryptUtil implements EncryptUtilApi {
         }
     }
 
+    public static List<String> ruleToList(String rule) {
+        return $.regex.regex("([^(\\[)|(\\])]+\\[[^(\\[)|(\\])]+\\])|(^\\*$)|(^\\#$)", rule); // 规则前缀集合
+    }
+
+    public static int getRuleSumLength(String rule) {
+        return (int)$.list.listSUM($.regex.regex("\\d+", rule)); // 从加密规则中提取加密长度
+    }
+
+    public static EncryptionRule getRuleByEncode(String rule) {
+        String eky = rule;
+        EncryptionRule er = encodeRuleCache.get(eky); // 加密规则，有缓存优先用缓存
+
+        if(null == er) {
+            er = new EncryptionRule(rule);
+            encodeRuleCache.put(eky, er);
+            decodeRuleCache.put(eky, er);
+        }
+
+        return er;
+    }
+
+    public static EncryptionRule getRuleByDecode(String rule) {
+        return decodeRuleCache.get(rule);
+    }
+
+    public static EncryptionRule getRuleByEncode(String rule, int length) {
+        String eky = rule+length;
+        EncryptionRule er = encodeRuleCache.get(eky); // 加密规则，有缓存优先用缓存
+
+        if(null == er) {
+            er = new EncryptionRule(rule, length);
+            encodeRuleCache.put(eky, er);
+            decodeRuleCache.put(rule + er.getDecodeRuleSumLength(), er);
+        }
+
+        return er;
+    }
+
+    public static EncryptionRule getRuleByDecode(String rule, int length) {
+        return decodeRuleCache.get(rule+length);
+    }
 }

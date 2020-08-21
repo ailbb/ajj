@@ -8,13 +8,14 @@ import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.security.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * AES对称加密
  *
  */
-public class AESUtil implements Encryption {
+public class AESUtil extends Encryption {
     public static final String AES = "AES";
     public static final String ALGORIGTHM_NAME = "AES";
     /**编码格式；UTF-8*/
@@ -87,4 +88,5 @@ public class AESUtil implements Encryption {
     public synchronized String decrypt( String strIn) throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException, UnsupportedEncodingException {
         return new String(decipher.doFinal(EncryptUtil.parseHexStr2Byte(strIn)));
     }
+
 }

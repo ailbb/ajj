@@ -21,11 +21,24 @@ public class $Regex {
             // 现在创建 matcher 对象
             Matcher m = r.matcher(s);
 
-            if (m.find( ))
+            while (m.find( ))
                 list.add(m.group());
         }
 
         return list;
+    }
+
+    public String regexFirst(String pattern, String... str) {
+        for(String s: str) {
+            Pattern r = Pattern.compile(pattern);
+
+            // 现在创建 matcher 对象
+            Matcher m = r.matcher(s);
+
+            while (m.find( )) return m.group();
+        }
+
+        return null;
     }
 
     public boolean test(String pattern, String... str) {
