@@ -524,7 +524,10 @@ public class EncryptUtil implements EncryptUtilApi {
     }
 
     public static int getRuleSumLength(String rule) {
-        return (int)$.list.listSUM($.regex.regex("\\d+", rule)); // 从加密规则中提取加密长度
+        int sumLength = 0;
+        List<String> list = $.regex.regex("\\[\\d+\\]", rule); // 匹配括号内的字符
+        for(String l : list) sumLength += $.integer.toInt(l.replaceAll("\\[|\\]", ""));
+        return sumLength; // 从加密规则中提取加密长度
     }
 
     public static EncryptionRule getRuleByEncode(String rule) {
@@ -541,7 +544,7 @@ public class EncryptUtil implements EncryptUtilApi {
     }
 
     public static EncryptionRule getRuleByDecode(String rule) {
-        return decodeRuleCache.get(rule);
+        return getRuleByEncode(rule);
     }
 
     public static EncryptionRule getRuleByEncode(String rule, int length) {
@@ -558,6 +561,14 @@ public class EncryptUtil implements EncryptUtilApi {
     }
 
     public static EncryptionRule getRuleByDecode(String rule, int length) {
-        return decodeRuleCache.get(rule+length);
+        EncryptionRule er = decodeRuleCache.get(rule+length);
+
+        if(null == er) {
+            er = new EncryptionRule(rule);
+            er.ruleTest(length, length < er.getDecodeRuleSumLength());
+            decodeRuleCache.put(rule + length, er);
+        }
+
+        return er;
     }
 }

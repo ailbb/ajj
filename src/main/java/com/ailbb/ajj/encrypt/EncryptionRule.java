@@ -39,14 +39,16 @@ public class EncryptionRule {
     public EncryptionRule(String rule, int length) {
         int blurLength = length > 0 ? (length- EncryptUtil.getRuleSumLength(rule)) : 0; // 数据与规则预计的长度差，即需要模糊匹配的长度
 
-        if(ruleTest(length, blurLength < 0)) return;  // 数据长度不满足规则长度（当数据长度为0时，做新建处理）
+        if(!ruleTest(length, blurLength < 0, $.regex("%", rule).size() > 1)) return;  // 数据长度不满足规则长度（当数据长度为0时，做新建处理）
+
+        if(!$.test("%", rule)) rule += "#[%]"; // 如果没有，则默认加一个
 
         this.dateLength = length;
         this.rule = rule; // 规则字符串
         this.rules = EncryptUtil.ruleToList(rule); // 所有规则集
         int ruleSize = rules.size(); // 规则数量
 
-        if(ruleTest(length, ruleSize == 0)) return; // 规则不符合要求
+        if(!ruleTest(length, ruleSize == 0)) return; // 规则不符合要求
 
         this.prefixs = new String[ruleSize]; // 前缀集合
         this.encodeSubNums = new int[ruleSize][2]; // 截取的加密数字集合
@@ -56,9 +58,9 @@ public class EncryptionRule {
         for(int i=0,n=0,d=0; i<ruleSize; i++) {
             String r = rules.get(i); // 获取规则信息
             String prefix = $.regex.regexFirst("(\\#)|(\\*)", r); // 规则前缀
-            String num = $.regex.regexFirst("\\d+", r); // 截取数字
+            String num = $.regex.regexFirst("\\[\\d+\\]", r); // 截取数字
             String all = $.regex.regexFirst("\\%|(^\\*$)|(^\\#$)", r); // 模糊匹配字符
-            int encodeSubNum = !$.isEmptyOrNull(all) && ((this.blurIndex = i) >= 0) ? blurLength : $.integer.toInt(num); // 截取的字符截止位
+            int encodeSubNum = !$.isEmptyOrNull(all) && ((this.blurIndex = i) >= 0) ? blurLength : $.integer.toInt(num.replaceAll("\\[|\\]", "")); // 截取的字符截止位
             int decodeSubNum = (prefix.equals(EncryptUtil.encryptionPrefix) ? Math.round(blurLength/16+1)*32 : encodeSubNum); // 截取的字符截止位
 
             this.encodeRuleSumLength += encodeSubNum; // 加密规则字段累加和
@@ -169,11 +171,11 @@ public class EncryptionRule {
      * @return
      */
     public boolean ruleTest(int length, boolean... flags){
-        boolean error = false; // 初始值是正确的
+        boolean success = true; // 初始值是正确的
 
         for(boolean b : flags)
             if(b) { // 某个规则校验不通过
-                error = true; // 初始值设置为false，设置错误的处理方法
+                success = false; // 初始值设置为false，设置错误的处理方法
 
                 this.encodeRuleSumLength = length;
                 this.decodeRuleSumLength = length;
@@ -181,7 +183,7 @@ public class EncryptionRule {
                 this.bad = true;
             }
 
-        return error;
+        return success;
     }
 
     /**
