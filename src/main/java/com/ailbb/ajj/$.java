@@ -274,6 +274,10 @@ public class $ {
         return file.readFile(path);
     }
 
+    public static String readFileToText(String path)  {
+        return file.readFileToText(path);
+    }
+
     public static $Result writeFile(String path, Object... object)  {
         return file.writeFile(path, object);
     }

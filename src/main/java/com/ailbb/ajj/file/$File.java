@@ -14,7 +14,6 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
-import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -66,11 +65,24 @@ public class $File {
         return readFile(path, charset.UTF8);
     }
 
+    public String readFileToText(String path)  {
+        return readFileToText(path, charset.UTF8);
+    }
+
     public $Result readFile(String path, String charset)  {
         try {
             return read(getInputStream(path), charset);
         } catch (IOException e) {
             return $.result().addError($.exception(e));
+        }
+    }
+
+    public String readFileToText(String path, String charset)  {
+        try {
+            return read(getInputStream(path), charset).getDataToString();
+        } catch (IOException e) {
+            $.warn(e);
+            return "";
         }
     }
 
@@ -129,6 +141,61 @@ public class $File {
         return rs;
     }
 
+    public String readLine(File f) {
+        return readLine(f, text -> text);
+    }
+
+    public String readLine(File f, $FileReplacer fr) {
+        try {
+            return readLine(new FileInputStream(f), charset.UTF8, fr);
+        } catch (FileNotFoundException e) {
+            $.exception(e);
+        }
+        return "";
+    }
+
+    public String readLine(InputStream is) {
+        return readLine(is, charset.UTF8, text -> text);
+    }
+
+    public String readLine(InputStream is, $FileReplacer fr) {
+        return readLine(is, charset.UTF8, fr);
+    }
+
+    public String readLine(InputStream is, String charset) {
+        return readLine(is, charset, text -> text);
+    }
+
+    public String readLine(InputStream is, String charset, $FileReplacer fr) {
+        StringBuffer content = new StringBuffer();
+        if(null != is) {
+            BufferedInputStream bis = new BufferedInputStream(is);
+            BufferedReader reader = null;
+            // 之所以用BufferedReader,而不是直接用BufferedInputStream读取,是因为BufferedInputStream是InputStream的间接子类,
+            // InputStream的read方法读取的是一个byte,而一个中文占两个byte,所以可能会出现读到半个汉字的情况,就是乱码.
+            // BufferedReader继承自Reader,该类的read方法读取的是char,所以无论如何不会出现读个半个汉字的.
+            try {
+                reader = new BufferedReader (new InputStreamReader(bis, charset));
+                String row;
+                while ((row = reader.readLine()) != null) {
+                    content.append(fr.getRowContext(row) + "\r\n");
+                }
+
+                return content.toString();
+            } catch (UnsupportedEncodingException e) {
+                $.exception(e);
+            } catch (IOException e) {
+                $.exception(e);
+            } finally {
+                $.file.closeStearm(bis);
+                $.file.closeStearm(reader);
+            }
+        }
+
+        return "";
+    }
+
+
     public $File writeFile(InputStream input, String path) throws IOException {
         //只能获取单input为单文件上传
         OutputStream output = null;
@@ -165,22 +232,36 @@ public class $File {
         return writeFile(path, false, object);
     }
 
-    public $Result writeFile(String path, boolean isAppend, Object... data)  {
+    public $Result writeFile(File file, Object... object)  {
+        return writeFile(file, false, object);
+    }
+
+    public $Result writeFileIsAdd(String path, boolean isAdd, Object... data)  {
         $Result rs = $.result();
 
         if(null == path) return rs;
 
-        path = getPath(path);
-        File file = getFile(path);
+        File file = getFile(path = getPath(path));
+
+        return writeFileIsAdd(file, isAdd, data);
+    }
+
+    public $Result writeFileIsAdd(File file, boolean isAdd, Object... data)  {
+        $Result rs = $.result();
+
+        if(null == file) return rs;
+
         FileWriter fw = null;
+        String path = getPath(file.getPath());
+
         try {
-            if(file.exists() && isAppend)
+            if(file.exists() && isAdd)
                 warn(String.format("Append file：%s", path));
             else
                 info(String.format("Write file：%s", path));
 
             mkdir(path.substring(0, path.lastIndexOf("/")));
-            fw = new FileWriter(file);
+            fw = new FileWriter(file, isAdd);
             if(null != data) for(Object o : data) fw.write(o.toString());
             fw.flush();
 
@@ -207,6 +288,10 @@ public class $File {
     }
 
     public $Result copyFile(File sfile, String destPath, boolean isReplace)  {
+        return copyFile(sfile, destPath, isReplace, false);
+    }
+
+    public $Result copyFile(File sfile, String destPath, boolean isReplace, boolean isDel)  {
         $Result rs = $.result();
         File dfile = getFile(destPath);
         String sourcePath = sfile.getPath();
@@ -219,7 +304,7 @@ public class $File {
             }
         } else if(dfile.exists() && !isReplace) {
             rs.addMessage(warn(String.format("%s is exists! -> %s", destPath, convert(dfile.length()))));
-        } else {
+        } else if(!sfile.getPath().equals(dfile.getPath())){
             FileChannel inputChannel = null;
             FileChannel outputChannel = null;
             try {
@@ -235,6 +320,8 @@ public class $File {
                 try {
                     inputChannel.close();
                     outputChannel.close();
+
+                    if(isDel) sfile.deleteOnExit();
                 } catch (IOException e) {
                     rs.addError(exception(e));
                 }
@@ -242,6 +329,88 @@ public class $File {
         }
 
         return rs.addData("sourcePath", sourcePath).addData("destPath", destPath).addData("isReplace", isReplace);
+    }
+
+
+    public static void searchPath(String path, $FileRunner runner) {
+        File f = $.file.getFile(path);
+
+        if(f.isDirectory()) {
+            for(String p : f.list()) {
+                searchPath(path+"\\"+p, runner);
+            }
+        } else {
+            runner.run(f);
+        }
+    }
+
+
+    public static void copyFileToModifyFix(String path, String sourceFix, String targetFix, boolean isReplace, boolean isDel, $FileReplacer runnable) {
+        File f = $.file.getFile(path);
+
+        sourceFix = (sourceFix.equals("*") || sourceFix.equals(".*")) ? "\\.[^\\.]+$" : (sourceFix + "$"); // 默认匹配结尾的
+        sourceFix = sourceFix.replaceAll("\\$+", "\\$"); // 全匹配
+
+        if(f.isDirectory()) {
+            for(String p : f.list()) {
+                copyFileToModifyFix(path+"\\"+p, sourceFix, targetFix, isReplace, isDel, runnable);
+            }
+        } else {
+            if($.test(sourceFix, f.getPath())) {
+                File targetFile = $.getFile(f.getPath().replaceAll(sourceFix, targetFix));
+
+                if(!isReplace && targetFile.exists()) return; // 如果不替换，文件存在时候就跳过
+
+                $.file.writeFile(targetFile, $.file.readLine(f, runnable));
+                if(isDel) f.deleteOnExit();
+            }
+        }
+    }
+
+    public static void copyFileToModifyFix(String path, String sourceFix, String targetFix) {
+        copyFileToModifyFix(path, sourceFix, targetFix, false, false);
+    }
+
+    public static void copyFileToModifyFix(String path, String sourceFix, Map<String,String> contextFilter) {
+        copyFileToModifyFix(path, sourceFix, contextFilter, false, false);
+    }
+
+    public static void copyFileToModifyFix(String path, String sourceFix, String targetFix, boolean isReplace, boolean isDel) {
+        File f = $.file.getFile(path);
+
+        sourceFix = (sourceFix.equals("*") || sourceFix.equals(".*")) ? "\\.[^\\.]+$" : (sourceFix + "$"); // 默认匹配结尾的
+        sourceFix = sourceFix.replaceAll("\\$+", "\\$"); // 全匹配
+
+        if(f.isDirectory()) {
+            for(String p : f.list()) {
+                copyFileToModifyFix(path+"\\"+p, sourceFix, targetFix, isReplace, isDel);
+            }
+        } else {
+            if($.test(sourceFix, f.getPath())) {
+                $.file.copyFile(f, f.getPath().replaceAll(sourceFix, targetFix), isReplace, isDel);
+            }
+        }
+    }
+
+    public static void copyFileToModifyFix(String path, String sourceFix, Map<String,String> contextFilter, boolean isReplace, boolean isDel) {
+        File f = $.file.getFile(path);
+
+        sourceFix = (sourceFix.equals("*") || sourceFix.equals(".*")) ? "\\.[^\\.]+$" : (sourceFix + "$"); // 默认匹配结尾的
+        sourceFix = sourceFix.replaceAll("\\$+", "\\$"); // 全匹配
+
+        if(f.isDirectory()) {
+            for(String p : f.list()) {
+                copyFileToModifyFix(path+"\\"+p, sourceFix, contextFilter, isReplace, isDel);
+            }
+        } else {
+            if($.test(sourceFix, f.getPath())) {
+                for(String key : contextFilter.keySet()) {
+                    if($.readFileToText(f.getPath()).contains(key)) {
+                        $.file.copyFile(f, f.getPath().replaceAll(sourceFix, contextFilter.get(key)), isReplace, isDel);
+                    }
+                }
+            }
+        }
     }
 
     public $Result copyFile(String sourcePath, String destPath, boolean isReplace)  {
