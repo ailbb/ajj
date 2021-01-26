@@ -142,7 +142,7 @@ public class $File {
     }
 
     public String readLine(File f) {
-        return readLine(f, text -> text);
+        return readLine(f, (text,i) -> text);
     }
 
     public String readLine(File f, $FileReplacer fr) {
@@ -155,7 +155,7 @@ public class $File {
     }
 
     public String readLine(InputStream is) {
-        return readLine(is, charset.UTF8, text -> text);
+        return readLine(is, charset.UTF8, (text,i) -> text);
     }
 
     public String readLine(InputStream is, $FileReplacer fr) {
@@ -163,7 +163,7 @@ public class $File {
     }
 
     public String readLine(InputStream is, String charset) {
-        return readLine(is, charset, text -> text);
+        return readLine(is, charset, (text,i) -> text);
     }
 
     public String readLine(InputStream is, String charset, $FileReplacer fr) {
@@ -177,8 +177,10 @@ public class $File {
             try {
                 reader = new BufferedReader (new InputStreamReader(bis, charset));
                 String row;
+                int index = 0;
                 while ((row = reader.readLine()) != null) {
-                    content.append(fr.getRowContext(row) + "\r\n");
+                    Object rc = fr.getRowContext(row, index++);
+                    if(null != rc) content.append(rc + "\r\n");
                 }
 
                 return content.toString();
@@ -228,25 +230,25 @@ public class $File {
         return this;
     }
 
-    public $Result writeFile(String path, Object... object)  {
-        return writeFile(path, false, object);
+    public $Result writeFile(String path, String... datas)  {
+        return writeFile(path, false, datas);
     }
 
-    public $Result writeFile(File file, Object... object)  {
-        return writeFile(file, false, object);
+    public $Result writeFile(File file, String... datas)  {
+        return writeFile(file, false, datas);
     }
 
-    public $Result writeFileIsAdd(String path, boolean isAdd, Object... data)  {
+    public $Result writeFile(String path, boolean isAdd, String... datas)  {
         $Result rs = $.result();
 
         if(null == path) return rs;
 
         File file = getFile(path = getPath(path));
 
-        return writeFileIsAdd(file, isAdd, data);
+        return writeFile(file, isAdd, datas);
     }
 
-    public $Result writeFileIsAdd(File file, boolean isAdd, Object... data)  {
+    public $Result writeFile(File file, boolean isAdd, String... datas)  {
         $Result rs = $.result();
 
         if(null == file) return rs;
@@ -262,7 +264,7 @@ public class $File {
 
             mkdir(path.substring(0, path.lastIndexOf("/")));
             fw = new FileWriter(file, isAdd);
-            if(null != data) for(Object o : data) fw.write(o.toString());
+            if(null != datas) for(String s : datas) fw.write(s);
             fw.flush();
 
             rs.addData(path);

@@ -278,12 +278,12 @@ public class $ {
         return file.readFileToText(path);
     }
 
-    public static $Result writeFile(String path, Object... object)  {
-        return file.writeFile(path, object);
+    public static $Result writeFile(String path, String... datas)  {
+        return file.writeFile(path, datas);
     }
 
-    public static $Result writeFile(String path, boolean isAppend, Object... object)  {
-        return file.writeFile(path, isAppend, object);
+    public static $Result writeFile(String path, boolean isAppend, String... datas)  {
+        return file.writeFile(path, isAppend, datas);
     }
 
     public static void copyFile(String sourcePath, String destPath)  {
