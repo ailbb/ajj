@@ -1,6 +1,7 @@
 package com.ailbb.ajj;
 
 import com.ailbb.ajj.encrypt.EncryptUtil;
+import com.ailbb.ajj.jar.$Jar;
 import com.ailbb.ajj.jdbc.$JDBC;
 import com.ailbb.ajj.date.$Date;
 import com.ailbb.ajj.entity.$Progress;
@@ -65,6 +66,9 @@ public class $ {
 
     // thread
     public static $Thread thread = new $Thread();
+
+    // thread
+    public static $Jar jar = new $Jar();
 
     // regex
     public static $Regex regex = new $Regex();
@@ -545,5 +549,9 @@ public class $ {
 
     public static String under2camel(String s){
         return regex.under2camel(s);
+    }
+
+    public static void decompilerJar(String sourcePath, String targetPath){
+        $.jar.decompilerJar(sourcePath, targetPath);
     }
 }
