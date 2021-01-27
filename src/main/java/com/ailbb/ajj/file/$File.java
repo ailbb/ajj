@@ -6,6 +6,7 @@ import com.ailbb.ajj.file.csv.$CSV;
 import com.ailbb.ajj.file.ctl.$Ctl;
 import com.ailbb.ajj.file.excel.$Excel;
 import com.ailbb.ajj.file.properties.$Properties;
+import com.ailbb.ajj.file.tool.FileCounter;
 import com.ailbb.ajj.file.yml.$Yml;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -653,6 +654,11 @@ public class $File {
         }
 
         return rs;
+    }
+
+
+    public static void fileTypeSizeCount(String path, Map<String,String> contextFilter){
+        FileCounter.fileTypeSizeCount(path, contextFilter);
     }
 
     public $File closeStearm(AutoCloseable closeable){
