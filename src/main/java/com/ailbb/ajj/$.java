@@ -1,6 +1,7 @@
 package com.ailbb.ajj;
 
 import com.ailbb.ajj.encrypt.EncryptUtil;
+import com.ailbb.ajj.file.$FileRunner;
 import com.ailbb.ajj.jar.$Jar;
 import com.ailbb.ajj.jdbc.$JDBC;
 import com.ailbb.ajj.date.$Date;
@@ -296,6 +297,10 @@ public class $ {
 
     public static void copyFile(String sourcePath, String destPath, boolean isReplace)  {
         file.copyFile(sourcePath, destPath, isReplace);
+    }
+
+    public static void searchPath(String path, $FileRunner runner) {
+        file.searchPath(path, runner);
     }
 
     public static boolean isFile(String path){

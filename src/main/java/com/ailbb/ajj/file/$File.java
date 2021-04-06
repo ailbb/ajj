@@ -335,7 +335,7 @@ public class $File {
     }
 
 
-    public static void searchPath(String path, $FileRunner runner) {
+    public void searchPath(String path, $FileRunner runner) {
         File f = $.file.getFile(path);
 
         if(f.isDirectory()) {
