@@ -3,7 +3,7 @@ package com.ailbb.ajj.lang;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-/**
+/*
  * Created by Wz on 9/10/2018.
  */
 public class $Bean {

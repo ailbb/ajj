@@ -4,7 +4,7 @@ import com.ailbb.ajj.$;
 
 import java.util.List;
 
-/**
+/*
  * Created by Wz on 8/18/2020.
  脱敏规则，为具体的脱敏内容，通过输入来配置，格式为#[位数]*[位数]，
  #代表的是不加密位数，*代表的是要加密的位数，%代表其余所有。
@@ -31,7 +31,7 @@ public class EncryptionRule {
 
     public EncryptionRule(String rule) { this(rule, 0); }
 
-    /**
+    /*
      * 新建
      * @param rule 规则
      * @param length 数据长度
@@ -164,7 +164,7 @@ public class EncryptionRule {
         return decodeSubNums[i];
     }
 
-    /**
+    /*
      * 测试规则
      * @param length
      * @param flags
@@ -186,7 +186,7 @@ public class EncryptionRule {
         return success;
     }
 
-    /**
+    /*
      * 截取加密字段
      * @param data
      * @param index
@@ -201,7 +201,7 @@ public class EncryptionRule {
         return data.substring(it[0] + (index == blurIndex ? 0 : blurLength),it[1] + blurLength); // 截取关键数据
     }
 
-    /**
+    /*
      * 截取解密字段
      * @param data
      * @param index

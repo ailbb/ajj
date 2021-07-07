@@ -14,19 +14,19 @@ import java.security.*;
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.*;
 
-/**
+/*
  * SM4对称加密
  *
  */
 public class Sm4Util extends Encryption {
     public static final String Sm4 = "SM4";
     public static final String ALGORIGTHM_NAME = "SM4";
-    /**
+    /*
      * 编码格式；UTF-8
      */
     public static final String ENCODING = "UTF-8";
 
-    /**
+    /*
      * SM4
      */
     public int keysizeSM4 = 128;
@@ -100,7 +100,7 @@ public class Sm4Util extends Encryption {
         return cache.get(strKey);
     }
 
-    /**
+    /*
      * 加密
      */
     public synchronized String encrypt(String strIn) throws BadPaddingException, IllegalBlockSizeException, UnsupportedEncodingException, InvalidKeyException {

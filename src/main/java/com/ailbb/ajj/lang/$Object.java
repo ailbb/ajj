@@ -4,7 +4,7 @@ import com.ailbb.ajj.$;
 
 import static com.ailbb.ajj.$.isEmptyOrNull;
 
-/**
+/*
  * Created by Wz on 6/20/2018.
  */
 public class $Object {

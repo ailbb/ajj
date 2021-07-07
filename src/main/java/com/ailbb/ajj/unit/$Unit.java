@@ -4,7 +4,7 @@ import com.ailbb.ajj.$;
 
 import static com.ailbb.ajj.$.*;
 
-/**
+/*
  * Created by Wz on 6/20/2018.
  */
 public class $Unit {
@@ -49,7 +49,7 @@ public class $Unit {
     public static final String $QIANYI = "千亿";
     public static final String $WANYI = "万亿";
 
-    /**
+    /*
      * byte to anything
      * @param num double
      * @return 格式化后的数据
@@ -58,7 +58,7 @@ public class $Unit {
         return convert(num, $BYTE);
     }
 
-    /**
+    /*
      * byte to anything
      * @param num double
      * @return 格式化后的数据
@@ -67,7 +67,7 @@ public class $Unit {
         return CountConvert(num, null);
     }
 
-    /**
+    /*
      * byte to anything
      * @param num double
      * @return 格式化后的数据

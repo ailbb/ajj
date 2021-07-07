@@ -9,7 +9,7 @@ import java.security.InvalidKeyException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
+/*
  * Created by Wz on 8/18/2020.
  */
 public abstract class Encryption {

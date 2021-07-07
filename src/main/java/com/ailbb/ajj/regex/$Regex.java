@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
+/*
  * Created by Wz on 6/20/2018.
  */
 public class $Regex {
@@ -54,7 +54,7 @@ public class $Regex {
         return false;
     }
 
-    /**
+    /*
      * 拾取文本
      * @param before 前置文本
      * @param pattern 匹配表达式
@@ -80,7 +80,7 @@ public class $Regex {
         return v;
     }
 
-    /**
+    /*
      * 拾取文本
      * @param pattern 正则表达式
      * @param text 文本对象

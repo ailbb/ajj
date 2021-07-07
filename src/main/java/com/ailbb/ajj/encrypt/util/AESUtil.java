@@ -11,16 +11,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
+/*
  * AES对称加密
  *
  */
 public class AESUtil extends Encryption {
     public static final String AES = "AES";
     public static final String ALGORIGTHM_NAME = "AES";
-    /**编码格式；UTF-8*/
+    /*编码格式；UTF-8*/
     public String charset = "UTF-8";
-    /**AES*/
+    /*AES*/
     public int keysizeAES = 128;
 
     private Cipher encipher;
@@ -74,7 +74,7 @@ public class AESUtil extends Encryption {
         return cache.get(strKey);
     }
 
-    /**
+    /*
      * 加密
      */
     public synchronized String encrypt(String strIn) throws BadPaddingException, IllegalBlockSizeException, UnsupportedEncodingException, InvalidKeyException {

@@ -27,7 +27,7 @@ public class EncryptUtil implements EncryptUtilApi {
     public static Encryption me;
     public static Map<String,EncryptionRule> encodeRuleCache = new HashMap<>(); // 保存缓存的加密规则信息
     public static Map<String,EncryptionRule> decodeRuleCache = new HashMap<>(); // 保存缓存的解密规则信息
-    /**
+    /*
      * 编码格式；默认null为GBK
      */
     public String charset = "UTF-8";
@@ -86,7 +86,7 @@ public class EncryptUtil implements EncryptUtilApi {
         return $.byter.parseHexStr2Byte(hexStr);
     }
 
-    /**
+    /*
      * 使用MessageDigest进行单向加密（无密码）
      */
     private String messageDigest(String res, String algorithm) throws NoSuchAlgorithmException, UnsupportedEncodingException {
@@ -97,7 +97,7 @@ public class EncryptUtil implements EncryptUtilApi {
         // return base64(md.digest(resBytes));
     }
 
-    /**
+    /*
      * 使用KeyGenerator进行单向/双向加密（可设密码）
      */
     private String keyGeneratorMac(String res, String algorithm, String key) throws NoSuchAlgorithmException, UnsupportedEncodingException, InvalidKeyException {
@@ -116,7 +116,7 @@ public class EncryptUtil implements EncryptUtilApi {
         return base64(result);
     }
 
-    /**
+    /*
      * 使用KeyGenerator双向加密，DES/AES/SM4，注意这里转化为字符串的时候是将2进制转为16进制格式的字符串，不是直接转，因为会出错
      */
     private String keyGeneratorES(String res, String algorithm, String key, int keysize, boolean isEncode) throws NoSuchAlgorithmException, UnsupportedEncodingException, NoSuchPaddingException, BadPaddingException, IllegalBlockSizeException, InvalidKeyException {
@@ -174,49 +174,49 @@ public class EncryptUtil implements EncryptUtilApi {
         return keyGeneratorMac(res, HmacSHA1, key);
     }
 
-    /**
+    /*
      */
     @Override
     public String DESencode(String res, String key) throws NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, UnsupportedEncodingException, InvalidKeyException {
         return keyGeneratorES(res, DES, key, 0, true);
     }
 
-    /**
+    /*
      */
     @Override
     public String DESdecode(String res, String key) throws NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, UnsupportedEncodingException, InvalidKeyException {
         return keyGeneratorES(res, DES, key, 128, false);
     }
 
-    /**
+    /*
      */
     @Override
     public String AESencode(String res, String key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException {
         return AESUtil.getInstance(key).encrypt(res);
     }
 
-    /**
+    /*
      */
     @Override
     public String AESdecode(String res, String key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException {
         return AESUtil.getInstance(key).decrypt(res);
     }
 
-    /**
+    /*
      */
     @Override
     public String SM4encode(String res, String key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException {
         return Sm4Util.getInstance(key).encrypt(res);
     }
 
-    /**
+    /*
      */
     @Override
     public String SM4decode(String res, String key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException, NoSuchProviderException, InvalidAlgorithmParameterException {
         return Sm4Util.getInstance(key).decrypt(res);
     }
 
-    /**
+    /*
      */
     @Override
     public String XORencode(String res, String key) {
@@ -227,7 +227,7 @@ public class EncryptUtil implements EncryptUtilApi {
         return parseByte2HexStr(bs);
     }
 
-    /**
+    /*
      */
     @Override
     public String XORdecode(String res, String key) {
@@ -238,28 +238,28 @@ public class EncryptUtil implements EncryptUtilApi {
         return new String(bs);
     }
 
-    /**
+    /*
      */
     @Override
     public int XOR(int res, String key) {
         return res ^ key.hashCode();
     }
 
-    /**
+    /*
      */
     @Override
     public String Base64Encode(String res) {
         return Base64.encode(res.getBytes());
     }
 
-    /**
+    /*
      */
     @Override
     public String Base64Decode(String res) {
         return new String(Base64.decode(res));
     }
 
-    /**
+    /*
      * Purpose:生成随机数字和字母
      *
      * @param length :返回字符串的长度
@@ -499,7 +499,7 @@ public class EncryptUtil implements EncryptUtilApi {
         return res;
     }
 
-    /**
+    /*
      *  自动生成密钥
      */
     public byte[] generateKey()  {

@@ -4,7 +4,7 @@ import com.ailbb.ajj.$;
 
 import java.math.BigDecimal;
 
-/**
+/*
  * Created by Wz on 8/22/2018.
  */
 public class $Double {

@@ -2,7 +2,7 @@ import com.ailbb.ajj.$;
 
 import java.util.Properties;
 
-/**
+/*
  * Created by Wz on 6/30/2019.
  */
 public class PropertiesTest {

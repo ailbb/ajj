@@ -7,7 +7,7 @@ import net.sf.json.JSONObject;
 
 import java.io.File;
 
-/**
+/*
  * Created by Wz on 5/10/2018.
  * Ajax proxy
  */

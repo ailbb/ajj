@@ -12,7 +12,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
 
-/**
+/*
  * Created by Wz on 6/30/2019.
  */
 public class JDBCTest {

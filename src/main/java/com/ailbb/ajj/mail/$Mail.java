@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-/**
+/*
  * 发送邮件
  * Created by WildMrZhang on 2017/3/6.
  */
@@ -29,7 +29,7 @@ public class $Mail {
     private String[] recipientCCEmails = new String[]{}; // 接收邮件人邮箱
     private String[] recipientBCCEmails = new String[]{}; // 接收邮件人邮箱
 
-    /**
+    /*
      * 发送邮件
      * @param title 标题
      * @param text 内容
@@ -39,7 +39,7 @@ public class $Mail {
         return send(title, text, recipientTOEmails.toArray(new String[recipientTOEmails.size()]));
     }
 
-    /**
+    /*
      * 发送邮件
      * @param title 标题
      * @param text 内容
@@ -102,7 +102,7 @@ public class $Mail {
         return rs;
     }
 
-    /**
+    /*
      * 封装环境变量信息
      * @return Properties 文件对象
      */

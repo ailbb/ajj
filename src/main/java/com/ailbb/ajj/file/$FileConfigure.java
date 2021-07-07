@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-/**
+/*
  * Created by Wz on 11/14/2018.
  */
 public class $FileConfigure {

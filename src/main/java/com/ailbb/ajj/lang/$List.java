@@ -7,7 +7,7 @@ import java.util.*;
 
 import static com.ailbb.ajj.$.*;
 
-/**
+/*
  * Created by Wz on 6/20/2018.
  */
 public class $List {
@@ -57,6 +57,18 @@ public class $List {
         return lists.toArray();
     }
 
+    public <T> T random(Collection<T> lists) {
+        List<T> li = toList(lists);
+
+        return li.get($.integer.toInt(Math.random()*li.size()));
+    }
+
+    public <T> T random(T[] arrays) {
+        List<T> li = toList(arrayToList(arrays));
+
+        return li.get($.integer.toInt(Math.random()*li.size()));
+    }
+
     public <T> long listSUM(Collection<T> lists){
         long sum = 0;
         for(T t : lists) {
@@ -81,7 +93,7 @@ public class $List {
         return lists.toArray(types);
     }
 
-    /**
+    /*
      * 包含开头，不包含结尾
      * @param ts
      * @param startIndex
@@ -93,7 +105,7 @@ public class $List {
         return $.list.listToArray(arrayToList(ts).subList(startIndex, endIndex), newArray(ts));
     }
 
-    /**
+    /*
      * 拷贝一个新数组
      * @param reference
      * @param length
@@ -105,7 +117,7 @@ public class $List {
         return  (T[]) Array.newInstance(type, length);
     }
 
-    /**
+    /*
      * 拷贝一个新数组
      * @param reference
      * @param <T>
@@ -114,4 +126,5 @@ public class $List {
     public static <T> T[] newArray(T[] reference) {
         return newArray(reference, 0);
     }
+
 }

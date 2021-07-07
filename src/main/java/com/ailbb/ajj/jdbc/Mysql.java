@@ -14,11 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
+/*
  * Created by Wz on 8/20/2018.
  */
 public class Mysql extends JDBCRunner {
-    /**
+    /*
      * demo
      private String driver = "com.mysql.jdbc.Driver";
      private String ip = "localhost";

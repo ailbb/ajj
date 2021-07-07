@@ -5,7 +5,7 @@ import com.ailbb.ajj.$;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
+/*
  * Created by Wz on 12/24/2019.
  */
 public class $Coding {
@@ -93,7 +93,7 @@ public class $Coding {
         return false;
     }
 
-    /**
+    /*
      * 判断是否为乱码
      *
      * @param str
@@ -155,7 +155,7 @@ public class $Coding {
         return msg ;
     }
 
-    /**
+    /*
      * 判断是否为汉字
      *
      * @param str
@@ -180,7 +180,7 @@ public class $Coding {
         return isGBK;
     }
 
-    /**
+    /*
      * 判断字符串是否为双整型数字
      *
      * @param str
@@ -195,7 +195,7 @@ public class $Coding {
         return p.matcher(str).matches();
     }
 
-    /**
+    /*
      * 判断字符串是否为整字
      *
      * @param str
@@ -209,7 +209,7 @@ public class $Coding {
         return p.matcher(str).matches();
     }
 
-    /**
+    /*
      * 判断是否为数字
      *
      * @param str

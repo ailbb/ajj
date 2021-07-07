@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
+/*
  * Created by Wz on 6/20/2018.
  */
 public class $String {
@@ -124,7 +124,7 @@ public class $String {
         return s;
     }
 
-    /**
+    /*
      * 文本简化
      * @param data 数据文本
      * @return 100字内的缩写

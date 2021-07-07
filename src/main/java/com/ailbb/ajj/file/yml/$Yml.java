@@ -10,7 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
-/**
+/*
  * Created by Wz on 11/14/2018.
  */
 public class $Yml {

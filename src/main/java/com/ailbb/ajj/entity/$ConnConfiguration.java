@@ -5,7 +5,7 @@ import com.ailbb.ajj.$;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
+/*
  * Created by Wz on 8/21/2018.
  */
 public class $ConnConfiguration {
@@ -96,4 +96,16 @@ public class $ConnConfiguration {
         return this;
     }
 
+    @Override
+    public String toString() {
+        return "$ConnConfiguration{" +
+                "ip='" + ip + '\'' +
+                ", ips=" + ips +
+                ", port=" + port +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", url='" + url + '\'' +
+                ", timeOut=" + timeOut +
+                '}';
+    }
 }

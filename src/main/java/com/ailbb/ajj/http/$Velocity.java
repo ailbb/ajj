@@ -14,12 +14,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-/**
+/*
  * Created by Wz on 6/20/2018.
  */
 public class $Velocity {
 
-    /**
+    /*
      * 将数据通过模板方式转向打印
      * @param request 对象
      * @param response 对象

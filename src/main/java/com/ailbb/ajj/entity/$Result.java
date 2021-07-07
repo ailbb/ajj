@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
+/*
  * Created by Wz on 6/22/2018.
  */
 public class $Result {

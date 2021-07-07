@@ -1,6 +1,6 @@
 package com.ailbb.ajj.entity;
 
-/**
+/*
  * Created by Wz on 6/22/2018.
  */
 public class $Status {

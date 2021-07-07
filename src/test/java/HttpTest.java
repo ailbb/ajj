@@ -9,7 +9,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Properties;
 
-/**
+/*
  * Created by Wz on 6/30/2019.
  */
 public class HttpTest {

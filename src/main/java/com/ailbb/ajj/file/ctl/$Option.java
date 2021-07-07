@@ -1,6 +1,6 @@
 package com.ailbb.ajj.file.ctl;
 
-/**
+/*
  * Created by Wz on 8/2/2018.
  */
 class $Option {

@@ -7,7 +7,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.io.File;
 
-/**
+/*
  * Created by Wz on 9/12/2018.
  */
 public class $FileInfo {

@@ -15,7 +15,7 @@ import java.text.DateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 
-/**
+/*
  * Created by Wz on 9/13/2018.
  */
 public class $Excel {
@@ -25,7 +25,7 @@ public class $Excel {
     private short maxCellWidth = 50 * 256 + $BASE_WIDTH; // 最大字符宽度
     private Interlayer interlayer; // 中间处理器
 
-    /**
+    /*
      * 读取Excel数据
      * @param path 文件路径
      * @return 路径
@@ -34,7 +34,7 @@ public class $Excel {
         return parseExcel(path, null);
     }
 
-    /**
+    /*
      * 读取Excel数据
      * @param path 文件路径
      * @return 路径
@@ -44,7 +44,7 @@ public class $Excel {
     }
 
 
-    /**
+    /*
      * 读取Excel数据
      * @param file 文件
      * @return 路径
@@ -53,7 +53,7 @@ public class $Excel {
         return parseExcel(file, null, 0, null);
     }
 
-    /**
+    /*
      * 读取Excel数据
      * @param file 文件
      * @return 路径
@@ -117,7 +117,7 @@ public class $Excel {
     }
 
 
-    /**
+    /*
      * 向Excel内写入数据
      * @param fileName 导出文件名
      * @param data 数据
@@ -127,7 +127,7 @@ public class $Excel {
         return writeToExcel(fileName, data, null);
     }
 
-    /**
+    /*
      * 向Excel内写入数据
      * @param fileName 导出文件名
      * @param data 数据
@@ -137,7 +137,7 @@ public class $Excel {
         return writeToExcel(null, fileName, data, type);
     }
 
-    /**
+    /*
      * 向Excel内写入数据
      * @param fileName 导出文件名
      * @param data 数据
@@ -147,7 +147,7 @@ public class $Excel {
         return writeToExcel(path, fileName, data, null);
     }
 
-    /**
+    /*
      * 向Excel内写入数据
      * @param path 导出路径
      * @param fileName 导出文件名
@@ -158,7 +158,7 @@ public class $Excel {
         return writeToExcel(path, fileName, null, data, type);
     }
 
-    /**
+    /*
      * 向Excel内写入数据
      * @param path 导出路径
      * @param fileName 导出文件名
@@ -171,7 +171,7 @@ public class $Excel {
         return writeToExcel(path, fileName, sheetName, list[0], list[1], type);
     }
 
-    /**
+    /*
      * 向Excel内写入数据
      * @param path 导出路径
      * @param fileName 导出文件名
@@ -244,7 +244,7 @@ public class $Excel {
         return rs.setData(fi);
     }
 
-    /**
+    /*
      * 向sheet内写入数据
      * @param sheet
      * @param data

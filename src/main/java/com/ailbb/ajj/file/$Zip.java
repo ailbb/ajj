@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-/**
+/*
  * Created by Wz on 8/3/2018.
  */
 public class $Zip {
-    public static final String $POSTFIX = "zip";
+    public static final String $POSTFIX = ".zip";
 
-    /**
+    /*
      * 压缩文件
      * @param path 生成目录
      * @param paths 文件目录
@@ -29,7 +29,7 @@ public class $Zip {
         return compress(path, false, paths);
     }
 
-    /**
+    /*
      * 压缩文件
      * @param path 生成目录
      * @param paths 文件目录
@@ -39,7 +39,7 @@ public class $Zip {
         return compress(path, isDelete, Arrays.asList(paths));
     }
 
-    /**
+    /*
      *
      * 压缩文件
      * @param path 生成目录
@@ -79,7 +79,7 @@ public class $Zip {
         return rs;
     }
 
-    /**
+    /*
      * 核心压缩类
      * @param filePath 压缩文件存储的路径
      * @param parentPath 父目录
@@ -123,5 +123,48 @@ public class $Zip {
         }
 
         return rs;
+    }
+
+
+    /*
+     * 压缩文件到指定路径
+     * @param file
+     * @param targetPath
+     * @return
+     */
+    public File compress(File file, String targetPath) {
+        try {
+            return compress(new FileInputStream(file), file.length(), targetPath, file.getName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+
+
+    public File compress(InputStream in, long size, String targetPath, String fileName) {
+        ZipOutputStream zos = null;
+        try {
+            File zipFile = new File(targetPath, fileName.substring(0, fileName.lastIndexOf(".")) + $POSTFIX);
+            if (!zipFile.getParentFile().exists()) zipFile.getParentFile().mkdirs();
+            zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(zipFile)));
+            zos.putNextEntry(new ZipEntry(fileName));
+            byte[] buffer = new byte[4096];
+            int len = 0;
+            while ((len = in.read(buffer)) > 0) {
+                zos.write(buffer, 0, len);
+            }
+            return zipFile;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (in != null) in.close();
+                if (zos != null) zos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 }

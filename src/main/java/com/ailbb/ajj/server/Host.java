@@ -1,6 +1,6 @@
 package com.ailbb.ajj.server;
 
-/**
+/*
  * Created by Wz on 4/4/2020.
  */
 public class Host {

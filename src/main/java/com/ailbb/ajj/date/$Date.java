@@ -10,7 +10,7 @@ import java.util.List;
 
 import static com.ailbb.ajj.$.*;
 
-/**
+/*
  * Created by Wz on 6/20/2018.
  */
 public class $Date {
@@ -52,7 +52,7 @@ public class $Date {
         return new SimpleDateFormat(lastDef("yyyy-MM-dd HH:mm:ss", patten)).parse(date);
     }
 
-    /**
+    /*
      * 前移后移计算时间
      * @param date date
      * @param num how long
@@ -83,14 +83,14 @@ public class $Date {
         return date(new Date(), num, types);
     }
 
-    /**
+    /*
      * 计时器
      * @return
      */
     public long timeclock() {
         return timeclock(0);
     }
-    /**
+    /*
      * 计时器
      * @param tag 下标
      * @return

@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-/**
+/*
  * Created by Wz on 6/20/2018.
  */
 public class $Url {
@@ -81,7 +81,7 @@ public class $Url {
         return getParameterStr(request.getParameterMap());
     }
 
-    /**
+    /*
      * 获取根节点
      * @param url 解析的url
      * @return 返回根路径

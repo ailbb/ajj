@@ -1,6 +1,6 @@
 package com.ailbb.ajj.sys;
 
-/**
+/*
  * Created by Wz on 6/20/2018.
  */
 public class $System {

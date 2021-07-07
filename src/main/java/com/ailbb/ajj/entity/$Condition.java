@@ -2,7 +2,7 @@ package com.ailbb.ajj.entity;
 
 import java.util.Map;
 
-/**
+/*
  * Created by Wz on 8/23/2018.
  */
 public class $Condition {

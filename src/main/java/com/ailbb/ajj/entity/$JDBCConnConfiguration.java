@@ -2,7 +2,7 @@ package com.ailbb.ajj.entity;
 
 import com.ailbb.ajj.$;
 
-/**
+/*
  * Created by Wz on 8/21/2018.
  */
 public class $JDBCConnConfiguration extends $ConnConfiguration {
@@ -64,4 +64,13 @@ public class $JDBCConnConfiguration extends $ConnConfiguration {
     }
 
 
+    @Override
+    public String toString() {
+        return "$JDBCConnConfiguration{" +
+                "driver='" + driver + '\'' +
+                ", database='" + database + '\'' +
+                ", url='" + url + '\'' +
+                "} | " + super.toString();
+
+    }
 }

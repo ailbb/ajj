@@ -26,7 +26,7 @@ import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.util.*;
 
-/**
+/*
  * Created by Wz on 6/20/2018.
  */
 public class $File {
@@ -60,6 +60,18 @@ public class $File {
 
     public $Result zip(String path, boolean isDelete, List<String> paths)  {
         return compress.zip(path, isDelete, paths);
+    }
+
+    public File zip(File file, String targetPath)  {
+        return compress.zip(file, targetPath);
+    }
+
+    public File gzip(File file, String targetPath)  {
+        return compress.gzip(file, targetPath);
+    }
+
+    public boolean isCompressFile(String fileName){
+        return compress.isCompressFile(fileName);
     }
 
     public $Result readFile(String path)  {
@@ -249,6 +261,8 @@ public class $File {
         return writeFile(file, isAdd, datas);
     }
 
+
+
     public $Result writeFile(File file, boolean isAdd, String... datas)  {
         $Result rs = $.result();
 
@@ -259,11 +273,12 @@ public class $File {
 
         try {
             if(file.exists() && isAdd)
-                warn(String.format("Append file：%s", path));
+                warn(String.format("Append Data To [%s]", file.getName()));
             else
-                info(String.format("Write file：%s", path));
+                info(String.format("Write Data To [%s]", file.getName()));
 
-            mkdir(path.substring(0, path.lastIndexOf("/")));
+            if(!file.exists()) mkdir(path.substring(0, path.lastIndexOf("/")));
+
             fw = new FileWriter(file, isAdd);
             if(null != datas) for(String s : datas) fw.write(s);
             fw.flush();
@@ -299,8 +314,9 @@ public class $File {
         File dfile = getFile(destPath);
         String sourcePath = sfile.getPath();
 
+        if(!sfile.exists()) return rs.addMessage($.warn("File Not Found："+sfile.getPath()));
+
         if(!sfile.isFile()) {
-            if(!dfile.exists()) dfile.mkdirs();
 
             for(String s: sfile.list()) {
                 copyFile(concat(sourcePath, "/", s), concat(destPath, "/", s), isReplace);
@@ -308,6 +324,8 @@ public class $File {
         } else if(dfile.exists() && !isReplace) {
             rs.addMessage(warn(String.format("%s is exists! -> %s", destPath, convert(dfile.length()))));
         } else if(!sfile.getPath().equals(dfile.getPath())){
+            mkdir(dfile);
+
             FileChannel inputChannel = null;
             FileChannel outputChannel = null;
             try {
@@ -332,6 +350,45 @@ public class $File {
         }
 
         return rs.addData("sourcePath", sourcePath).addData("destPath", destPath).addData("isReplace", isReplace);
+    }
+
+
+    /**
+     * 拷贝文件流到指定的文件
+     * @param inputStream 文件流
+     * @param destFilePath 目标文件路径
+     * @param isReplace 如果存在是否替换
+     * @return 结果
+     */
+    public $Result copyFile(InputStream inputStream, String destFilePath, boolean isReplace)  {
+        $Result rs = $.result();
+        File dfile = getFile(destFilePath);
+
+        if(dfile.exists() && !isReplace) {
+            rs.addMessage(warn(String.format("%s is exists! -> %s", destFilePath, convert(dfile.length()))));
+        } else {
+            mkdir(dfile); // 创建文件的
+
+            OutputStream outputStream = null;
+            try {
+                outputStream = new BufferedOutputStream(new FileOutputStream(dfile));
+
+                int temp = 0;
+                while((temp = inputStream.read()) != -1){
+                    outputStream.write(temp);
+                }
+
+            } catch (FileNotFoundException e) {
+                rs.addError(exception(e));
+            } catch (IOException e) {
+                rs.addError(exception(e));
+            } finally {
+                $.file.closeStearm(inputStream);
+                $.file.closeStearm(outputStream);
+            }
+        }
+
+        return rs.addData("destPath", destFilePath).addData("isReplace", isReplace);
     }
 
 
@@ -416,12 +473,21 @@ public class $File {
         }
     }
 
-    public $Result copyFile(String sourcePath, String destPath, boolean isReplace)  {
+    public $Result copyFile(String sourcePath, String destPath, boolean isReplace) {
         $Result rs = $.result();
 
-        if(!isExists(sourcePath)) return rs;
+        if(!isExists(sourcePath)) return rs.addMessage($.warn("sourcePath ["+sourcePath+"] not found."));
 
-        return copyFile(getFile(sourcePath), destPath, isReplace);
+        try {
+            return
+                    test("\\.jar!", sourcePath) ?
+                            copyFile(getInputStream(sourcePath), destPath, isReplace) :
+                            copyFile(getFile(sourcePath), destPath, isReplace);
+        } catch (Exception e) {
+            $.warn("获取文件流失败..." + e);
+        }
+
+        return rs;
     }
 
     public boolean isFile(String path){
@@ -466,7 +532,7 @@ public class $File {
         return uploadFile(request, null, path, null);
     }
 
-    /**
+    /*
      * 通用解析器
      * @param request 上传请求
      * @param response
@@ -645,11 +711,26 @@ public class $File {
         $Result rs = $.result();
 
         for(String p : path) {
-            File file = new File(getPath(p));
-            if(!file.exists()) {
-                rs.addMessage(info(String.format("Make directory：%s", p)));
+            mkdir(new File(getPath(p)));
+        }
+
+        return rs;
+    }
+
+
+    public $Result mkdir(File... files) {
+        $Result rs = $.result();
+
+        for(File file : files) {
+            File tempFile = file;
+
+            if(file.getName().indexOf(".") > 1) tempFile = file.getParentFile(); // 如果是文件名带小数点，认为是文件
+            
+            if(!tempFile.exists()) {
+                rs.addMessage(info(String.format("Make directory：%s", tempFile.getPath())));
                 rs.addData(file);
-                file.mkdirs();
+
+                tempFile.mkdirs(); // 创建目录
             }
         }
 
@@ -673,4 +754,11 @@ public class $File {
 
         return this;
     }
+
+    public $File closeStearm(AutoCloseable closeable, long dealyTimeOut, String flagKey){
+        $DelayCloseable.doDelayCloseable(closeable, dealyTimeOut, flagKey);
+
+        return this;
+    }
+
 }

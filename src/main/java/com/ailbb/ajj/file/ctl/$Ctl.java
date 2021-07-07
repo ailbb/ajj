@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-/**
+/*
  * Created by Wz on 8/2/2018.
  */
 public class $Ctl {
@@ -25,7 +25,7 @@ public class $Ctl {
         return parse($.file.readFile(_file).getDataToString());
     }
 
-    /**
+    /*
      * 格式化ctl内容
      * @param context 格式化的文本
      * @return ctl对象
@@ -49,7 +49,7 @@ public class $Ctl {
         return this;
     }
 
-    /**
+    /*
      * 解析参数
      * @param row 当前行
      * @param progress 进度条
@@ -83,7 +83,7 @@ public class $Ctl {
         return progress;
     }
 
-    /**
+    /*
      * 解析丢弃的内容
      * @param row 当前行
      * @param progress 进度条
@@ -99,7 +99,7 @@ public class $Ctl {
         return progress.setEnd(true);
     }
 
-    /**
+    /*
      * 解析行分隔符
      * @param row 当前行
      * @param progress 进度条
@@ -118,7 +118,7 @@ public class $Ctl {
         return progress.setEnd(true);
     }
 
-    /**
+    /*
      * 解析列分隔符
      * @param row 当前行
      * @param progress 进度条
@@ -150,7 +150,7 @@ public class $Ctl {
         return progress.setEnd(true);
     }
 
-    /**
+    /*
      * 解析id的内容
      * @param row 当前行
      * @param progress 进度条

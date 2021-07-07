@@ -8,7 +8,7 @@ import org.openqa.selenium.firefox.FirefoxProfile;
 
 import java.io.File;
 
-/**
+/*
  * Created by Wz on 11/6/2018.
  */
 public class $Firefox {

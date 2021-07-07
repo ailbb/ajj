@@ -2,6 +2,7 @@ package com.ailbb.ajj;
 
 import com.ailbb.ajj.encrypt.EncryptUtil;
 import com.ailbb.ajj.file.$FileRunner;
+import com.ailbb.ajj.file.properties.$Properties;
 import com.ailbb.ajj.jar.$Jar;
 import com.ailbb.ajj.jdbc.$JDBC;
 import com.ailbb.ajj.date.$Date;
@@ -36,7 +37,7 @@ import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.util.*;
 
-/**
+/*
  * Created by Wz on 5/9/2018.
  */
 public class $ {
@@ -105,6 +106,8 @@ public class $ {
     // log
     public static $Logger logger = new $Logger();
 
+    // 属性工具类
+    public static $Properties properties = file.properties;
     // email
     public static $Mail mail = new $Mail();
 
@@ -389,7 +392,7 @@ public class $ {
         return regex.pickup(pattern, str);
     }
 
-    /**
+    /*
      * 拾取文本
      * @param before 前置文本
      * @param pattern 匹配表达式
@@ -558,5 +561,24 @@ public class $ {
 
     public static void decompilerJar(String sourcePath, String targetPath){
         $.jar.decompilerJar(sourcePath, targetPath);
+    }
+
+    public static String random(String s) {
+        return random(s, ",");
+    }
+
+    public static String random(String o, String split) {
+        return random(o.split(split));
+    }
+
+    public static String random(String[] lists) {
+        return trim(list.random(lists));
+    }
+    public static <T> T random(Collection<T> lists) {
+        return list.random(lists);
+    }
+
+    public static String trim(String str) {
+        return string.trim(str);
     }
 }

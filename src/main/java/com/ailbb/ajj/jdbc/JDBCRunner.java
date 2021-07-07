@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
+/*
  * Created by Wz on 8/20/2018.
  */
 public abstract class JDBCRunner {
@@ -23,7 +23,7 @@ public abstract class JDBCRunner {
     private DriverManagerDataSource dataSource; // 数据源信息
     private $JDBCConnConfiguration connConfiguration; // 连接配置信息
 
-    /**
+    /*
      * 执行sql
      * @param sql
      * @return
@@ -32,7 +32,7 @@ public abstract class JDBCRunner {
         return run(sql, new ArrayList<>());
     }
 
-    /**
+    /*
      * 执行sql
      * @param sql 执行sql
      * @return
@@ -53,7 +53,7 @@ public abstract class JDBCRunner {
         return rs;
     }
 
-    /**
+    /*
      * 执行SQL
      * @param sql
      * @return
@@ -63,7 +63,7 @@ public abstract class JDBCRunner {
         return getJdbcTemplate().queryForList(sql);
     }
 
-    /**
+    /*
      *
      * @return
      */

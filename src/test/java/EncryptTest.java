@@ -8,7 +8,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-/**
+/*
  * Created by Wz on 8/18/2020.
  */
 public class EncryptTest {
@@ -258,7 +258,7 @@ public class EncryptTest {
         }
     }
 
-    /**
+    /*
      * 测试For循环
      * @return
      * @throws Exception

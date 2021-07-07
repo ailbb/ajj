@@ -45,7 +45,7 @@ class $DocumentRoot {
         this.directory = directory;
     }
 
-    /**
+    /*
      * Returns the absolute document root when it points to a valid directory, logging a
      * warning and returning {@code null} otherwise.
      * @return the valid document root

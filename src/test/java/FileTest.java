@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-/**
+/*
  * Created by Wz on 6/30/2019.
  */
 public class FileTest {
@@ -76,7 +76,7 @@ public class FileTest {
 
     }
 
-    /**
+    /*
      * 删除小数点开头的文件
      */
     public static void deleteXIAOSHUDIAN(){
@@ -93,7 +93,7 @@ public class FileTest {
         }
     }
 
-    /**
+    /*
      * 转换文件到另外一个目录，格式变为其他
      * @param path
      * @param contextFilter
@@ -116,7 +116,7 @@ public class FileTest {
         }
     }
 
-    /**
+    /*
      * 如果文件里面包含某个内容，则替换后输出
      * @param path
      * @param sourceFix

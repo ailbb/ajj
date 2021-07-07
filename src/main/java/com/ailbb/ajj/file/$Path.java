@@ -9,10 +9,12 @@ import java.util.List;
 
 import static com.ailbb.ajj.$.*;
 
-/**
+/*
  * Created by Wz on 6/20/2018.
  */
 public class $Path {
+    private String tempDirName = "temp";
+
     public String getPath(String path){
         String currpath = "";
 
@@ -58,8 +60,16 @@ public class $Path {
         return clazz.getResource("").getPath().replaceFirst("file:", "");
     }
 
+    public String getTempPath(){
+        return getRootPath() + tempDirName;
+    }
+
+    public String getTempPath(String path){
+        return getRootPath() + tempDirName + "/" + path;
+    }
+
     public String getRootPath(){
-        return getRootPath(null);
+        return getRootPath(null); // 获取当前类所处的位置
     }
 
     public String getRootPath(Class clazz){
@@ -102,16 +112,17 @@ public class $Path {
             }
 
             String prefix = ".jar!/";
+            String jarPath = null;
             List<String> searchPaths = new ArrayList<>();
             int prefixIndex = (path = getPath(path + "/")).lastIndexOf(prefix);
 
             if(-1 != prefixIndex) {
-                searchPaths.add(path.substring(0, prefixIndex + prefix.length())); // 如果有jar包，记录jar包的位置
+                searchPaths.add((jarPath = path.substring(0, prefixIndex + prefix.length()))); // 如果有jar包，记录jar包的位置
             }
 
             searchPaths.add(path); // 最后查找当前目录
 
-            for(PathPatten p : pathPattens) { // 匹配路径
+            for(PathPatten p : pathPattens) { // 匹配所有路径
                 for(String s_path : searchPaths) {
                     int index = s_path.lastIndexOf(p.getPatten());
 
@@ -133,6 +144,9 @@ public class $Path {
                     if($.isExists(tempPath)) return rel(tempPath);
                 }
             }
+
+            // 如果所有都没匹配到，则直接返回jar的路径
+            if(-1 != prefixIndex) return jarPath;
         } catch (Exception e) {
             $.warn(e);
         }
@@ -182,4 +196,11 @@ public class $Path {
         }
     }
 
+    public String getTempDirName() {
+        return tempDirName;
+    }
+
+    public void setTempDirName(String tempDirName) {
+        this.tempDirName = tempDirName;
+    }
 }

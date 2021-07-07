@@ -2,6 +2,7 @@ package com.ailbb.ajj.file.properties;
 
 import com.ailbb.ajj.$;
 import com.ailbb.ajj.file.yml.$Yml;
+import org.springframework.core.env.PropertyResolver;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -9,14 +10,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-/**
+/*
  * Created by Wz on 8/22/2018.
  */
 public class $Properties {
     private Map<String, Properties> propertiesMap = new HashMap<>();
     public static final String $SUFFIX = ".properties";
 
-    /**
+    /*
      * 获取文件
      * @param path 文件路径，相对路径/绝对路径
      * @return 文件对象
@@ -65,4 +66,7 @@ public class $Properties {
     }
 
 
+    public String getPropertyDef(PropertyResolver pr, String key, String def) {
+        return  $.lastDef(def, pr.getProperty(key, ""));
+    }
 }

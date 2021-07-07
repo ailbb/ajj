@@ -8,7 +8,7 @@ import java.util.Map;
 
 import static com.ailbb.ajj.$.*;
 
-/**
+/*
  * Created by Wz on 5/9/2018.
  */
 public class Ajax {
@@ -142,7 +142,7 @@ public class Ajax {
         return this;
     }
 
-    /**
+    /*
      * Thread callback
      */
     public interface Callback {

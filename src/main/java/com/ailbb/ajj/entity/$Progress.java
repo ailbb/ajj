@@ -1,6 +1,6 @@
 package com.ailbb.ajj.entity;
 
-/**
+/*
  * Created by Wz on 8/2/2018.
  */
 public class $Progress {

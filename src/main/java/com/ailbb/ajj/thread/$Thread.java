@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.TimeoutException;
 
-/**
+/*
  * Created by Wz on 6/20/2018.
  */
 public class $Thread<T> {
@@ -17,7 +17,7 @@ public class $Thread<T> {
         }
     }
 
-    /**
+    /*
      * 异步执行，且返回集合结果
      * @param rs
      * @return
@@ -26,7 +26,7 @@ public class $Thread<T> {
         return asyncAndReturnMap(3*60*1000, rs);
     }
 
-    /**
+    /*
      * 异步执行，且返回集合结果
      * @param rs
      * @return
@@ -57,7 +57,7 @@ public class $Thread<T> {
         return result;
     }
 
-    /**
+    /*
      * 异步执行，且返回数组结果
      * @param rs
      * @return
@@ -67,7 +67,7 @@ public class $Thread<T> {
         return $.list.toList(result.values());
     }
 
-    /**
+    /*
      * 异步执行，且返回结果
      * @param rs
      * @return

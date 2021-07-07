@@ -1,6 +1,6 @@
 package com.ailbb.ajj.lang;
 
-/**
+/*
  * Created by Wz on 8/18/2020.
  */
 public class $Byte {

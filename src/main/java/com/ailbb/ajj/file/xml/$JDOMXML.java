@@ -10,13 +10,13 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.*;
 
-/**
+/*
  * Created by Wz on 8/9/2019.
  */
 public class $JDOMXML {
     Map<String, Integer> mapCount = new HashMap<>();
 
-    /**
+    /*
      * 通过文件名解析xml
      * @param fileName
      * @return
@@ -27,7 +27,7 @@ public class $JDOMXML {
         return parse($.file.getInputStream(fileName));
     }
 
-    /**
+    /*
      * 通过流解析xml
      * @param inputStream
      * @return
@@ -46,7 +46,7 @@ public class $JDOMXML {
         return rootElement;
     }
 
-    /**
+    /*
      * 统计xml
      * @param fileName
      * @return
@@ -56,7 +56,7 @@ public class $JDOMXML {
         return count(parse(fileName));
     }
 
-    /**
+    /*
      * 统计xml流
      * @param element
      * @return
@@ -71,7 +71,7 @@ public class $JDOMXML {
         return mapCount;
     }
 
-    /**
+    /*
      * 解析节点
      * @param element
      */

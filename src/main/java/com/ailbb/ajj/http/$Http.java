@@ -16,7 +16,7 @@ import java.util.*;
 
 import static com.ailbb.ajj.$.*;
 
-/**
+/*
  * Created by Wz on 6/20/2018.
  */
 public class $Http {
@@ -61,7 +61,7 @@ public class $Http {
             br = request.getReader();
 
             while((str = br.readLine()) != null){
-                result.append(str);
+                result.append(str + "\n");
             }
         } catch (Exception e) {
             $.warn(e);
@@ -70,7 +70,7 @@ public class $Http {
         return $.isEmptyOrNull(result.toString()) ? getParameterJSONStr(request) : result.toString();
     }
 
-    /**
+    /*
      * 获取cookie
      * @param request request对象
      * @return cookie集合
@@ -79,7 +79,7 @@ public class $Http {
         return request.getCookies();
     }
 
-    /**
+    /*
      * 获取指定cookie
      * @param request request对象
      * @param key cookie的key
@@ -95,7 +95,7 @@ public class $Http {
         return null;
     }
 
-    /**
+    /*
      * 封装发送Result对象jsonp消息
      * @param response response对象体
      * @param callback 回调方法
@@ -106,7 +106,7 @@ public class $Http {
         return send(response, String.format("%s(%s)", callback, data));
     }
 
-    /**
+    /*
      * 发送json消息
      * @param response response对象体
      * @param data 需要发送的数据对象
@@ -229,7 +229,7 @@ public class $Http {
         return $.join(list, "&");
     }
 
-    /**
+    /*
      * 发送请求
      * @param ajax ajax 请求对象
      * @return $Result 结构体
@@ -238,7 +238,7 @@ public class $Http {
         return sendRequest(ajax, false);
     }
 
-    /**
+    /*
      * 发送请求
      * @param ajax ajax 请求对象
      * @return $Result 结构体

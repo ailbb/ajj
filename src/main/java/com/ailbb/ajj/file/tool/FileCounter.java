@@ -9,7 +9,7 @@ public class FileCounter {
     public static Map<String,Long> fileMapper = new TreeMap<>();
     public static Map<String,List<String>> fileMapperList = new TreeMap<>();
 
-    /**
+    /*
      * 文件大小统计主类
      * @param path
      * @param contextFilter
@@ -34,7 +34,7 @@ public class FileCounter {
         cmdServer();
     }
 
-    /**
+    /*
      * 执行文件大小统计
      * @param path
      * @param contextFilter
@@ -61,7 +61,7 @@ public class FileCounter {
 
     }
 
-    /**
+    /*
      * 命令行服务
      */
     private static void cmdServer(){
@@ -94,7 +94,7 @@ public class FileCounter {
         input.close(); // 关闭资源
     }
 
-    /**
+    /*
      * 解析获取输入的命令行
      * @param cmd
      */
@@ -103,7 +103,7 @@ public class FileCounter {
             showFileSizeCountDetail(cmd.split(":")[1]);
     }
 
-    /**
+    /*
      * 显示文件详情
      * @param prefix
      */
