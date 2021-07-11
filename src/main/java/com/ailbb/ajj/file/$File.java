@@ -512,6 +512,10 @@ public class $File {
         return new File(getPath(path));
     }
 
+    public File getFile(String parent, String child) {
+        return new File(getPath(path + "/"+child));
+    }
+
     public String getFileType(File file){
         return getFileType(file.getName());
     }

@@ -145,8 +145,13 @@ public class $Zip {
     public File compress(InputStream in, long size, String targetPath, String fileName) {
         ZipOutputStream zos = null;
         try {
-            File zipFile = new File(targetPath, fileName.substring(0, fileName.lastIndexOf(".")) + $POSTFIX);
-            if (!zipFile.getParentFile().exists()) zipFile.getParentFile().mkdirs();
+            String destName = (fileName.contains(".") ? fileName.substring(0, fileName.lastIndexOf(".")) : fileName) + $POSTFIX;
+            File zipFile = $.file.getFile(targetPath, destName);
+            File parentFile = zipFile.getParentFile();
+            if (!parentFile.exists()) {
+                $.info("路径不存在，创建路径："+parentFile.getPath());
+                parentFile.mkdirs();
+            }
             zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(zipFile)));
             zos.putNextEntry(new ZipEntry(fileName));
             byte[] buffer = new byte[4096];

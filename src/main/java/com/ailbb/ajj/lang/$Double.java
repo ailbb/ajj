@@ -12,8 +12,9 @@ public class $Double {
         return $.isEmptyOrNull(o) ? 0 : Double.parseDouble($.str(o));
     }
 
-    public double toDouble(Object o, int index){
+    public double toDouble(Object o, int fixed){
         BigDecimal b = new BigDecimal(toDouble(o));
-        return b.setScale(index, BigDecimal.ROUND_HALF_UP).doubleValue();
+        return b.setScale(fixed, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
+
 }

@@ -32,9 +32,13 @@ public class $GZip {
         GZIPOutputStream gzip = null;
         File tmpFile = null;
         try {
-            String destName = fileName.substring(0, fileName.lastIndexOf("."));
-            tmpFile = new File(targetPath + destName);
-            if (!tmpFile.getParentFile().exists()) tmpFile.getParentFile().mkdirs();
+            String destName = (fileName.contains(".") ? fileName.substring(0, fileName.lastIndexOf(".")) : fileName);
+            tmpFile = $.file.getFile(targetPath, destName);
+            File parentFile = tmpFile.getParentFile();
+            if (!parentFile.exists()) {
+                $.info("路径不存在，创建路径："+parentFile.getPath());
+                parentFile.mkdirs();
+            }
             tar = new TarArchiveOutputStream(new FileOutputStream(tmpFile));
             TarArchiveEntry entry = new TarArchiveEntry(fileName);
             entry.setSize(size);
@@ -49,7 +53,7 @@ public class $GZip {
             tar.close();
             tar = null;
             in.close();
-            File zipFile = new File(targetPath, destName + $POSTFIX);
+            File zipFile = $.file.getFile(targetPath, destName + $POSTFIX);
             in = new FileInputStream(tmpFile);
             gzip = new GZIPOutputStream(new FileOutputStream(zipFile));
             while ((len = in.read(buffer)) > 0) {
@@ -64,7 +68,8 @@ public class $GZip {
                 if (tmpFile != null && tmpFile.exists()) tmpFile.delete();
                 if (tar != null) tar.close();
                 if (gzip != null) gzip.close();
-            } catch (IOException e) {}
+            } catch (IOException e) {
+            }
         }
         return null;
     }

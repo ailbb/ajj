@@ -122,12 +122,12 @@ public class $Logger {
         for (int i = 1; i < stackTrace.length; i++) {
             StackTraceElement e = stackTrace[i];
             if (!e.getClassName().equals(log.getClassName())) {
-                tag = e.getClassName() + "." + e.getMethodName() + e.getLineNumber();
+                tag = e.getClassName() + "." + e.getMethodName() +" | "+ e.getLineNumber();
                 break;
             }
         }
         if (tag == null) {
-            tag = log.getClassName() + "." + log.getMethodName() + log.getLineNumber();
+            tag = log.getClassName() + "." + log.getMethodName() +" | "+ log.getLineNumber();
 
         }
         return tag;
