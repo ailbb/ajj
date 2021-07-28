@@ -7,6 +7,7 @@ import com.ailbb.ajj.file.ctl.$Ctl;
 import com.ailbb.ajj.file.excel.$Excel;
 import com.ailbb.ajj.file.properties.$Properties;
 import com.ailbb.ajj.file.tool.FileCounter;
+import com.ailbb.ajj.file.tool.FileMerge;
 import com.ailbb.ajj.file.yml.$Yml;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -39,6 +40,8 @@ public class $File {
     public $Ctl ctl = new $Ctl();
 
     public $CSV csv = new $CSV();
+
+    public FileMerge merge = new FileMerge();
 
     public $Properties properties = new $Properties();
 
@@ -260,8 +263,6 @@ public class $File {
 
         return writeFile(file, isAdd, datas);
     }
-
-
 
     public $Result writeFile(File file, boolean isAdd, String... datas)  {
         $Result rs = $.result();
@@ -697,6 +698,10 @@ public class $File {
         return new List[]{headers, datas};
     }
 
+    public $Result deleteFile(String... paths)  {
+        return delete(paths);
+    }
+
     public $Result delete(String... path) {
         $Result rs = $.result();
 
@@ -704,6 +709,23 @@ public class $File {
             File file = new File(getPath(p));
             if(!file.exists()) {
                 rs.addMessage(info(String.format("Delete directory：%s", p)));
+                file.deleteOnExit();
+            }
+        }
+
+        return rs;
+    }
+
+    public $Result deleteFile(File... files)  {
+        return delete(files);
+    }
+
+    public $Result delete(File... files) {
+        $Result rs = $.result();
+
+        for(File file : files) {
+            if(null != file && !file.exists()) {
+                rs.addMessage(info(String.format("Delete directory：%s", file.getPath())));
                 file.deleteOnExit();
             }
         }

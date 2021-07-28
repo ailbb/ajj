@@ -20,6 +20,7 @@ public class $Logger {
     private $LoggerCallback loggerCallback = null;
     private List<String> history = new ArrayList<>();
     private int maxHistroyLine = 1000; // 默认缓存1000行记录
+    private boolean ended = false;
 
     public $Logger() {}
     public $Logger(String filePath) {
@@ -47,6 +48,8 @@ public class $Logger {
         $Logger.LOG_LEVEL = level;
         return this;
     }
+
+    public String err(Object... o){ return error(o); }
 
     public String error(Object... o){
         for(Object oi : o) exception(new $Exception(String.format("[ERROR]\t%s", "[" + getDzInfo() + "]" + oi)));
@@ -82,6 +85,8 @@ public class $Logger {
 
         return isEmptyOrNull(e) ? null : e[e.length-1];
     }
+
+    public String msg(Object... o){ return sout(o); }
 
     public String sout(Object... o){
         for(Object oi : o) {
@@ -168,5 +173,18 @@ public class $Logger {
     public $Logger setLoggerCallback($LoggerCallback loggerCallback) {
         this.loggerCallback = loggerCallback;
         return this;
+    }
+
+    public boolean isEnded() {
+        return ended;
+    }
+
+    public $Logger end() {
+        this.ended = ended;
+        return this;
+    }
+
+    public void setEnded(boolean ended) {
+        this.ended = ended;
     }
 }

@@ -16,6 +16,7 @@ import static com.ailbb.ajj.$.*;
 public class $Date {
     public $Cron cron = new $Cron();
     private List<Long> tcache = new ArrayList<>();
+    private $DateVariable variable = new $DateVariable();
 
     public String now(String... ns){
         String n = lastDef("s", ns);
@@ -38,6 +39,10 @@ public class $Date {
         if(n.equals("nss")) return format("yyyyMMddHHmmssS"); // number millisecond
 
         return format("yyyy-MM-dd HH:mm:ss");
+    }
+
+    public String variable(String name){
+        return variable.variable(name);
     }
 
     public String format(String patten, Date... date){

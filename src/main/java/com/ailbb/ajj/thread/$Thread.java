@@ -17,6 +17,14 @@ public class $Thread<T> {
         }
     }
 
+    public void async(boolean daemon, Runnable... rs){
+        for(Runnable r : rs) {
+            Thread t = new Thread(r);
+            t.setDaemon(daemon);
+            t.start();
+        }
+    }
+
     /*
      * 异步执行，且返回集合结果
      * @param rs

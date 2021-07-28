@@ -294,6 +294,24 @@ public class $ {
         return file.writeFile(path, isAppend, datas);
     }
 
+    public static $Result deleteFile(String... paths)  {
+        return file.deleteFile(paths);
+    }
+
+    public static $Result delete(String... paths)  {
+        return file.delete(paths);
+    }
+
+    public static $Result deleteFile(File... files)  {
+        return file.deleteFile(files);
+    }
+
+    public static $Result delete(File... files)  {
+        return file.delete(files);
+    }
+
+    public static int parseInt(Object o){ return integer.toInt(o); }
+
     public static void copyFile(String sourcePath, String destPath)  {
         file.copyFile(sourcePath, destPath);
     }
@@ -378,8 +396,13 @@ public class $ {
 
     //* Thread area
 
-    public static void async(Runnable r){
+    public static void async(Runnable... r){
         thread.async(r);
+    }
+    //* Thread area
+
+    public static void async(boolean daemon, Runnable... r){
+        thread.async(daemon, r);
     }
 
     //* regex

@@ -17,6 +17,7 @@ import java.util.Map;
 public class $JDBC {
     private JDBCRunner jdbcRunner = null;
     public Mysql mysql = new Mysql();
+    public Oracle oracle = new Oracle();
 
     public void run(String sql) {
         getJDBCRunner().run(sql);
