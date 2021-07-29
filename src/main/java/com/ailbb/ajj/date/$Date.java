@@ -15,8 +15,8 @@ import static com.ailbb.ajj.$.*;
  */
 public class $Date {
     public $Cron cron = new $Cron();
+    public  $DateVariable dateVariable = new $DateVariable();
     private List<Long> tcache = new ArrayList<>();
-    private $DateVariable variable = new $DateVariable();
 
     public String now(String... ns){
         String n = lastDef("s", ns);
@@ -42,7 +42,7 @@ public class $Date {
     }
 
     public String variable(String name){
-        return variable.variable(name);
+        return dateVariable.variable(name);
     }
 
     public String format(String patten, Date... date){
