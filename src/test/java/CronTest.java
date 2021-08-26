@@ -1,11 +1,14 @@
 import com.ailbb.ajj.$;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
 public class CronTest {
     public static void main(String[] args) throws Exception {
+        new CronTest().cronweektest();
+/*
         boolean a = true;
 
         Properties p = $.file.yml.getProperties("D:\\Z\\Code\\java\\java-ee\\Share\\sharepro\\code\\web-service\\sharepro\\src\\main\\resources\\cdb\\local-127\\auth-config\\auth-user.yml");
@@ -30,6 +33,19 @@ public class CronTest {
         strings = $.list.subCollection(strings, 0, 6);
 
         System.out.println(strings);
+*/
 
     }
+
+
+
+    public void cronweektest() throws ParseException {
+        String cron = "0 00 1 ? * 5";
+
+        List<Date> dates = $.date.cron.init(cron, false).ranges($.date.parse("2021-08-26 00:00:00"), $.date.parse("2021-10-26 00:00:00"));
+        for(Date d : dates) {
+            System.out.println($.date.format(d));
+        }
+    }
+
 }

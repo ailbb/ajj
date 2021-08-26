@@ -22,17 +22,35 @@ public class $Cron {
         init(patten);
     }
 
-    public $Cron init(String patten){
-        List<String> corn = new ArrayList<>();
+    public $Cron init(String patten, boolean isUnix){
+        List<String> cron = new ArrayList<>();
+        String[] crons = patten.split("\\s+");
+        for(int i=0; i<crons.length; i++) {
+            String v = crons[i].replace("0/0", "0");
 
-        for(String c : patten.split("\\s+")) {
-            corn.add(c.replace("0/0", "0"));
+            cron.add(getCronValue(v, i, isUnix));
         }
 
-        if(corn.size() > 6) corn = corn.subList(0,6);
+        if(cron.size() > 6) cron = cron.subList(0,6);
 
-        this.cronSequenceGenerator = new CronSequenceGenerator(this.patten = $.string.join(corn, " "));
+        this.cronSequenceGenerator = new CronSequenceGenerator(this.patten = $.string.join(cron, " "));
         return this;
+    }
+
+    public $Cron init(String patten){
+        return init(patten, true);
+    }
+
+    public String getCronValue(String v, int i) {
+        // 如果是周，
+        return getCronValue(v, i, false);
+    }
+
+    public String getCronValue(String v, int i, boolean isUnix) {
+        // 如果是周，
+        if(isUnix && i == 5 && $.test("\\d", v)) v = ($.parseInt(v)-1) + "";
+
+        return v;
     }
 
     public Date next(Date time) {
