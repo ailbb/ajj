@@ -25,20 +25,23 @@ public class $Cron {
     public $Cron init(String patten, boolean isUnix){
         List<String> cron = new ArrayList<>();
         String[] crons = patten.split("\\s+");
+
+        if(crons.length > 6) isUnix = true; // 如果是7，默认当unix解决
+
         for(int i=0; i<crons.length; i++) {
             String v = crons[i].replace("0/0", "0");
 
             cron.add(getCronValue(v, i, isUnix));
         }
 
-        if(cron.size() > 6) cron = cron.subList(0,6);
+        if(isUnix) cron = cron.subList(0,6);
 
         this.cronSequenceGenerator = new CronSequenceGenerator(this.patten = $.string.join(cron, " "));
         return this;
     }
 
     public $Cron init(String patten){
-        return init(patten, true);
+        return init(patten, false);
     }
 
     public String getCronValue(String v, int i) {
