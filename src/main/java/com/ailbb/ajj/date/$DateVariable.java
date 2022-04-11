@@ -2,6 +2,7 @@ package com.ailbb.ajj.date;
 
 import com.ailbb.ajj.$;
 
+import java.util.Calendar;
 import java.util.Date;
 
 public class $DateVariable {
@@ -190,7 +191,6 @@ public class $DateVariable {
 
     public String partition_last(int a, int b, String time) {
         Date startTime = scheduled_time(-a * 60 * 1000);
-        Date lastTime = null;
         if (time.equals("m")) {
             startTime.setMinutes(startTime.getMinutes() - b);
         } else if (time.equals("h")) {
@@ -200,7 +200,7 @@ public class $DateVariable {
         } else if (time.equals("M")) {
             startTime.setMonth(startTime.getMonth() - b);
         }
-        String time1 = format_date("YYYYMMddHHmm", lastTime);
+        String time1 = format_date("yyyyMMddHHmm", startTime);
         String day = time1.substring(0, 8);
         String minute = time1.substring(8, 12);
         System.out.println("day=" + day + ",minute='" + minute + "'");
@@ -209,8 +209,7 @@ public class $DateVariable {
 
     public String where_last(int a, int b, String time) {
         Date endTime = scheduled_time(-a * 60 * 1000);
-        String endTimeFmt = format_date("YYYYMMddHHmm", endTime);
-        Date startTime = null;
+        String endTimeFmt = format_date("yyyyMMddHHmm", endTime);
         if (time.equals("m")) {
             endTime.setMinutes(endTime.getMinutes() - b);
         } else if (time.equals("h")) {
@@ -220,7 +219,7 @@ public class $DateVariable {
         } else if (time.equals("M")) {
             endTime.setMonth(endTime.getMonth() - b);
         }
-        String startTimeFmt = format_date("YYYYMMddHHmm", startTime);
+        String startTimeFmt = format_date("yyyyMMddHHmm", endTime);
         int endDay = $.integer.toInt(endTimeFmt.substring(0, 8));
         int startDay = $.integer.toInt(startTimeFmt.substring(0, 8));
         String endMinute = endTimeFmt.substring(8, 12);
@@ -244,7 +243,6 @@ public class $DateVariable {
 
     public String unixtime_last(int a, int b, String time) {
         Date startTime = scheduled_time(0);
-        Date lastTime = null;
         if (time.equals("m")) {
             startTime.setMinutes(startTime.getMinutes() - b);
         } else if (time.equals("h")) {
@@ -256,7 +254,7 @@ public class $DateVariable {
         }
         int minutes = 8 * 60 - a;
         startTime.setMinutes(startTime.getMinutes() + minutes);
-        String newTime = format_date("YYYY-MM-dd HH:mm:00", lastTime);
+        String newTime = format_date("yyyy-MM-dd HH:mm:00", startTime);
         System.out.println("unixtime_last:" + newTime);
         return "'" + newTime + "'";
     }
@@ -290,7 +288,6 @@ public class $DateVariable {
 
     public String path_last(int a, int b, String time) {
         Date startTime = scheduled_time(-a * 60 * 1000);
-        Date lastTime = new Date();
         if (time.equals("m")) {
             startTime.setMinutes(startTime.getMinutes() - b);
         } else if (time.equals("h")) {
@@ -300,7 +297,7 @@ public class $DateVariable {
         } else if (time.equals("M")) {
             startTime.setMonth(startTime.getMonth() - b);
         }
-        String time1 = format_date("YYYYMMddHHmm", lastTime);
+        String time1 = format_date("yyyyMMddHHmm", startTime);
         String day = time1.substring(0, 8);
         String minute = time1.substring(8, 12);
         System.out.println("day=" + day + ",minute='" + minute + "'");
@@ -309,7 +306,6 @@ public class $DateVariable {
 
     public String day_last(int a, int b, String time) {
         Date startTime = scheduled_time(-a * 60 * 1000);
-        Date lastTime = new Date();
         if (time.equals("m")) {
             startTime.setMinutes(startTime.getMinutes() - b);
         } else if (time.equals("h")) {
@@ -319,7 +315,7 @@ public class $DateVariable {
         } else if (time.equals("M")) {
             startTime.setMonth(startTime.getMonth() - b);
         }
-        String time1 = format_date("YYYYMMddHHmm", lastTime);
+        String time1 = format_date("yyyyMMddHHmm", startTime);
         String day = time1.substring(0, 8);
         System.out.println("day=" + day);
         return day;
@@ -327,7 +323,6 @@ public class $DateVariable {
 
     public String minute_last(int a, int b, String time) {
         Date startTime = scheduled_time(-a * 60 * 1000);
-        Date lastTime = new Date();
         if (time.equals("m")) {
             startTime.setMinutes(startTime.getMinutes() - b);
         } else if (time.equals("h")) {
@@ -337,7 +332,7 @@ public class $DateVariable {
         } else if (time.equals("M")) {
             startTime.setMonth(startTime.getMonth() - b);
         }
-        String time1 = format_date("YYYYMMddHHmm", lastTime);
+        String time1 = format_date("yyyyMMddHHmm", startTime);
         String minute = time1.substring(8, 12);
         System.out.println("minute=" + minute);
         return minute;

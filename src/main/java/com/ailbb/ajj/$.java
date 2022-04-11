@@ -4,6 +4,7 @@ import com.ailbb.ajj.encrypt.EncryptUtil;
 import com.ailbb.ajj.file.$FileRunner;
 import com.ailbb.ajj.file.properties.$Properties;
 import com.ailbb.ajj.jar.$Jar;
+import com.ailbb.ajj.jar.$Java;
 import com.ailbb.ajj.jdbc.$JDBC;
 import com.ailbb.ajj.date.$Date;
 import com.ailbb.ajj.entity.$Progress;
@@ -14,6 +15,7 @@ import com.ailbb.ajj.http.*;
 import com.ailbb.ajj.lang.*;
 import com.ailbb.ajj.log.$Logger;
 import com.ailbb.ajj.mail.$Mail;
+import com.ailbb.ajj.mybatis.$Mybatis;
 import com.ailbb.ajj.regex.$Regex;
 import com.ailbb.ajj.server.$Server;
 import com.ailbb.ajj.server.Host;
@@ -69,8 +71,9 @@ public class $ {
     // thread
     public static $Thread thread = new $Thread();
 
-    // thread
+    // jar&java
     public static $Jar jar = new $Jar();
+    public static $Java java = new $Java();
 
     // regex
     public static $Regex regex = new $Regex();
@@ -93,6 +96,7 @@ public class $ {
     public static $List list = new $List();
     public static $Map map = new $Map();
     public static $Bean bean = new $Bean();
+    public static $Mybatis mybatis = new $Mybatis();
 
     // 加密方法
     public static EncryptUtil encrypt = new EncryptUtil();
@@ -336,8 +340,16 @@ public class $ {
         return file.getFile(path);
     }
 
+    public static List<File> getFiles(String... path){
+        return file.getFiles(path);
+    }
+
     public static void mkdir(String... path) {
         file.mkdir(path);
+    }
+
+    public static void mkdirOrFile(String... path) {
+        file.mkdirOrFile(path);
     }
 
     public static String getPath(){
@@ -538,6 +550,14 @@ public class $ {
 
     //* log
 
+    public static boolean isDebugEnabled(){
+        return logger.isDebugEnabled();
+    }
+
+    public static String debug(Object... o){
+        return logger.debug(o);
+    }
+
     public static Exception exception(Exception... e){
         return logger.exception(e);
     }
@@ -584,6 +604,9 @@ public class $ {
 
     public static void decompilerJar(String sourcePath, String targetPath){
         $.jar.decompilerJar(sourcePath, targetPath);
+    }
+    public static void decompilerClass(String sourcePath, String targetPath){
+        $.java.decompilerClass(sourcePath, targetPath);
     }
 
     public static String random(String s) {

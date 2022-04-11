@@ -4,9 +4,10 @@ import com.ailbb.ajj.$;
 import com.ailbb.ajj.entity.$Result;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 /*
@@ -24,6 +25,7 @@ public class $Zip {
     public $Result compress(String path, String... paths)  {
         return compress(path, false, Arrays.asList(paths));
     }
+
 
     public $Result compress(String path, List<String> paths)  {
         return compress(path, false, paths);
@@ -97,8 +99,9 @@ public class $Zip {
             } else if(!file.getPath().equals(filePath)){
                 InputStream in = null;
                 try {
+                    String zipPath = parentPath + file.getName();
                     in = new FileInputStream(file);
-                    zipOut.putNextEntry(new ZipEntry(parentPath + file.getName()));
+                    zipOut.putNextEntry(new ZipEntry(zipPath));
 
                     int temp = 0;
                     while((temp = in.read()) != -1){
@@ -107,7 +110,12 @@ public class $Zip {
 
                     in.close();
 
-                    if(isDelete) file.delete();
+                    $.info("Zip File : " + file.getAbsoluteFile() + " >>> " + zipPath);
+
+                    if(isDelete) {
+                        file.delete();
+                        $.info("Delete File : " + file.getAbsoluteFile());
+                    }
                 } catch (FileNotFoundException e) {
                     rs.addError($.exception(e));
                 } catch (IOException e) {
@@ -143,9 +151,13 @@ public class $Zip {
 
 
     public File compress(InputStream in, long size, String targetPath, String fileName) {
+        return compress(in, size, targetPath, fileName, $POSTFIX);
+    }
+
+    public File compress(InputStream in, long size, String targetPath, String fileName, String POSTFIX) {
         ZipOutputStream zos = null;
         try {
-            String destName = (fileName.contains(".") ? fileName.substring(0, fileName.lastIndexOf(".")) : fileName) + $POSTFIX;
+            String destName = (fileName.contains(".") ? fileName.substring(0, fileName.lastIndexOf(".")) : fileName) + POSTFIX;
             File zipFile = $.file.getFile(targetPath, destName);
             File parentFile = zipFile.getParentFile();
             if (!parentFile.exists()) {
@@ -172,4 +184,55 @@ public class $Zip {
         }
         return null;
     }
+
+    public $Result uncompress(String zipPath)  {
+        return uncompress(zipPath, $.getFile(zipPath).getParent());
+    }
+
+    public $Result uncompress(String zipPath, String sDestPath)  {
+        $Result rs = $.result();
+        $.info("uncompress:" + zipPath);
+
+        try {
+            ArrayList<String> allFileName = new ArrayList<String>();
+            // 先指定压缩档的位置和档名，建立FileInputStream对象
+            FileInputStream fins = new FileInputStream(zipPath);
+            // 将fins传入ZipInputStream中
+            ZipInputStream zins = new ZipInputStream(fins);
+            ZipEntry ze = null;
+            byte[] ch = new byte[256];
+            while ((ze = zins.getNextEntry()) != null) {
+                File zfile = new File(sDestPath, ze.getName());
+                File fpath = new File(zfile.getParentFile().getPath());
+                $.info("uncompress:" + fpath.getAbsolutePath() + " >>> " + zfile.getAbsolutePath());
+                if (ze.isDirectory()) {
+                    if (!zfile.exists())
+                        zfile.mkdirs();
+                    zins.closeEntry();
+                } else {
+                    if (!fpath.exists())
+                        fpath.mkdirs();
+                    FileOutputStream fouts = new FileOutputStream(zfile);
+                    int i;
+                    allFileName.add(zfile.getAbsolutePath());
+                    while ((i = zins.read(ch)) != -1)
+                        fouts.write(ch, 0, i);
+                    zins.closeEntry();
+                    fouts.close();
+                }
+            }
+            fins.close();
+            zins.close();
+        } catch (Exception e) {
+            rs.addError(e);
+        }
+
+        return rs;
+    }
+
+    public String subFix(String name) {
+        if(name.indexOf(".") != -1) return name.substring(0, name.indexOf("."));
+        return name;
+    }
+
 }

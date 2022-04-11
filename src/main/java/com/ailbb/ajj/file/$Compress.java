@@ -23,6 +23,13 @@ public class $Compress {
         return zip.compress(path, paths);
     }
 
+    public $Result unzip(String path)  {
+        return zip.uncompress(path);
+    }
+    public $Result unzip(String path, String descPath)  {
+        return zip.uncompress(path, descPath);
+    }
+
     public $Result zip(String path, String... paths)  {
         return zip.compress(path, paths);
     }

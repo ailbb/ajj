@@ -21,6 +21,8 @@ public class $Logger {
     private List<String> history = new ArrayList<>();
     private int maxHistroyLine = 1000; // 默认缓存1000行记录
     private boolean ended = false;
+    public static boolean DebugEnabled = false;
+
 
     public $Logger() {}
     public $Logger(String filePath) {
@@ -63,6 +65,15 @@ public class $Logger {
 
     public String info(Object... o){
         for(Object oi : o) sout( String.format("[INFO]\t%s", oi));
+        return $.lastStr(o);
+    }
+
+    public boolean isDebugEnabled(){
+        return DebugEnabled;
+    }
+
+    public String debug(Object... o){
+        for(Object oi : o) sout( String.format("[DEBUG]\t%s", oi));
         return $.lastStr(o);
     }
 

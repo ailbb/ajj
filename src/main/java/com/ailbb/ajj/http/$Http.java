@@ -7,6 +7,7 @@ import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,6 +16,7 @@ import java.net.*;
 import java.util.*;
 
 import static com.ailbb.ajj.$.*;
+import static com.ailbb.ajj.$.path;
 
 /*
  * Created by Wz on 6/20/2018.
@@ -194,6 +196,59 @@ public class $Http {
         }
 
         return false;
+    }
+
+
+    public void sendFile(HttpServletResponse response, String path) {
+        sendFile(response, path, null);
+    }
+
+
+    public void sendFile(HttpServletResponse response, String path, String fileName) {
+        sendFile(response, $.getFile(path), fileName);
+    }
+
+    public void sendFile(HttpServletResponse response, File file) {
+        sendFile(response, file, null);
+    }
+
+    public void sendFile(HttpServletResponse response, File file, String fileName) {
+        ServletOutputStream out = null;
+        FileInputStream ips = null;
+
+        try {
+            //获取文件存放的路径
+            if($.isEmptyOrNull(fileName)) fileName = file.getName();
+            //获取到文字 数据库里对应的附件名字加上老的文件名字：filename 截取到后面的文件类型 例：txt  组成一个新的文件名字：newFileName
+            if(!file.exists()) {
+                //如果文件不存在就跳出
+                return;
+            }
+            ips = new FileInputStream(file);
+            response.setContentType("multipart/form-data");
+            //为文件重新设置名字，采用数据库内存储的文件名称
+            response.addHeader("Content-Disposition", "attachment; filename=\"" + new String(fileName.getBytes("UTF-8"),"ISO8859-1") + "\"");
+            out = response.getOutputStream();
+            //读取文件流
+            int len = 0;
+            byte[] buffer = new byte[1024 * 10];
+            while ((len = ips.read(buffer)) != -1){
+                out.write(buffer,0,len);
+            }
+            out.flush();
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            try {
+                out.close();
+                ips.close();
+            } catch (IOException e) {
+                System.out.println("关闭流出现异常");
+                e.printStackTrace();
+            }
+        }
+
+        return ;
     }
 
     public $Result sendGet(Ajax ajax)  {

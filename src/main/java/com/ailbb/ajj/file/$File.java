@@ -13,6 +13,8 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
@@ -55,6 +57,14 @@ public class $File {
 
     public $Result zip(String path, List<String> paths)  {
         return compress.zip(path, paths);
+    }
+
+    public $Result unzip(String path)  {
+        return compress.unzip(path);
+    }
+
+    public $Result unzip(String path, String descPath)  {
+        return compress.unzip(path, descPath);
     }
 
     public $Result zip(String path, boolean isDelete, String... paths)  {
@@ -503,9 +513,28 @@ public class $File {
         try {
             getInputStream(path).close();
         } catch (IOException e) {
-            return false;
+            try {
+                return new File(path).exists();
+            } catch (Exception e1) {
+                return false;
+            }
         }
 
+        return true;
+    }
+
+
+    /**
+     * 检查文件，如果不存在则创建
+     * @param path
+     * @return
+     */
+    public boolean checkToDo(String path){
+        if(!isExists(path)) {
+            $.info("路径不存在，创建路径："+ path);
+            $.mkdirOrFile(path);
+            return false;
+        }
         return true;
     }
 
@@ -743,6 +772,49 @@ public class $File {
         return rs;
     }
 
+    public $Result mkfile(String... path) {
+        $Result rs = $.result();
+
+        for(String p : path) {
+            String _mkPath = getPath(p);
+            String _fileName = null;
+            String[] split = _mkPath.split("/"); // 切分路径
+
+            if(split[split.length-1].indexOf(".") > 1) { // 如果是文件名, 则分别创建文件夹和文件
+                _fileName = split[split.length-1];
+                _mkPath = _mkPath.substring(0, _mkPath.lastIndexOf("/"));
+            }
+
+            mkdir(new File(_mkPath));
+            try {
+                new File(_mkPath + "/" + _fileName).createNewFile();
+            } catch (IOException e) {
+                rs.addError(e);
+            }
+        }
+
+        return rs;
+    }
+
+
+    public $Result mkdirOrFile(String... path) {
+        $Result rs = $.result();
+
+        for(String p : path) {
+            String _mkPath = getPath(p);
+            String _fileName = null;
+            String[] split = _mkPath.split("/"); // 切分路径
+
+            if(split[split.length-1].indexOf(".") > 1) { // 如果是文件名, 则分别创建文件夹和文件
+                mkfile(p);
+            } else {
+                mkdir(p);
+            }
+        }
+
+        return rs;
+    }
+
 
     public $Result mkdir(File... files) {
         $Result rs = $.result();
@@ -787,4 +859,48 @@ public class $File {
         return this;
     }
 
+
+    public List<File> getFiles(String[] paths){
+        List<File> fileList = new ArrayList<>();
+        for(String path : paths) fileList.addAll(getFiles(path));
+        return fileList;
+    }
+
+    /**
+     * 扫描资源文件所在的路径
+     * @param paths 需要扫描的包路径
+     * @return 资源列表
+     */
+    public Resource[] scanFilesResource(String... paths){
+        Resource[] mapperLocations = new Resource[]{};
+        for(String packageSearchPath: paths) {
+            Resource[] _mapperLocation = new Resource[0];
+            try {
+                _mapperLocation = new PathMatchingResourcePatternResolver().getResources(packageSearchPath);
+            } catch (IOException e) {
+                $.warn("扫描错误：" + e);
+            }
+            mapperLocations = Arrays.copyOf(mapperLocations, mapperLocations.length + _mapperLocation.length); // 扩容
+            System.arraycopy(_mapperLocation, 0, mapperLocations, mapperLocations.length - _mapperLocation.length, _mapperLocation.length); // 临时数组和数组合并
+        }
+        return mapperLocations;
+    }
+
+    public List<File> getFiles(String path){
+        return getFiles(new File(path));
+    }
+
+    public List<File> getFiles(File file){
+        List<File> fileList = new ArrayList<>();
+
+        if (file.isDirectory()) {
+            fileList.addAll(this.getFiles(file));
+        } else if (file.isFile()) {
+            fileList.add(file);
+        } else {
+            System.out.println("Error file." + file.getName());
+        }
+
+        return fileList;
+    }
 }

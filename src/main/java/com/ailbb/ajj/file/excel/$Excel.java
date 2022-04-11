@@ -255,7 +255,7 @@ public class $Excel {
 
         String sheetName = sheet.getSheetName();
 
-        for (int i=0, datasize = data.size(), startRow = sheet.getLastRowNum(); i<datasize; i++) {
+        for (int i=0, datasize = data.size(), startRow = sheet.getLastRowNum() <0 ? 0 : sheet.getLastRowNum() ; i<datasize; i++) {
             int rowNum = i + startRow;
             Row row = sheet.createRow(rowNum);
             List<Object> li = data.get(i);
@@ -312,17 +312,21 @@ public class $Excel {
             v = cell.getBooleanCellValue();
         } else if(cell.getCellTypeEnum() == CellType.ERROR) {
             v = cell.getErrorCellValue();
-        } else if(cell.getCellTypeEnum() == CellType.NUMERIC || cell.getCellTypeEnum() == CellType.FORMULA) { // 公式
-            if(DateUtil.isCellDateFormatted(cell)) {
-                v = cell.getDateCellValue();
-            } else {
-                double d = cell.getNumericCellValue();
-                long longVal = Math.round(d);
+        } else if(cell.getCellTypeEnum() == CellType.NUMERIC || cell.getCellTypeEnum() == CellType.FORMULA) { // 如果是number类型，或者是公式
+            try {
+                if(DateUtil.isCellDateFormatted(cell)) {
+                    v = cell.getDateCellValue();
+                } else {
+                    double d = cell.getNumericCellValue();
+                    long longVal = Math.round(d);
 
-                if(Double.parseDouble(longVal + ".0") == d)
-                    v = longVal;
-                else
-                    v = d;
+                    if(Double.parseDouble(longVal + ".0") == d)
+                        v = longVal;
+                    else
+                        v = d;
+                }
+            } catch (Exception e) {
+                $.warn(e);
             }
         }
 
@@ -345,5 +349,17 @@ public class $Excel {
     public $Excel setInterlayer(Interlayer interlayer) {
         this.interlayer = interlayer;
         return this;
+    }
+
+    public List<Object> getExcelData(List<String> headers, List<HashMap<String,Object>> datas){
+        List excelData = new ArrayList<>();
+        for(HashMap<String,Object> m : datas) {
+            List l = new ArrayList();
+            for(String s : headers) l.add($.str(m.get(s)));
+
+            excelData.add(l);
+        }
+
+        return excelData;
     }
 }
