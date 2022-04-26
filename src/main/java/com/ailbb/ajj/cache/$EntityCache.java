@@ -46,6 +46,7 @@ public class $EntityCache <T> {
 
     public void setData(T data) {
         this.data = data;
+        lastUpdateTime = new Date();
     }
 
     public long getTimeOut() {
@@ -74,5 +75,6 @@ public class $EntityCache <T> {
 
     public void setAutoDelayRunnable($AutoDelayRunnable<T> autoDelayRunnable) {
         this.autoDelayRunnable = autoDelayRunnable;
+        lastUpdateTime = new Date();
     }
 }
