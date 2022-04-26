@@ -1,5 +1,7 @@
 package com.ailbb.ajj.cache;
 
+import java.util.Date;
+
 public class $EntityCache <T> {
     /**
      * 数据
@@ -17,14 +19,17 @@ public class $EntityCache <T> {
     long expiresTime;
 
     /**
+     * 数据更新时间
+     */
+    Date lastUpdateTime;
+
+    /**
      * 自动延时接口
      */
     private $AutoDelayRunnable<T> autoDelayRunnable;
 
     public $EntityCache(T data, long timeOut) {
-        this.data = data;
-        this.timeOut = timeOut;
-        expiresTime = System.currentTimeMillis() + timeOut;
+        this(data, null , timeOut);
     }
 
     public $EntityCache(T data, $AutoDelayRunnable autoDelayRunnable, long timeOut) {
@@ -32,6 +37,7 @@ public class $EntityCache <T> {
         this.autoDelayRunnable = autoDelayRunnable;
         this.timeOut = timeOut;
         expiresTime = System.currentTimeMillis() + timeOut;
+        lastUpdateTime = new Date();
     }
 
     public T getData() {
