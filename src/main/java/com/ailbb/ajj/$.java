@@ -1,5 +1,6 @@
 package com.ailbb.ajj;
 
+import com.ailbb.ajj.cache.$CacheManagerImpl;
 import com.ailbb.ajj.encrypt.EncryptUtil;
 import com.ailbb.ajj.file.$FileRunner;
 import com.ailbb.ajj.file.properties.$Properties;
@@ -65,7 +66,10 @@ public class $ {
     // date
     public static $Date date = new $Date();
 
-    // date
+    // 缓存对象
+    public static $CacheManagerImpl cache = new $CacheManagerImpl();
+
+    // tomcat处理类
     public static $Tomcat tomcat = new $Tomcat();
 
     // thread

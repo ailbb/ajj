@@ -42,6 +42,11 @@ public class Mysql extends JDBCRunner {
         );
         dataSource.setUsername($.notNull(connConfiguration.getUsername()));
         dataSource.setPassword($.notNull(connConfiguration.getPassword()));
+//        try {
+//            dataSource.setLoginTimeout(1000000);
+//        } catch (SQLException throwables) {
+//            throwables.printStackTrace();
+//        }
         return setJdbcTemplate(new JdbcTemplate(dataSource));
     }
 
