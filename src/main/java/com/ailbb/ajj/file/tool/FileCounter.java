@@ -8,6 +8,8 @@ import java.util.*;
 public class FileCounter {
     public static Map<String,Long> fileMapper = new TreeMap<>();
     public static Map<String,List<String>> fileMapperList = new TreeMap<>();
+    public static Map<String,Long> fileLineMapper = new TreeMap<>();
+    public static Map<String,List<String>> fileLineMapperList = new TreeMap<>();
 
     /*
      * 文件大小统计主类
@@ -35,6 +37,21 @@ public class FileCounter {
     }
 
     /*
+     * 文件条数统计主类
+     * @param path
+     * @param contextFilter
+     */
+    public static void fileLineCount(String path, Map<String,String> contextFilter) {
+        doFileLineCount(path, contextFilter);
+        List<Map.Entry<String,Long>> list = new ArrayList<Map.Entry<String,Long>>(fileLineMapper.entrySet());
+        //然后通过比较器来实现排序
+
+        for(Map.Entry<String,Long> mapping: list){
+            $.sout(mapping.getKey()+" --- "+mapping.getValue() + " line");
+        }
+    }
+
+    /*
      * 执行文件大小统计
      * @param path
      * @param contextFilter
@@ -48,7 +65,7 @@ public class FileCounter {
                 doFileSizeCount(path+"\\"+p, contextFilter);
             }
         } else {
-            $.sout("扫描路径：" + f.getPath() + " --- " + $.convert(f.length()));
+            $.sout("scan path：" + f.getPath() + " --- " + $.convert(f.length()));
             String prefix = f.getName().contains(".") ? f.getName().substring(f.getName().lastIndexOf(".")) : f.getName();
             if(null == fileMapper.get(prefix)) fileMapper.put(prefix, 0L);
             if(null == fileMapperList.get(prefix)) fileMapperList.put(prefix, new ArrayList<>());
@@ -56,6 +73,34 @@ public class FileCounter {
             if(null == contextFilter || (null != contextFilter && null != contextFilter.get(prefix))) {
                 fileMapper.put(prefix, fileMapper.get(prefix) + f.length());
                 fileMapperList.get(prefix).add(f.getPath());
+            }
+        }
+
+    }
+
+    /*
+     * 执行文件大小统计
+     * @param path
+     * @param contextFilter
+     */
+    private static void doFileLineCount(String path, Map<String,String> contextFilter){
+
+        File f = $.file.getFile(path);
+
+        if(f.isDirectory()) {
+            for(String p : f.list()) {
+                doFileLineCount(path+"\\"+p, contextFilter);
+            }
+        } else {
+            long fileLine = $.file.countLine(f);
+            $.sout("scan path：" + f.getPath() + " --- " + fileLine + " line");
+            String prefix = f.getName().contains(".") ? f.getName().substring(f.getName().lastIndexOf(".")) : f.getName();
+            if(null == fileLineMapper.get(prefix)) fileLineMapper.put(prefix, 0L);
+            if(null == fileLineMapperList.get(prefix)) fileLineMapperList.put(prefix, new ArrayList<>());
+
+            if(null == contextFilter || (null != contextFilter && null != contextFilter.get(prefix))) {
+                fileLineMapper.put(prefix, fileLineMapper.get(prefix) + fileLine);
+                fileLineMapperList.get(prefix).add(f.getPath());
             }
         }
 
@@ -85,7 +130,8 @@ public class FileCounter {
         }).start();
 
         do{
-            System.out.print("\n\n\n请输入命令：");
+            System.out.print("\n\n\n请输入命令：\r\n");
+            System.out.print("\t list:{type} 展开类型的文件列表；");
             val = input.next();
             i[0] = 0; // 重新计时
             commonLine(val);
@@ -109,6 +155,9 @@ public class FileCounter {
      */
     private static void showFileSizeCountDetail(String prefix){
         int i = 0;
+
+        if(null == fileMapperList || fileMapperList.get(prefix) == null) return;
+
         for(String p : fileMapperList.get(prefix)) {
             File f = new File(p);
             if(f.length() < 1024*10) {

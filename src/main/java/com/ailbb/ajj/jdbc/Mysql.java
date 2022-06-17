@@ -50,4 +50,13 @@ public class Mysql extends JDBCRunner {
         return setJdbcTemplate(new JdbcTemplate(dataSource));
     }
 
+
+    /*
+     *
+     * @return
+     */
+    public JdbcTemplate getJdbcTemplate($JDBCConnConfiguration connConfiguration) {
+        return this.setConnConfiguration(connConfiguration).getJdbcTemplate();
+    }
+
 }

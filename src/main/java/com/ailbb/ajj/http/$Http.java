@@ -429,6 +429,14 @@ public class $Http {
         return get(new Ajax(url));
     }
 
+    public $Result get(String url, Map<String,Object> params)  {
+        return get(new Ajax(url).setParams(JSONObject.fromObject(params)));
+    }
+
+    public $Result get(String url, Map<String,Object> params, boolean isClearSession)  {
+        return get(new Ajax(url).setParams(JSONObject.fromObject(params)), isClearSession);
+    }
+
     public $Result get(String url, boolean isClearSession)  {
         return get(new Ajax(url), isClearSession);
     }

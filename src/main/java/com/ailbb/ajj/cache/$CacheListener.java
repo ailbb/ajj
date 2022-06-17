@@ -18,12 +18,19 @@ public class $CacheListener{
                         cacheManagerImpl.clearByKey(key);
                         $.info(key + "缓存被清除");
                     } else if (cacheManagerImpl.isHalfExpires(key) && null != cacheManagerImpl.getCache(key).getAutoDelayRunnable()) {
+                        cacheManagerImpl.delayTime(key); // 缓存延期
                         // 如果时间已经过半, 并且自动延期,  则重新加载数据
-                        new Thread(() -> {
+                        new Thread(() -> { // 重新加载数据
                             $.info(key + "有效期不足, 继续延期.");
                             cacheManagerImpl.autoGetSaveData(key, cacheManagerImpl.getCache(key).getAutoDelayRunnable(), cacheManagerImpl.getCache(key).getTimeOut()); // 加载数据
                         }).start();
                     }
+                }
+
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    $.warn("睡眠异常, 重试中...");
                 }
             }
         }).start();

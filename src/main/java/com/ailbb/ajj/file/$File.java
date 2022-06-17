@@ -8,6 +8,7 @@ import com.ailbb.ajj.file.excel.$Excel;
 import com.ailbb.ajj.file.properties.$Properties;
 import com.ailbb.ajj.file.tool.FileCounter;
 import com.ailbb.ajj.file.tool.FileMerge;
+import com.ailbb.ajj.file.xml.$Xml;
 import com.ailbb.ajj.file.yml.$Yml;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -40,6 +41,8 @@ public class $File {
     public $Excel excel = new $Excel();
 
     public $Ctl ctl = new $Ctl();
+
+    public $Xml xml = new $Xml();
 
     public $CSV csv = new $CSV();
 
@@ -167,6 +170,10 @@ public class $File {
         return rs;
     }
 
+    public long countLine(File f) {
+        return countLine(f, (text,i) -> text);
+    }
+
     public String readLine(File f) {
         return readLine(f, (text,i) -> text);
     }
@@ -178,6 +185,15 @@ public class $File {
             $.exception(e);
         }
         return "";
+    }
+
+    public long countLine(File f, $FileReplacer fr) {
+        try {
+            return countLine(new FileInputStream(f), charset.UTF8, fr);
+        } catch (FileNotFoundException e) {
+            $.exception(e);
+        }
+        return 0;
     }
 
     public String readLine(InputStream is) {
@@ -221,6 +237,34 @@ public class $File {
         }
 
         return "";
+    }
+
+    public long countLine(InputStream is, String charset, $FileReplacer fr) {
+        StringBuffer content = new StringBuffer();
+        if(null != is) {
+            BufferedInputStream bis = new BufferedInputStream(is);
+            BufferedReader reader = null;
+            // 之所以用BufferedReader,而不是直接用BufferedInputStream读取,是因为BufferedInputStream是InputStream的间接子类,
+            // InputStream的read方法读取的是一个byte,而一个中文占两个byte,所以可能会出现读到半个汉字的情况,就是乱码.
+            // BufferedReader继承自Reader,该类的read方法读取的是char,所以无论如何不会出现读个半个汉字的.
+            try {
+                reader = new BufferedReader (new InputStreamReader(bis, charset));
+                String row;
+                int index = 1;
+                while ((row = reader.readLine()) != null) index++;
+
+                return index;
+            } catch (UnsupportedEncodingException e) {
+                $.exception(e);
+            } catch (IOException e) {
+                $.exception(e);
+            } finally {
+                $.file.closeStearm(bis);
+                $.file.closeStearm(reader);
+            }
+        }
+
+        return 0;
     }
 
 
@@ -706,6 +750,16 @@ public class $File {
         return is;
     }
 
+    public InputStream getInputStream(File file) throws IOException {
+        InputStream is = new FileInputStream(file);
+
+        if(null == is) throw new FileNotFoundException(file.getAbsolutePath());
+
+        info(String.format("Read file：%s", file.getAbsolutePath()));
+
+        return is;
+    }
+
     public InputStream getResourceAsStream(String path) {
         return Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
     }
@@ -838,6 +892,10 @@ public class $File {
 
     public static void fileTypeSizeCount(String path, Map<String,String> contextFilter){
         FileCounter.fileTypeSizeCount(path, contextFilter);
+    }
+
+    public static void fileLineCount(String path, Map<String,String> contextFilter){
+        FileCounter.fileLineCount(path, contextFilter);
     }
 
     public $File closeStearm(AutoCloseable closeable){

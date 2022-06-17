@@ -60,6 +60,11 @@ public class $EntityCache <T> {
     public boolean isExpires() {
         return expiresTime - System.currentTimeMillis() < 0;
     }
+    public boolean delayTime() {
+        expiresTime = System.currentTimeMillis() + timeOut;
+        lastUpdateTime = new Date();
+        return true;
+    }
 
     /**
      * 已经不足一半有效期

@@ -139,6 +139,15 @@ public class $CacheManagerImpl implements $CacheManage {
     }
 
     /**
+     * 缓存延期
+     * @param key 缓存的key
+     * @return boolean
+     */
+    public boolean delayTime(String key) {
+        return !caches.containsKey(key) ? true : caches.get(key).delayTime();
+    }
+
+    /**
      * 获取所有key
      * @return
      */

@@ -5,6 +5,7 @@ import com.ailbb.ajj.$;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -86,6 +87,54 @@ public class $Date {
 
     public Date date(long num, String... types){
         return date(new Date(), num, types);
+    }
+
+    public Calendar mondayOfCalendar(){
+        return mondayOfCalendar(0);
+    }
+
+    public Calendar mondayOfCalendar(int index){
+        Calendar cal = Calendar.getInstance();
+        cal.setFirstDayOfWeek(Calendar.MONDAY);
+        // 获得当前日期是一个星期的第几天
+        int day = cal.get(Calendar.DAY_OF_WEEK);
+        // 根据日历的规则，给当前日期减去星期几与一个星期第一天的差值
+        //  cal.getFirstDayOfWeek()根据前面的设置 来动态的改变此值
+        cal.add(Calendar.DATE, cal.getFirstDayOfWeek() - day + index);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+
+        return cal;
+    }
+
+    public Date Monday(){
+        return mondayOfCalendar().getTime();
+    }
+
+    public Date Tuesday(){
+        return mondayOfCalendar(1).getTime();
+    }
+
+    public Date Wednesday(){
+        return mondayOfCalendar(2).getTime();
+    }
+
+    public Date Thursday(){
+        return mondayOfCalendar(3).getTime();
+    }
+
+    public Date Friday(){
+        return mondayOfCalendar(4).getTime();
+    }
+
+    public Date Saturday(){
+        return mondayOfCalendar(5).getTime();
+    }
+
+    public Date Sunday(){
+        return mondayOfCalendar(6).getTime();
     }
 
     /*
