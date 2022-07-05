@@ -40,7 +40,7 @@ public class Sm4Util extends Encryption {
 
     private static Map<String, Sm4Util> cache = new HashMap<>();
 
-    private Sm4Util() {}
+    public Sm4Util() {}
 
     public Sm4Util(String strkey) throws NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, UnsupportedEncodingException, NoSuchProviderException, InvalidKeyException {
         this(strkey, ALGORITHM_NAME_CBC_PADDING);

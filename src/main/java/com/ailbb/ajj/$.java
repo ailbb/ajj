@@ -1,7 +1,11 @@
 package com.ailbb.ajj;
 
 import com.ailbb.ajj.cache.$CacheManagerImpl;
+import com.ailbb.ajj.encrypt.util.StringEncryptorUtil;
 import com.ailbb.ajj.encrypt.EncryptUtil;
+import com.ailbb.ajj.encrypt.Encryption;
+import com.ailbb.ajj.encrypt.util.AESUtil;
+import com.ailbb.ajj.encrypt.util.Sm4Util;
 import com.ailbb.ajj.file.$FileRunner;
 import com.ailbb.ajj.file.properties.$Properties;
 import com.ailbb.ajj.jar.$Jar;
@@ -29,14 +33,19 @@ import com.ailbb.ajj.unit.$Unit;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import javax.crypto.NoSuchPaddingException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.text.ParseException;
 import java.util.*;
 
@@ -113,6 +122,10 @@ public class $ {
 
     // log
     public static $Logger logger = new $Logger();
+
+    public static Encryption stringencryptor = new StringEncryptorUtil();
+    public static Encryption aes = new AESUtil();
+    public static Encryption sm4 = new Sm4Util();
 
     // 属性工具类
     public static $Properties properties = file.properties;
@@ -631,4 +644,16 @@ public class $ {
     public static String trim(String str) {
         return string.trim(str);
     }
+
+    public static Encryption Sm4(String key) throws InvalidAlgorithmParameterException, NoSuchPaddingException, UnsupportedEncodingException, NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException {
+        return new Sm4Util(key);
+    }
+    public static Encryption AES(String key) throws InvalidAlgorithmParameterException, NoSuchPaddingException, UnsupportedEncodingException, NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException {
+        return new AESUtil(key);
+    }
+
+    public static Encryption StringEncryptor(String key) {
+        return new StringEncryptorUtil(key);
+    }
+
 }

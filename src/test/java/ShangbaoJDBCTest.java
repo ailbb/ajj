@@ -1,22 +1,18 @@
 import com.ailbb.ajj.$;
 import com.ailbb.ajj.entity.$JDBCConnConfiguration;
-import com.ailbb.ajj.entity.$Result;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /*
  * Created by Wz on 6/30/2019.
  */
-public class JDBCTest {
+public class ShangbaoJDBCTest {
     static String shangbao_business_sql = "SELECT\n" +
             "\tcase when td.uptype in ('IuCS','IuPS','LTE') then 'ESB'\n" +
             "when td.uptype in ('PDP084','CDR084','FDR084') then '集团信息化'\n" +
@@ -104,12 +100,62 @@ public class JDBCTest {
             "\tcheck.warn_result w inner join check.sx_cfg_server_info cf on w.host=cf.IP_id\n" +
             "\twhere cf.USE_TYPE IN ('2file','kafka') and warnid not in ('10009');";
 
-    static String sql = "SELECT *\n" +
+    static String host_list = "SELECT *\n" +
             "FROM\n" +
-            "\tCHECK.sx_cfg_server_info \n" +
-            "WHERE\n" +
-            "\tuse_type = '集群' \n" +
-            "\tgroup by motor_room;";
+            "\tCHECK.sx_cfg_server_info \n";
+
+    static String link_bandwidth = "SELECT * from sx_cfg_link_bandwidth where type='shangbao'";
+
+    static String point_load = "\n" +
+            "\tselect CASE WHEN PORT IN ('GigabitEthernet3/0/8(10G)') then 'ESB' \n" +
+            "\tWHEN PORT IN ('GigabitEthernet2/0/1','GigabitEthernet2/0/2') then '集团信息化' \n" +
+            "\tWHEN PORT IN ('GigabitEthernet3/0/9(10G)','GigabitEthernet2/0/0') then '管局' END momot_room,\n" +
+            "\tif(avg(if(inused<0.001,null,inused))<avg(if(inused<0.001,null,outused)), avg(if(inused<0.001,null,outused)),avg(if(inused<0.001,null,inused))) up_load\n" +
+            "\tfrom check.check_lte_exchanger \n" +
+            "\twhere time BETWEEN date_sub( now(), INTERVAL 50 MINUTE ) \tAND now()\n" +
+            "\tand port in ('GigabitEthernet3/0/8(10G)','GigabitEthernet2/0/1','GigabitEthernet2/0/1','GigabitEthernet3/0/9(10G)','GigabitEthernet2/0/0')\n" +
+            " and host='172.26.1.25'\n" +
+            " group by  CASE WHEN PORT IN ('GigabitEthernet3/0/8(10G)') then 'ESB' \n" +
+            "\tWHEN PORT IN ('GigabitEthernet2/0/1','GigabitEthernet2/0/2') then '集团信息化' \n" +
+            "\tWHEN PORT IN ('GigabitEthernet3/0/9(10G)','GigabitEthernet2/0/0') then '管局' end\n" +
+            "\n" +
+            "union all\n" +
+            "\n" +
+            "select 'TT' momot_room,tx_flow/100 up_load from check_lte_interfaceinfo  \n" +
+            "where  time BETWEEN date_sub( now(), INTERVAL 30 MINUTE ) \tAND now()\n" +
+            "and ip='172.26.1.198' and port='1/f/25';\n";
+
+    static String overview_sql = "\n" +
+            "select cpu_load,mem_load,disk_load\n" +
+            "from \n" +
+            "(\n" +
+            "select \n" +
+            "\t'up' up,\n" +
+            "\tavg(cpuusedrate) cpu_load,\n" +
+            "\tsum(usedmem)/sum(mem) mem_load \n" +
+            "from\t\n" +
+            "\tcheck.check_server_performancev w\n" +
+            "\tinner join check.sx_cfg_server_info cf on w.host=cf.IP_id\n" +
+            "where \n" +
+            "\tcf.USE_TYPE IN ('2file','kafka') \n" +
+            "\tand time>=date_sub(CURDATE(), interval 1 hour)\n" +
+            "\tand w.system is not null and cpuusedrate>5\n" +
+            ") cm\n" +
+            "\n" +
+            "inner join \n" +
+            "\n" +
+            "(\n" +
+            "select \n" +
+            "\t'up' up,\n" +
+            "\tavg(usedrate) disk_load \n" +
+            "from check_server_disk di \n" +
+            "\tinner join check.sx_cfg_server_info cf on di.host=cf.IP_id\n" +
+            "where \n" +
+            "\tcf.USE_TYPE IN ('2file','kafka') \n" +
+            "\tand time>=(SELECT date_sub(max(time), interval 1 hour) FROM check_server_disk)\n" +
+            "\tand `data` regexp '^/data'\n" +
+            "\tand usedrate>10 \n" +
+            ") di on cm.up=di.up;";
 
     public static void main(String[] args) throws IOException {
         t();
@@ -128,14 +174,42 @@ public class JDBCTest {
         $.jdbc.mysql.setConnConfiguration(jdbcConnConfiguration);
 
         // 查询分区的结果
-        List<Map<String,Object>>  list = $.jdbc.mysql.getJdbcTemplate().queryForList(shangbao_warn_sql);
+        List<Map<String,Object>>  list = $.jdbc.mysql.getJdbcTemplate().queryForList(overview_sql);
 
 //        SHANGBAO_YEWU(list);
 //        SHANGBAO_QUSHITU_DAY(list);
 //        SHANGBAO_QUSHITU_WEEK(list);
 //        SHANGBAO_DEVICE(list);
-        SHANGBAO_WARN(list);
+//        SHANGBAO_WARN(list);
 //        ALL_DEVICE(list);
+//        SHANGBAO_linkBandwidth(list);
+//        SHANGBAO_point_load(list);
+        SHANGBAO_overview(list);
+    }
+
+    private static void SHANGBAO_overview(List<Map<String, Object>> list) {
+        Map<String, Object> map = new HashMap<>();
+        for(Map<String, Object> mp : list) {
+            map.put("cpu_load", mp.get("cpu_load"));
+            map.put("mem_load", mp.get("mem_load"));
+            map.put("disk_load", mp.get("disk_load"));
+        }
+
+        System.out.println(JSONObject.fromObject(map));
+    }
+
+    private static void SHANGBAO_point_load(List<Map<String, Object>> list) {
+        Map<String, Object> map = new HashMap<>();
+        for(Map<String, Object> mp : list) map.put(mp.get("momot_room").toString(), mp.get("up_load"));
+
+        System.out.println(JSONObject.fromObject(map));
+    }
+
+    private static void SHANGBAO_linkBandwidth(List<Map<String, Object>> list) {
+        Map<String, Object> map = new HashMap<>();
+        for(Map<String, Object> mp : list) map.put(mp.get("label").toString(), mp.get("context"));
+
+        System.out.println(JSONObject.fromObject(map));
     }
 
     /**

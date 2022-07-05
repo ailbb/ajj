@@ -30,7 +30,7 @@ public class AESUtil extends Encryption {
 
     private static Map<String, AESUtil> cache = new HashMap<>();
 
-    private AESUtil() {}
+    public AESUtil() {}
 
     public AESUtil(String strkey) throws NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, UnsupportedEncodingException, NoSuchProviderException, InvalidKeyException {
         if(strkey==null || strkey.length()==0)
