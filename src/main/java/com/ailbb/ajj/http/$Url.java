@@ -1,7 +1,5 @@
 package com.ailbb.ajj.http;
 
-import com.ailbb.ajj.$;
-import com.sun.corba.se.spi.ior.ObjectKey;
 import net.sf.json.JSONObject;
 
 import javax.servlet.http.HttpServletRequest;

@@ -2,6 +2,7 @@ package com.ailbb.ajj.http;
 
 import static com.ailbb.ajj.$.*;
 
+import com.ailbb.ajj.$;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -19,6 +20,13 @@ public class Proxy {
     public static void init(){
         boolean inited = false;
         info("AJJ init...");
+
+        double javaVersion = $.toDouble(System.getProperty("java.specification.version"));
+        double classVersion = $.toDouble(System.getProperty("java.class.version"));
+
+        if(javaVersion < 11) $.warn("Your java version is ["+javaVersion+"].  Please upgrade to the new version as soon as possible. At the least >Java 11");
+
+        if(classVersion < 55) $.warn("Your class version is ["+classVersion+"]. Please upgrade to the new version as soon as possible. At the least >Class 55.0");
 
         if(new File(getPath($PROXY_PATH)).exists()) inited = initProxy($PROXY_PATH);
 

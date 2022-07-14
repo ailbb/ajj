@@ -488,6 +488,10 @@ public class $ {
         return integer.toInt(object);
     }
 
+    public static double toDouble(Object object){
+        return doubled.toDouble(object);
+    }
+
     public static String join(Collection list, Object... u){
         return string.join(list, u);
     }

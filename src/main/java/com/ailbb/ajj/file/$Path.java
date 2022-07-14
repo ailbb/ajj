@@ -1,7 +1,6 @@
 package com.ailbb.ajj.file;
 
 import com.ailbb.ajj.$;
-import jdk.nashorn.internal.runtime.linker.Bootstrap;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -55,7 +54,7 @@ public class $Path {
     }
 
     public String getPath(Class clazz){
-        if($.isEmptyOrNull(clazz)) clazz = Bootstrap.class;
+        if($.isEmptyOrNull(clazz)) clazz = Runtime.class;
 
         return clazz.getResource("").getPath().replaceFirst("file:", "");
     }
