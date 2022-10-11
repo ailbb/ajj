@@ -14,7 +14,7 @@ import static com.ailbb.ajj.$.*;
 public class $Path {
     private String tempDirName = "temp";
 
-    public String getPath(String path){
+    public String getPath(String path, boolean isSubRoot){
         String currpath = "";
 
         if(system().equals("windows")) {
@@ -31,7 +31,17 @@ public class $Path {
             currpath = System.getProperty("user.dir");
         }
 
-        return isEmptyOrNull(currpath) ? rel(path) : rel(subRootPath(currpath, 1), path);
+        if(isEmptyOrNull(currpath)) return rel(path);
+
+        if(!isSubRoot) return rel(subRootPath(currpath, 1), path);
+
+        $.warn("路径无法识别："+path + " >>> " + currpath);
+
+        return currpath;
+    }
+
+    public String getPath(String path){
+        return getPath(path, false);
     }
 
     public String getDirPath(String path){
@@ -56,7 +66,14 @@ public class $Path {
     public String getPath(Class clazz){
         if($.isEmptyOrNull(clazz)) clazz = Runtime.class;
 
-        return clazz.getResource("").getPath().replaceFirst("file:", "");
+        String clazzPath = clazz.getResource("").getPath();
+
+        try {
+            return clazzPath.replaceFirst("file:", "");
+        } catch (Exception e){
+            $.warn("无法初始化类路径，请检查："+ clazzPath+ "（" +e+"）");
+            return clazzPath;
+        }
     }
 
     public String getTempPath(){
@@ -93,6 +110,7 @@ public class $Path {
                 case 1: // 1，jar包工程
                     pathPattens = new PathPatten[]{
                             new PathPatten(1, "/WEB-INF/"),
+                            new PathPatten(1, "/BOOT-INF/"),
                             new PathPatten(2, "/classes/")
                     };
                     break;
@@ -113,7 +131,7 @@ public class $Path {
             String prefix = ".jar!/";
             String jarPath = null;
             List<String> searchPaths = new ArrayList<>();
-            int prefixIndex = (path = getPath(path + "/")).lastIndexOf(prefix);
+            int prefixIndex = (path = path.endsWith("/") ? path : (path + "/")).lastIndexOf(prefix);
 
             if(-1 != prefixIndex) {
                 searchPaths.add((jarPath = path.substring(0, prefixIndex + prefix.length()))); // 如果有jar包，记录jar包的位置
@@ -129,24 +147,30 @@ public class $Path {
                        return s_path.substring(0, p.getType() == 1 ? index : (index + p.getPatten().length()));
                     }
 
-                    String tempPath = getPath(s_path + "/");
+                    String tempPath = getPath(s_path + "/", true);
+
+                    if($.isEmptyOrNull(tempPath)) {
+                        $.warn("路径无法解析：" + s_path);
+                        continue;
+                    }
 
                     // 先找同级
                     tempPath = tempPath.substring(0, tempPath.length() - 1);
                     tempPath = tempPath.substring(0, tempPath.lastIndexOf("/") + 1) + p.getPatten();
 
-                    if($.isExists(tempPath)) return rel(tempPath);
+                    if($.isExists(tempPath, false)) return rel(tempPath);
 
                     // 再找下级
                     tempPath = s_path + "/" + p.getPatten();
 
-                    if($.isExists(tempPath)) return rel(tempPath);
+                    if($.isExists(tempPath, false)) return rel(tempPath);
                 }
             }
 
             // 如果所有都没匹配到，则直接返回jar的路径
             if(-1 != prefixIndex) return jarPath;
         } catch (Exception e) {
+            $.warn("路径解析失败：" + path);
             $.warn(e);
         }
 

@@ -554,8 +554,12 @@ public class $File {
     }
 
     public boolean isExists(String path){
+        return isExists(path, false);
+    }
+
+    public boolean isExists(String path, boolean isFormatPath){
         try {
-            getInputStream(path).close();
+            getInputStream(path, isFormatPath).close();
         } catch (IOException e) {
             try {
                 return new File(path).exists();
@@ -733,9 +737,14 @@ public class $File {
     }
 
     public InputStream getInputStream(String path) throws IOException {
+        return getInputStream(path, true);
+    }
+
+
+    public InputStream getInputStream(String path, boolean isFormatPath) throws IOException {
         InputStream is = null;
 
-        path = getPath(path);
+        path = isFormatPath ? getPath(path) : path;
 
         if(test("\\.jar!", path)) { // 如果内容在jar包内，则用流去读取
             is = new URL("jar:file:" + path).openConnection().getInputStream();

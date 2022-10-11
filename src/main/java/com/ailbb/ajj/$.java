@@ -139,7 +139,11 @@ public class $ {
     public static $Progress progress() { return new $Progress(); }
 
     static {
-        Proxy.init();
+        try {
+            Proxy.init();
+        } catch (Exception e){
+            $.warn("系统无法初始化路径，缺少功能模块启动！"+e);
+        }
     }
 
      //* Http area
@@ -351,6 +355,10 @@ public class $ {
 
     public static boolean isExists(String path){
         return file.isExists(path);
+    }
+
+    public static boolean isExists(String path, boolean isFormatPath){
+        return file.isExists(path, isFormatPath);
     }
 
     public static File getFile(String path){
@@ -584,11 +592,23 @@ public class $ {
     }
 
     public static String error(Object... o){
-        return logger.error(o);
+        try {
+            return logger.error(o);
+        } catch (Exception e) {
+            System.out.println("无法唤醒日志类："+e);
+            System.out.println(o);
+        }
+        return $.lastStr(o);
     }
 
     public static String warn(Object... o){
-        return logger.warn(o);
+        try {
+            return logger.warn(o);
+        } catch (Exception e) {
+            System.out.println("无法唤醒日志类："+e);
+            System.out.println(o);
+        }
+        return $.lastStr(o);
     }
 
     public static String info(Object... o){
