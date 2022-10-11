@@ -145,7 +145,7 @@
 
         <version.selenium.firefox>3.141.0</version.selenium.firefox>
         <version.jdom2>2.0.6</version.jdom2>
-        <version.commons.compress>1.20</version.commons.compress>
+        <version.commons.compress>1.21</version.commons.compress>
         <version.httpclient>4.5.10</version.httpclient>
         <version.bcprov-jdk15on>1.66</version.bcprov-jdk15on>
     </properties>
