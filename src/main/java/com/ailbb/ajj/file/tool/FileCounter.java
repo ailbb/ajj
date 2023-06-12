@@ -60,6 +60,8 @@ public class FileCounter {
 
         File f = $.file.getFile(path);
 
+        if(path.indexOf(".git") != -1 || path.indexOf("target") != -1 ) return;
+
         if(f.isDirectory()) {
             for(String p : f.list()) {
                 doFileSizeCount(path+"\\"+p, contextFilter);
@@ -86,6 +88,8 @@ public class FileCounter {
     private static void doFileLineCount(String path, Map<String,String> contextFilter){
 
         File f = $.file.getFile(path);
+
+        if(path.indexOf(".git") != -1 ||path.indexOf(".svn") != -1 || path.indexOf("target") != -1 ) return;
 
         if(f.isDirectory()) {
             for(String p : f.list()) {
