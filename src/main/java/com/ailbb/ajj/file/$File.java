@@ -18,7 +18,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -678,14 +677,6 @@ public class $File {
     }
 
     public $Result uploadFile(MultipartFile file, String path, String type){
-        try {
-            if(file instanceof CommonsMultipartFile) {
-                return uploadFile(((CommonsMultipartFile) file).getFileItem(), path, type);
-            }
-        } catch (Exception e) {
-            $.warn(e);
-        }
-
         $Result rs = mkdir(path);
         $FileInfo fi = new $FileInfo(file);
         $.timeclock();

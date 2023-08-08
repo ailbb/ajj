@@ -3,7 +3,6 @@ package com.ailbb.ajj.file;
 import com.ailbb.ajj.$;
 import org.apache.commons.fileupload.FileItem;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.io.File;
 
@@ -53,12 +52,6 @@ public class $FileInfo {
     }
 
     public $FileInfo initMultipartFile(MultipartFile file) {
-        try {
-            if(file instanceof CommonsMultipartFile) {
-                return initFileItem(((CommonsMultipartFile) file).getFileItem());
-            }
-        } catch (Exception e) { $.warn(e); }
-
         return setMultipartFile(file)
                 .setFileName(file.getOriginalFilename())
                 .setType($.file.getFileType(file.getOriginalFilename()))
