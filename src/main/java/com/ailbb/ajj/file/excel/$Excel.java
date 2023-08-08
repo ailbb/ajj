@@ -304,15 +304,15 @@ public class $Excel {
     public Object getCellObjectValue(Cell cell){
         Object v = "";
 
-        if($.isEmptyOrNull(cell) || cell.getCellTypeEnum() == CellType._NONE || cell.getCellTypeEnum() == CellType.BLANK) {
+        if($.isEmptyOrNull(cell) || cell.getCellType() == CellType._NONE || cell.getCellType() == CellType.BLANK) {
             v = "";
-        } else if(cell.getCellTypeEnum() == CellType.STRING) {
+        } else if(cell.getCellType() == CellType.STRING) {
             v = cell.getStringCellValue();
-        } else if(cell.getCellTypeEnum() == CellType.BOOLEAN) {
+        } else if(cell.getCellType() == CellType.BOOLEAN) {
             v = cell.getBooleanCellValue();
-        } else if(cell.getCellTypeEnum() == CellType.ERROR) {
+        } else if(cell.getCellType() == CellType.ERROR) {
             v = cell.getErrorCellValue();
-        } else if(cell.getCellTypeEnum() == CellType.NUMERIC || cell.getCellTypeEnum() == CellType.FORMULA) { // 如果是number类型，或者是公式
+        } else if(cell.getCellType() == CellType.NUMERIC || cell.getCellType() == CellType.FORMULA) { // 如果是number类型，或者是公式
             try {
                 if(DateUtil.isCellDateFormatted(cell)) {
                     v = cell.getDateCellValue();
