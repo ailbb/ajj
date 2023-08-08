@@ -127,7 +127,7 @@
         <encoding>UTF-8</encoding>
         <java.version>1.8</java.version>  <!-- Don't specify the version-->
 
-        <version.spring>5.1.9.RELEASE</version.spring>
+        <version.spring>6.0.0</version.spring>
 
         <version.jsonlib>2.4</version.jsonlib>
         <version.servlet>3.1.0</version.servlet>
