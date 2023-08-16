@@ -136,19 +136,24 @@
         <version.velocity>2.3</version.velocity>
         <version.velocity.tools>3.1</version.velocity.tools>
         <version.velocity.tools-view>3.0</version.velocity.tools-view>
-        <version.mail>1.6.0</version.mail>
+        <version.mail>2.1.2</version.mail>
 
-        <version.jdbc.mysql>8.0.28</version.jdbc.mysql>
+        <version.jdbc.mysql>8.1.0</version.jdbc.mysql>
 
         <version.fileupload>2.0.0-M1</version.fileupload>
         <version.poi>5.2.3</version.poi>
 
-        <version.snakeyaml.yaml>2.0</version.snakeyaml.yaml>
+        <version.snakeyaml.yaml>2.1</version.snakeyaml.yaml>
 
-        <version.selenium.firefox>3.141.0</version.selenium.firefox>
-        <version.jdom2>2.0.6</version.jdom2>
-        <version.commons.compress>1.21</version.commons.compress>
-        <version.httpclient>4.5.14</version.httpclient>
+        <version.selenium.firefox>4.11.0</version.selenium.firefox>
+        <version.jdom2>2.0.6.1</version.jdom2>
+        <version.commons.compress>1.23.0</version.commons.compress>
+        <version.commons-io>2.13.0</version.commons-io>
+        <version.commons-lang3>3.13.0</version.commons-lang3>
+        <version.jasypt>3.0.5</version.jasypt>
+        <version.mybatis>3.5.13</version.mybatis>
+        <version.junit>5.10.0</version.junit>
+        <version.httpclient>5.2.1</version.httpclient>
         <version.bcprov-jdk15on>1.70</version.bcprov-jdk15on>
     </properties>
 
@@ -209,9 +214,16 @@
 
 
         <!-- https://mvnrepository.com/artifact/javax.mail/javax.mail-api -->
+<!--        <dependency>-->
+<!--            <groupId>javax.mail</groupId>-->
+<!--            <artifactId>javax.mail-api</artifactId>-->
+<!--            <version>${version.mail}</version>-->
+<!--        </dependency>-->
+
+        <!-- https://mvnrepository.com/artifact/javax.mail/javax.mail-api -->
         <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>javax.mail-api</artifactId>
+            <groupId>jakarta.mail</groupId>
+            <artifactId>jakarta.mail-api</artifactId>
             <version>${version.mail}</version>
         </dependency>
 
@@ -230,10 +242,24 @@
         </dependency>
 
         <!-- MySQL 连接驱动依赖 -->
+<!--        <dependency>-->
+<!--            <groupId>mysql</groupId>-->
+<!--            <artifactId>mysql-connector-java</artifactId>-->
+<!--            <version>${version.jdbc.mysql}</version>-->
+<!--        </dependency>-->
+
+        <!-- MySQL 连接驱动依赖 -->
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
             <version>${version.jdbc.mysql}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${version.commons-io}</version>
         </dependency>
 
         <!-- 文件上传所依赖的jar包 -->
@@ -293,9 +319,17 @@
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+<!--        <dependency>-->
+<!--            <groupId>org.apache.httpcomponents</groupId>-->
+<!--            <artifactId>httpclient</artifactId>-->
+<!--            <version>${version.httpclient}</version>-->
+<!--        </dependency>-->
+
+        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
+
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
             <version>${version.httpclient}</version>
         </dependency>
 
@@ -306,18 +340,13 @@
 <!--            <version>11.2.0.1.0</version>-->
 <!--        </dependency>-->
         <!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15on -->
+
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
             <version>${version.bcprov-jdk15on}</version>
         </dependency>
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>decompiler</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/jar/java-decompiler.jar</systemPath>
-        </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-compress -->
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -328,25 +357,44 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.12.0</version>
+            <version>${version.commons-lang3}</version>
         </dependency>
 
         <dependency>
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis</artifactId>
-            <version>3.5.9</version>
+            <version>${version.mybatis}</version>
+        </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>junit</groupId>-->
+<!--            <artifactId>junit</artifactId>-->
+<!--            <version>4.13.2</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
+
+        <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${version.junit}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>com.github.ulisesbocchio</groupId>
             <artifactId>jasypt-spring-boot-starter</artifactId>
-            <version>3.0.4</version>
+            <version>${version.jasypt}</version>
         </dependency>
+
+
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>decompiler</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/jar/java-decompiler.jar</systemPath>
+        </dependency>
+
     </dependencies>
 </project>

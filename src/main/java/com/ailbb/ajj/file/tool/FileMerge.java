@@ -1,6 +1,6 @@
 package com.ailbb.ajj.file.tool;
 
-import org.apache.http.util.TextUtils;
+import org.apache.hc.core5.util.TextUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
