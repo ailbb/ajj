@@ -8,8 +8,8 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -34,7 +34,7 @@ public class $Velocity {
             // 初始化模板引擎
             VelocityEngine ve = new VelocityEngine();
             // 设值模板引擎上下文
-            ve.setApplicationAttribute("javax.servlet.ServletContext", request.getServletContext());
+            ve.setApplicationAttribute("jakarta.servlet.ServletContext", request.getServletContext());
             //设置velocity资源加载方式为webapp资源
             ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "webapp");
             //设置velocity资源加载方式为webapp时的处理类

@@ -130,7 +130,8 @@
         <version.spring>6.0.3</version.spring>
 
         <version.jsonlib>2.4</version.jsonlib>
-        <version.servlet>3.1.0</version.servlet>
+        <version.servlet>4.0.1</version.servlet>
+        <version.jakarta.servlet>6.0.0</version.jakarta.servlet>
 
         <version.velocity>2.3</version.velocity>
         <version.velocity.tools>3.1</version.velocity.tools>
@@ -139,7 +140,7 @@
 
         <version.jdbc.mysql>8.0.28</version.jdbc.mysql>
 
-        <version.fileupload>1.5</version.fileupload>
+        <version.fileupload>2.0.0-M1</version.fileupload>
         <version.poi>5.2.3</version.poi>
 
         <version.snakeyaml.yaml>2.0</version.snakeyaml.yaml>
@@ -192,12 +193,20 @@
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
+<!--        <dependency>-->
+<!--            <groupId>javax.servlet</groupId>-->
+<!--            <artifactId>javax.servlet-api</artifactId>-->
+<!--            <version>${version.servlet}</version>-->
+<!--            <scope>provided</scope>-->
+<!--        </dependency>-->
+
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>${version.servlet}</version>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>${version.jakarta.servlet}</version>
             <scope>provided</scope>
         </dependency>
+
 
         <!-- https://mvnrepository.com/artifact/javax.mail/javax.mail-api -->
         <dependency>
@@ -229,8 +238,15 @@
 
         <!-- 文件上传所依赖的jar包 -->
         <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-fileupload2-core</artifactId>
+            <version>${version.fileupload}</version>
+        </dependency>
+
+        <!-- 文件上传所依赖的jar包 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-fileupload2-jakarta</artifactId>
             <version>${version.fileupload}</version>
         </dependency>
 
@@ -295,13 +311,14 @@
             <artifactId>bcprov-jdk15on</artifactId>
             <version>${version.bcprov-jdk15on}</version>
         </dependency>
-        <!--<dependency>
+        <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>decompiler</artifactId>
             <version>1.0</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/src/main/resources/jar/java-decompiler.jar</systemPath>
-        </dependency>--><!-- https://mvnrepository.com/artifact/org.apache.commons/commons-compress -->
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-compress -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>

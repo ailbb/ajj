@@ -34,9 +34,9 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import javax.crypto.NoSuchPaddingException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -301,6 +301,14 @@ public class $ {
 
     public static $Result zip(String path, boolean isDelete, List<String> paths)  {
         return file.zip(path, isDelete, paths);
+    }
+
+    public static $Result unzip(String path)  {
+        return file.unzip(path);
+    }
+
+    public static $Result unzip(String path, String targetpath)  {
+        return file.unzip(path, targetpath);
     }
 
     public static $Result readFile(String path)  {
@@ -643,11 +651,11 @@ public class $ {
         return regex.under2camel(s);
     }
 
-    public static void decompilerJar(String sourcePath, String targetPath){
-        $.jar.decompilerJar(sourcePath, targetPath);
+    public static String decompilerJar(String sourcePath, String targetPath){
+        return $.jar.decompilerJar(sourcePath, targetPath);
     }
-    public static void decompilerClass(String sourcePath, String targetPath){
-        $.java.decompilerClass(sourcePath, targetPath);
+    public static String decompilerClass(String sourcePath, String targetPath){
+        return $.java.decompilerClass(sourcePath, targetPath);
     }
 
     public static String random(String s) {

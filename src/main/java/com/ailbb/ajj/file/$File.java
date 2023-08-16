@@ -10,23 +10,24 @@ import com.ailbb.ajj.file.tool.FileCounter;
 import com.ailbb.ajj.file.tool.FileMerge;
 import com.ailbb.ajj.file.xml.$Xml;
 import com.ailbb.ajj.file.yml.$Yml;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload2.core.FileItem;
+import org.apache.commons.fileupload2.core.FileUploadException;
+import org.apache.commons.fileupload2.core.DiskFileItemFactory;
+import org.apache.commons.fileupload2.jakarta.JakartaServletFileUpload;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import static com.ailbb.ajj.$.*;
 
 import java.io.*;
 import java.net.URL;
 import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /*
@@ -632,9 +633,8 @@ public class $File {
         } catch (UnsupportedEncodingException e) {
             rs.addError(exception(e));
         }
-
         //检查请求是否是multipart/form-data类型
-        if(!ServletFileUpload.isMultipartContent(request)){  //不是multipart/form-data类型
+        if(!JakartaServletFileUpload.isMultipartContent(request)){  //不是multipart/form-data类型
             return rs.setSuccess(false).addMessage("Form type is not equals multipart/form-data!");
         }
 
@@ -653,13 +653,12 @@ public class $File {
                 }
             }
         } else {
-            //创建上传所需要的两个对象
-            DiskFileItemFactory factory = new DiskFileItemFactory();
             //解析器依赖于工厂
-            ServletFileUpload sfu = new ServletFileUpload(factory);
+            JakartaServletFileUpload sfu = new JakartaServletFileUpload(
+                    DiskFileItemFactory.builder().get() //创建上传所需要的两个对象
+            );
             //创建容器来接受解析的内容
             List<FileItem> items;
-
             //将上传的文件信息放入容器中
             try {
                 items = sfu.parseRequest(request);
@@ -716,7 +715,7 @@ public class $File {
 
             try {
                 //写入服务器或者磁盘
-                item.write(fi.initFile(new File($.getPath(path, fileName))).getFile());
+                item.write(fi.initFile(new File($.getPath(path, fileName))).getFile().toPath().getParent());
                 //向控制台打印文件信息
                 info(String.format("Upload file：%s, Size: %s, RunTime：%s ms", fileName, fi.getSize(), fi.setRunTime($.timeclock()).getRunTime()));
             } catch (Exception e) {

@@ -2,7 +2,7 @@ package com.ailbb.ajj.http;
 
 import net.sf.json.JSONObject;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import static com.ailbb.ajj.$.*;
 

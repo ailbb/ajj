@@ -1,10 +1,11 @@
 package com.ailbb.ajj.file;
 
 import com.ailbb.ajj.$;
-import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload2.core.FileItem;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 
 /*
  * Created by Wz on 9/12/2018.
@@ -69,7 +70,7 @@ public class $FileInfo {
 
         try {
             return setFieldName(item.getFieldName())
-                    .setContent(item.getString("utf-8"));
+                    .setContent(item.getString(StandardCharsets.UTF_8));
         } catch (Exception e) {}
 
         return this;

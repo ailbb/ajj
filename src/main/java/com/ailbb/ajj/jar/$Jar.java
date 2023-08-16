@@ -8,6 +8,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 public class $Jar {
+
     public String decompilerJar(String sourcePath, String targetPath){
         if($.file.isDirectory(sourcePath)) for(String f : $.getFile(sourcePath).list()) {
             if(f.endsWith(".jar")) return decompilerJar(sourcePath + File.separator + f, targetPath);
