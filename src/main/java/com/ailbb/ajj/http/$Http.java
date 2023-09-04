@@ -524,4 +524,132 @@ public class $Http {
         }
         return JSONObject.fromObject(maps);
     }
+
+    public String download(String addressURL, String targetPath) {
+        // 转换为utf8,防止中文路径无法下载
+        String httpUrl = toUtf8URL(addressURL);
+        URL url = null;
+        HttpURLConnection conn = null;
+        InputStream inputStream = null;
+        FileOutputStream fos = null;
+
+        try {
+            url = new URL(httpUrl);
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setConnectTimeout(10 * 1000); // 设置超时时间为10秒
+            inputStream = conn.getInputStream(); // 获得下载下来的输入流
+
+            // 将输入流转换为字节数组
+            byte[] byteData = readInputStream(inputStream);
+
+            // 文件保存位置
+            String fileName = addressURL.substring(addressURL.lastIndexOf("/"));
+            String path = $.getPath(targetPath.endsWith(fileName) ? targetPath : (targetPath + File.separator + fileName));
+            $.info("Download URL ["+addressURL+"] size:"+$.unit.convert(byteData.length, $.unit.$BYTE)  +" >>> Local Path ["+path+"]");
+            $.mkdir(path.substring(0,path.lastIndexOf("/")));
+            File file = new File(path);
+            fos = new FileOutputStream(file);
+            fos.write(byteData);
+        } catch (MalformedURLException mue) {
+            mue.printStackTrace();
+        } catch (FileNotFoundException fnfe) {
+            fnfe.printStackTrace();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return "";
+    }
+
+    public void download(String text, String targetDir, String tag, String baseURL) {
+        List<String> picStrs = new ArrayList<>();
+        List<String> downLoadPaths = new ArrayList<>();
+
+        for(String str : text.split("\n")) {
+            if($.test(tag, str)){
+                String pickStr = $.regex.pickup("<"+tag+"[^>]+>", ".+", "</"+tag+">", str);
+                String fileName = pickStr.replaceAll(baseURL, "");
+                picStrs.add(pickStr);
+                downLoadPaths.add($.getPath(targetDir,fileName));
+            }
+        }
+
+        $.info("开始下载文件，总共链接数为："+picStrs.size() + "（个）;");
+        for(int i=0; i<picStrs.size(); i++) {
+            int idx = i+1;
+            String picStr = picStrs.get(i);
+            String downLoadPath = picStrs.get(i);
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+                    $.info(">> 正在下载文件第："+ idx + "（个）;");
+                    download(picStr, downLoadPath);
+//                }
+//            }).start();
+        }
+    }
+    public static byte[] readInputStream(InputStream inputStream) {
+        byte[] buffer = new byte[1024];
+        int len = 0;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+        try {
+            while ((len = inputStream.read(buffer)) != -1) {
+                bos.write(buffer, 0, len);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (bos != null) {
+                try {
+                    bos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return bos.toByteArray();
+    }
+
+    public static String toUtf8URL(String s) {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c >= 0 && c <= 255) {
+                sb.append(c);
+            } else {
+                byte[] b;
+                try {
+                    b = String.valueOf(c).getBytes("utf-8");
+                } catch (Exception ex) {
+                    System.out.println(ex);
+                    b = new byte[0];
+                }
+                for (int j = 0; j < b.length; j++) {
+                    int k = b[j];
+                    if (k < 0) {
+                        k += 256;
+                    }
+                    sb.append("%" + Integer.toHexString(k).toUpperCase());
+                }
+            }
+        }
+        return sb.toString();
+    }
 }

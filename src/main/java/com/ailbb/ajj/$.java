@@ -684,6 +684,14 @@ public class $ {
         return new AESUtil(key);
     }
 
+
+    public static String download(String url, String targetPath){
+        return http.download(url, targetPath);
+    }
+
+    public static void download(String text, String targetDir, String tag, String baseURL){
+        http.download(text, targetDir, tag, baseURL);
+    }
     public static Encryption StringEncryptor(String key) {
         return new StringEncryptorUtil(key);
     }

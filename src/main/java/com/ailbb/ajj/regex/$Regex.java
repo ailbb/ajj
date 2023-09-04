@@ -75,7 +75,7 @@ public class $Regex {
         String v = list.get(0);
 
         if(!$.isEmptyOrNull(before))  v = v.replaceAll("^" + before, "");
-        if(!$.isEmptyOrNull(end)) v = v.replaceAll(before + "$", "");
+        if(!$.isEmptyOrNull(end)) v = v.replaceAll(end + "$", "");
 
         return v;
     }
