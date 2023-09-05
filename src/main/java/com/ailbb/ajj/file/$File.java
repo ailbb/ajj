@@ -875,8 +875,10 @@ public class $File {
         for(File file : files) {
             File tempFile = file;
 
-            if(file.getName().indexOf(".") > 1) tempFile = file.getParentFile(); // 如果是文件名带小数点，认为是文件
-            
+            int fidx = file.getName().lastIndexOf(".");
+
+            if(fidx > 1 && $.isSuffix(file.getName().substring(fidx+1))) tempFile = file.getParentFile(); // 如果是文件名带小数点，认为是文件
+
             if(!tempFile.exists()) {
                 rs.addMessage(info(String.format("Make directory：%s", tempFile.getPath())));
                 rs.addData(file);

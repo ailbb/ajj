@@ -29,6 +29,7 @@ import com.ailbb.ajj.test.$Test;
 import com.ailbb.ajj.thread.$Thread;
 import com.ailbb.ajj.tomcat.$Tomcat;
 import com.ailbb.ajj.unit.$Charset;
+import com.ailbb.ajj.unit.$Suffix;
 import com.ailbb.ajj.unit.$Unit;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -64,6 +65,7 @@ public class $ {
 
     // http
     public static $Http http = new $Http();
+    public static $Download downloader = new $Download();
     public static $Server server = new $Server();
     public static $Url url = new $Url();
     public static $Velocity velocity = new $Velocity();
@@ -96,6 +98,7 @@ public class $ {
 
     // unit
     public static $Unit unit = new $Unit();
+    public static $Suffix suffix = new $Suffix();
     public static $Charset charset = new $Charset();
 
     // lang
@@ -409,6 +412,10 @@ public class $ {
         return path.getWebRootPath(clazz);
     }
 
+    public static boolean isSuffix(String name) {
+        return suffix.isSuffix(name);
+    }
+
     public String getRelativePath(String _path){
         return path.getRelativePath(_path);
     }
@@ -685,12 +692,16 @@ public class $ {
     }
 
 
-    public static String download(String url, String targetPath){
-        return http.download(url, targetPath);
+    public static boolean download(String url, String targetPath){
+        return downloader.download(url, targetPath);
     }
 
-    public static void download(String text, String targetDir, String tag, String baseURL){
-        http.download(text, targetDir, tag, baseURL);
+    public static boolean smartDownload(List<String> urls, String targetDir){
+        return downloader.download(urls, targetDir);
+    }
+
+    public static boolean smartDownload(String text, String targetDir, String tag, String baseURL){
+        return downloader.smartDownload(text, targetDir, tag, baseURL);
     }
     public static Encryption StringEncryptor(String key) {
         return new StringEncryptorUtil(key);
