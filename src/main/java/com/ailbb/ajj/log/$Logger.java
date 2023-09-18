@@ -99,6 +99,10 @@ public class $Logger {
 
     public String msg(Object... o){ return sout(o); }
 
+    public String debugOut(Object... o) {
+        return isDebugEnabled() ? sout(o) : $.lastStr(o);
+    }
+
     public String sout(Object... o){
         for(Object oi : o) {
             String s = oi.toString()+"\n";

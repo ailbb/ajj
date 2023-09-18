@@ -13,14 +13,22 @@ import java.security.NoSuchProviderException;
 public interface EncryptUtilApi {
 
     //------MD5-------//
-    String MD5(String res) throws UnsupportedEncodingException, NoSuchAlgorithmException;//要加密的字符串
-    String MD5(String res, String key) throws NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException;//要加密的字符串和密码
+    String MD5(String res);//要加密的字符串
+    String MD5(String res, String key);//要加密的字符串和密码
 
     //------SHA1-------//
-    String SHA1(String res) throws UnsupportedEncodingException, NoSuchAlgorithmException;//要加密的字符串
-    String SHA1(String res, String key) throws NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException;//要加密的字符串和密码
+    String SHA1(String res);//要加密的字符串
+    String SHA1(String res, String key);//要加密的字符串和密码
 
     //=====上面的没有解码方法====================================
+
+    String MD5Generator(String res) throws UnsupportedEncodingException, NoSuchAlgorithmException;
+
+    String MD5Generator(String res, String key) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException;
+
+    String SHA1Generator(String res) throws UnsupportedEncodingException, NoSuchAlgorithmException;
+
+    String SHA1Generator(String res, String key) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException;
 
     //------DES-------//
     String DESencode(String res, String key) throws NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, UnsupportedEncodingException, InvalidKeyException;//加密：要加密的字符串和密码

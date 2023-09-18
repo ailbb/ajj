@@ -26,6 +26,7 @@ import static com.ailbb.ajj.$.*;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -53,6 +54,8 @@ public class $File {
     public $Yml yml = new $Yml();
 
     public $Compress compress = new $Compress();
+
+    public $FileTailReader fileTailReader = new $FileTailReader();
 
     public $Result zip(String path, String... paths)  {
         return compress.zip(path, paths);
@@ -115,6 +118,27 @@ public class $File {
         }
     }
 
+    public String readFileToText(File file, long currentPos)   {
+        return readFileToText(file, currentPos, true);
+    }
+    public String readFileToText(File file, long currentPos, boolean hasNewLine)   {
+        return readFileToText(file, currentPos, charset.UTF8, hasNewLine);
+    }
+
+    public String readFileToText(File file, long currentPos, String chartSet)   {
+        return readFileToText(file, currentPos, chartSet, true);
+    }
+
+    public String readFileToText(File file, long currentPos, String chartSet, boolean hasNewLine)   {
+        try {
+            return readText(new FileInputStream(file), currentPos, chartSet, hasNewLine);
+        } catch (IOException e) {
+            $.warn(e);
+            return "";
+        }
+    }
+
+
     public $Result readFile(File file)  {
         try {
             return read(new FileInputStream(file));
@@ -168,6 +192,34 @@ public class $File {
         }
 
         return rs;
+    }
+    public String readText(InputStream in, long currentPos, String charset)  {
+        return readText(in, currentPos, charset, true);
+    }
+
+    public String readText(InputStream in, long currentPos, String charset, boolean hasNewLine)  {
+        StringBuffer data = new StringBuffer();
+        BufferedInputStream bis = new BufferedInputStream(in);
+        BufferedReader reader = null;
+        try {
+            in.skip(currentPos);
+            reader = new BufferedReader (new InputStreamReader(bis, charset));
+            ByteBuffer bb = ByteBuffer.allocate(10);
+
+            while (reader.ready()) {
+                data.append((char) reader.read());
+            }
+            if(hasNewLine) data.append("\n");
+            return data.toString();
+        } catch (FileNotFoundException fe) {
+            fe.printStackTrace();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        } finally {
+            $.file.closeStearm(in);
+        }
+        return "";
+
     }
 
     public long countLine(File f) {

@@ -83,6 +83,14 @@ public class $CacheManagerImpl implements $CacheManage {
         return null;
     }
 
+    @Override
+    public <T> T getCacheData(String key, Class<T> clazz) {
+        if (this.isContains(key)) {
+            return (T)caches.get(key).getData();
+        }
+        return null;
+    }
+
     /**
      * 获取所有缓存
      * @return 所有缓存

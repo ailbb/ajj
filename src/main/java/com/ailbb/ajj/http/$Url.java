@@ -1,16 +1,24 @@
 package com.ailbb.ajj.http;
 
+import com.ailbb.ajj.$;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import net.sf.json.JSONObject;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import static com.ailbb.ajj.$.*;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /*
  * Created by Wz on 6/20/2018.
@@ -27,6 +35,20 @@ public class $Url {
         }
 
         return url;
+    }
+
+    public void proxyUrl(HttpServletRequest request, HttpServletResponse response,
+                      String serviceUrl
+
+    ) throws IOException {
+        $.http.proxyUrl(request, response, serviceUrl);
+    }
+
+    public void proxyUrl(RestTemplate restTemplate, HttpServletRequest request, HttpServletResponse response,
+                      String serviceUrl
+
+    ) throws IOException {
+        $.http.proxyUrl(restTemplate, request, response, serviceUrl);
     }
 
     public String rel(String... path){

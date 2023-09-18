@@ -11,12 +11,17 @@ import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
+
 import java.io.*;
 import java.net.*;
 import java.util.*;
 
 import static com.ailbb.ajj.$.*;
-import static com.ailbb.ajj.$.path;
 
 /*
  * Created by Wz on 6/20/2018.
@@ -31,6 +36,25 @@ public class $Http {
     public static final String $GET = "GET";
     public static final String $POST = "POST";
 
+    /**
+     * 获取对应的HTTPMethod
+     * @param method 原始HTTPMethod
+     * @return 匹配到的HTTPmethod对象
+     */
+    public HttpMethod getHttpMethod(String method){
+        for(HttpMethod hm: HttpMethod.values())
+            if(hm.name().equals(method.toUpperCase())) return hm;
+
+        return HttpMethod.GET;
+    }
+
+
+    /**
+     * 重定向到目标URL
+     * @param response 当前响应值
+     * @param url 重定向的地址
+     * @return
+     */
     public $Result redirect(HttpServletResponse response, String url)  {
         $Result rs = $.result();
         try {
@@ -42,10 +66,17 @@ public class $Http {
         return rs;
     }
 
-    public $Result reforward(HttpServletRequest request, HttpServletResponse response, String url)  {
+    /**
+     * 内部Serverlet转发
+     * @param request 当前请求
+     * @param response 当前响应值
+     * @param serlvetUrl 代理的地址
+     * @return
+     */
+    public $Result reforward(HttpServletRequest request, HttpServletResponse response, String serlvetUrl)  {
         $Result rs = $.result();
         try {
-            request.getRequestDispatcher(url).forward(request,response);
+            request.getRequestDispatcher(serlvetUrl).forward(request,response);
             rs.setData(url);
         } catch (ServletException e) {
             rs.addError($.exception(e));
@@ -53,6 +84,145 @@ public class $Http {
             rs.addError($.exception(e));
         }
         return rs;
+    }
+
+    /**
+     * 微服务代理转发
+     * @param restTemplate 微服务对象
+     * @param request 当前请求
+     * @param response 当前响应值
+     * @param serviceUrl 代理远端地址
+     * @throws IOException
+     */
+    public void proxyUrl(RestTemplate restTemplate, HttpServletRequest request, HttpServletResponse response,
+                      String serviceUrl
+
+    ) throws IOException {
+        HttpHeaders headers = new HttpHeaders();
+
+        Enumeration er = request.getHeaderNames();//获取请求头的所有name值
+        while(er.hasMoreElements()){
+            String name	=(String) er.nextElement();
+            String value = request.getHeader(name);
+            headers.add(name, value);
+        }
+
+
+        HttpEntity<String> entity = new HttpEntity<>(getRequestBody(request), headers);
+        ResponseEntity<byte[]> responseEntity = restTemplate.exchange(serviceUrl, getHttpMethod(request.getMethod()), entity, byte[].class);
+        byte[] fileContent = responseEntity.getBody();
+
+        // 将文件内容写入响应体中
+        response.setContentType("multipart/form-data");
+        response.setContentLength(fileContent.length);
+        response.getOutputStream().write(fileContent);
+    }
+
+    /**
+     * 代理地址进行转发
+     * @param outputStream 输出流
+     * @param proxyHost 代理主机
+     * @param proxyPort 代理端口
+     * @param targetUrl 转发到目标URL
+     * @throws IOException
+     */
+    public void proxyUrl(OutputStream outputStream, String proxyHost, int proxyPort, String targetUrl) throws IOException {
+        InputStream inputStream = null; // 对端输出，本端接收流
+        HttpURLConnection conn = null; // HTTTP连接
+
+        try {
+            /* 创建一个目标URL地址对象 */
+            URL url = new URL(targetUrl);
+
+            /* 设置代理 */
+            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
+
+            /* 打开连接 */
+            conn = (HttpURLConnection) url.openConnection(proxy);
+            conn.setRequestMethod($GET);
+
+            inputStream = conn.getInputStream();
+
+            byte[] buffer = new byte[1024];
+            // 每次读取的字符串长度，如果为-1，代表全部读取完毕
+            int len = 0;
+            // 使用一个输入流从buffer里把数据读取出来
+            while((len = inputStream.read(buffer)) != -1 ){
+                // 用输出流往buffer里写入数据，中间参数代表从哪个位置开始读，len代表读取的长度
+                outputStream.write(buffer, 0, len);
+            }
+            outputStream.flush();
+        } catch (Exception e) {
+            $.error("Proxy URL File error, e = {}", e);
+            throw e;
+        } finally {
+            if (inputStream != null) {
+                inputStream.close();
+            }
+            if (outputStream != null) {
+                outputStream.flush();
+                outputStream.close();
+            }
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+    }
+
+    /**
+     * 将当前请求，代理到远端地址
+     * @param request 当前请求
+     * @param response 当前响应
+     * @param targetURL 远端地址
+     * @throws IOException
+     */
+    public void proxyUrl(HttpServletRequest request, HttpServletResponse response, String targetURL) throws IOException {
+        InputStream inputStream = null; // 对端输出，本端接收流
+        ServletOutputStream outputStream = null; // 本端输出流
+        HttpURLConnection conn = null; // HTTTP连接
+
+        try {
+            /* 创建一个目标URL地址对象 */
+            URL url = new URL(targetURL);
+
+            /* 打开连接 */
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod(request.getMethod());
+
+            Enumeration er = request.getHeaderNames();//获取请求头的所有name值
+            while(er.hasMoreElements()){
+                String name	=(String) er.nextElement();
+                String value = request.getHeader(name);
+                conn.setRequestProperty(name, value);
+            }
+
+            inputStream = conn.getInputStream();
+            outputStream = response.getOutputStream();
+
+            byte[] buffer = new byte[1024];
+            // 每次读取的字符串长度，如果为-1，代表全部读取完毕
+            int len = 0;
+            // 使用一个输入流从buffer里把数据读取出来
+            while((len = inputStream.read(buffer)) != -1 ){
+                // 用输出流往buffer里写入数据，中间参数代表从哪个位置开始读，len代表读取的长度
+                outputStream.write(buffer, 0, len);
+            }
+            outputStream.flush();
+        } catch (Exception e) {
+            $.error("Proxy URL File error, e = {}", e);
+            throw e;
+        } finally {
+            if (inputStream != null) {
+                inputStream.close();
+            }
+            if (outputStream != null) {
+                outputStream.flush();
+                outputStream.close();
+            }
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
     }
 
     public String getRequestBody(HttpServletRequest request) {
@@ -138,11 +308,11 @@ public class $Http {
         return rs;
     }
 
-    public $Result ajax(final Ajax ajax)  {
+    public $Result ajax(final $Ajax ajax)  {
         return ajax(ajax, false);
     }
 
-    public $Result ajax(final Ajax ajax, boolean isClearSession)  {
+    public $Result ajax(final $Ajax ajax, boolean isClearSession)  {
         $Result rs = $.result();
 
         if(null == ajax.getUrl()) {
@@ -159,7 +329,7 @@ public class $Http {
 
             return rs;
         } else {
-            Ajax.Callback callback = ajax.getCallback();
+            $Ajax.Callback callback = ajax.getCallback();
 
             try {
                 rs.addMessage(info("-----------------------"));
@@ -251,19 +421,19 @@ public class $Http {
         return ;
     }
 
-    public $Result sendGet(Ajax ajax)  {
+    public $Result sendGet($Ajax ajax)  {
         return sendRequest(ajax.setType($GET));
     }
 
-    public $Result sendPost(Ajax ajax)  {
+    public $Result sendPost($Ajax ajax)  {
         return sendRequest(ajax.setType($POST));
     }
 
-    public $Result sendGet(Ajax ajax, boolean isClearSession)  {
+    public $Result sendGet($Ajax ajax, boolean isClearSession)  {
         return sendRequest(ajax.setType($GET), isClearSession);
     }
 
-    public $Result sendPost(Ajax ajax, boolean isClearSession)  {
+    public $Result sendPost($Ajax ajax, boolean isClearSession)  {
         return sendRequest(ajax.setType($POST), isClearSession);
     }
 
@@ -289,7 +459,7 @@ public class $Http {
      * @param ajax ajax 请求对象
      * @return $Result 结构体
      */
-    public $Result sendRequest(Ajax ajax)  {
+    public $Result sendRequest($Ajax ajax)  {
         return sendRequest(ajax, false);
     }
 
@@ -298,7 +468,7 @@ public class $Http {
      * @param ajax ajax 请求对象
      * @return $Result 结构体
      */
-    public $Result sendRequest(Ajax ajax, boolean isClearSession)  {
+    public $Result sendRequest($Ajax ajax, boolean isClearSession)  {
         OutputStreamWriter out = null;
         BufferedReader in = null;
         StringBuffer result = new StringBuffer();
@@ -426,80 +596,80 @@ public class $Http {
     }
 
     public $Result get(String url)  {
-        return get(new Ajax(url));
+        return get(new $Ajax(url));
     }
 
     public $Result get(String url, Map<String,Object> params)  {
-        return get(new Ajax(url).setParams(JSONObject.fromObject(params)));
+        return get(new $Ajax(url).setParams(JSONObject.fromObject(params)));
     }
 
     public $Result get(String url, Map<String,Object> params, boolean isClearSession)  {
-        return get(new Ajax(url).setParams(JSONObject.fromObject(params)), isClearSession);
+        return get(new $Ajax(url).setParams(JSONObject.fromObject(params)), isClearSession);
     }
 
     public $Result get(String url, boolean isClearSession)  {
-        return get(new Ajax(url), isClearSession);
+        return get(new $Ajax(url), isClearSession);
     }
 
     public $Result post(String url)  {
-        return post(new Ajax(url));
+        return post(new $Ajax(url));
     }
 
     public $Result post(String url, boolean isClearSession)  {
-        return post(new Ajax(url), isClearSession);
+        return post(new $Ajax(url), isClearSession);
     }
 
-    public $Result get(Ajax ajax)  {
+    public $Result get($Ajax ajax)  {
         return ajax(ajax.setType($GET));
     }
 
-    public $Result get(Ajax ajax, boolean isClearSession)  {
+    public $Result get($Ajax ajax, boolean isClearSession)  {
         return ajax(ajax.setType($GET), isClearSession);
     }
 
-    public $Result post(Ajax ajax)  {
+    public $Result post($Ajax ajax)  {
         return ajax(ajax.setType($POST));
     }
 
-    public $Result post(Ajax ajax, boolean isClearSession)  {
+    public $Result post($Ajax ajax, boolean isClearSession)  {
         return ajax(ajax.setType($POST), isClearSession);
     }
 
-    public $Http login(Ajax ajax) {
+    public $Http login($Ajax ajax) {
         post(ajax);
         return this;
     }
 
     public $Http login(String url, JSONObject jo) {
-        login(new Ajax(url).setData(toHttpParams(jo)));
+        login(new $Ajax(url).setData(toHttpParams(jo)));
         return this;
     }
 
     public $Result ajax(String url)  {
-        return ajax(new Ajax(url));
+        return ajax(new $Ajax(url));
     }
 
     public JSONObject getJSON(String url)  {
-        return getJSON(new Ajax(url));
+        return getJSON(new $Ajax(url));
     }
 
     public JSONObject getJSONObject(String url)  {
-        return getJSONObject(new Ajax(url));
+        return getJSONObject(new $Ajax(url));
     }
 
     public JSONArray getJSONArray(String url)  {
-        return getJSONArray(new Ajax(url));
+        return getJSONArray(new $Ajax(url));
     }
 
-    public JSONObject getJSON(Ajax ajax)  {
+    public JSONObject getJSON($Ajax ajax)  {
         return getJSONObject(ajax.setType($GET));
     }
 
-    public JSONObject getJSONObject(Ajax ajax)  {
+    public JSONObject getJSONObject($Ajax ajax)  {
         return JSONObject.fromObject(ajax(ajax.setType($GET)).getData());
     }
 
-    public JSONArray getJSONArray(Ajax ajax)  {
+    public JSONArray getJSONArray($Ajax ajax)  {
         return JSONArray.fromObject(ajax(ajax.setType($GET)).getData());
     }
 

@@ -11,31 +11,31 @@ import static com.ailbb.ajj.$.*;
 /*
  * Created by Wz on 5/9/2018.
  */
-public class Ajax {
+public class $Ajax {
     private String url;
     private boolean async = false;
     private String type = $Http.$GET;
     private int timeout = $TIMEOUT;
     private JSONObject params;
     private Object data;
-    private Proxy proxy;
+    private $Proxy proxy;
     private Map<String, String> property;
 
     private Callback callback;
 
-    public Ajax(String url){
+    public $Ajax(String url){
         this.setUrl(url);
     }
 
-    public Ajax(String url, JSONObject params){
+    public $Ajax(String url, JSONObject params){
         this.setUrl(url).setParams(params);
     }
 
-    public Ajax(String serverName, String requestMapping){
+    public $Ajax(String serverName, String requestMapping){
         this(serverName, requestMapping, null);
     }
 
-    public Ajax(String serverName, String requestMapping, JSONObject params){
+    public $Ajax(String serverName, String requestMapping, JSONObject params){
         this.setProxy($PROXY.get(serverName)).setParams(params);
         String ip;
         int port;
@@ -65,7 +65,7 @@ public class Ajax {
         return property;
     }
 
-    public Ajax setProperty(Map<String, String> property) {
+    public $Ajax setProperty(Map<String, String> property) {
         this.property = property;
         return this;
     }
@@ -74,7 +74,7 @@ public class Ajax {
         return url;
     }
 
-    public Ajax setUrl(String url) {
+    public $Ajax setUrl(String url) {
         this.url = url;
         return this;
     }
@@ -83,7 +83,7 @@ public class Ajax {
         return async;
     }
 
-    public Ajax setAsync(boolean async) {
+    public $Ajax setAsync(boolean async) {
         this.async = async;
         return this;
     }
@@ -92,7 +92,7 @@ public class Ajax {
         return type;
     }
 
-    public Ajax setType(String type) {
+    public $Ajax setType(String type) {
         this.type = type;
         return this;
     }
@@ -101,7 +101,7 @@ public class Ajax {
         return timeout;
     }
 
-    public Ajax setTimeout(int timeout) {
+    public $Ajax setTimeout(int timeout) {
         this.timeout = timeout;
         return this;
     }
@@ -110,7 +110,7 @@ public class Ajax {
         return params;
     }
 
-    public Ajax setParams(JSONObject params) {
+    public $Ajax setParams(JSONObject params) {
         this.params = params;
         return this;
     }
@@ -119,7 +119,7 @@ public class Ajax {
         return data;
     }
 
-    public Ajax setData(Object data) {
+    public $Ajax setData(Object data) {
         this.data = data;
         return this;
     }
@@ -128,16 +128,16 @@ public class Ajax {
         return callback;
     }
 
-    public Ajax setCallback(Callback callback) {
+    public $Ajax setCallback(Callback callback) {
         this.callback = callback;
         return this;
     }
 
-    public Proxy getProxy() {
+    public $Proxy getProxy() {
         return proxy;
     }
 
-    public Ajax setProxy(Proxy proxy) {
+    public $Ajax setProxy($Proxy proxy) {
         this.proxy = proxy;
         return this;
     }

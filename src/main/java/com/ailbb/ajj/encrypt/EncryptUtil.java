@@ -155,22 +155,58 @@ public class EncryptUtil implements EncryptUtilApi {
     }
 
     @Override
-    public String MD5(String res) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+    public String MD5(String res) {
+        try {
+            return messageDigest(res, MD5);
+        } catch (Exception e){
+            return null;
+        }
+    }
+
+    @Override
+    public String MD5(String res, String key) {
+        try {
+            return keyGeneratorMac(res, HmacMD5, key);
+        } catch (Exception e){
+            return null;
+        }
+    }
+
+    @Override
+    public String SHA1(String res) {
+        try {
+            return messageDigest(res, SHA1);
+        } catch (Exception e){
+            return null;
+        }
+    }
+
+    @Override
+    public String SHA1(String res, String key) {
+        try {
+            return keyGeneratorMac(res, HmacSHA1, key);
+        } catch (Exception e){
+            return null;
+        }
+    }
+
+    @Override
+    public String MD5Generator(String res) throws UnsupportedEncodingException, NoSuchAlgorithmException {
         return messageDigest(res, MD5);
     }
 
     @Override
-    public String MD5(String res, String key) throws NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException {
+    public String MD5Generator(String res, String key) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
         return keyGeneratorMac(res, HmacMD5, key);
     }
 
     @Override
-    public String SHA1(String res) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+    public String SHA1Generator(String res) throws UnsupportedEncodingException, NoSuchAlgorithmException {
         return messageDigest(res, SHA1);
     }
 
     @Override
-    public String SHA1(String res, String key) throws NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException {
+    public String SHA1Generator(String res, String key) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
         return keyGeneratorMac(res, HmacSHA1, key);
     }
 

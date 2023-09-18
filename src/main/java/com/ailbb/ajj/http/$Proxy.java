@@ -12,7 +12,7 @@ import java.io.File;
  * Created by Wz on 5/10/2018.
  * Ajax proxy
  */
-public class Proxy {
+public class $Proxy {
     private String serverName;
     private String ip;
     private int port;
@@ -32,7 +32,7 @@ public class Proxy {
 
         if(!inited){
             info("Use default file.");
-            String p = path.getPath(Proxy.class); // 默认获取类文件目录
+            String p = path.getPath($Proxy.class); // 默认获取类文件目录
             String search = "jar!/";
             int pIndex = p.lastIndexOf(search);
             if(-1 == pIndex) pIndex = p.lastIndexOf(search = "classes/");
@@ -50,27 +50,13 @@ public class Proxy {
             $PROXY.clear();
 
             for(Object o : ja) {
-                Proxy proxy = (Proxy) JSONObject.toBean(JSONObject.fromObject(o), Proxy.class);
+                $Proxy proxy = ($Proxy) JSONObject.toBean(JSONObject.fromObject(o), $Proxy.class);
                 $PROXY.put(proxy.getServerName(), proxy);
             }
         } catch (Exception e) {
             warn("File is init error! " + e);
             return false;
         }
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while(initProxy($PATH)) {
-                    try {
-                        Thread.sleep($TIMEOUT);
-                    } catch (InterruptedException e) {
-                        exception(e);
-                        break;
-                    }
-                }
-            }
-        });
 
         return true;
     }

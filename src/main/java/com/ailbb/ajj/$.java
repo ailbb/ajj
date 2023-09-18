@@ -61,7 +61,7 @@ public class $ {
     public static final int $TIMEOUT = 100000;
     public static final String $PROXY_PATH = "ajj.json";
 
-    public static Map<String, Proxy> $PROXY = new HashMap<String, Proxy>();
+    public static Map<String, $Proxy> $PROXY = new HashMap<String, $Proxy>();
 
     // http
     public static $Http http = new $Http();
@@ -143,12 +143,16 @@ public class $ {
 
     static {
         try {
-            Proxy.init();
+            $Proxy.init();
         } catch (Exception e){
             $.warn("系统无法初始化路径，缺少功能模块启动！"+e);
         }
     }
 
+
+    public static String md5(String str){
+        return encrypt.MD5(str);
+    }
      //* Http area
 
     public static $Result get(String url)  {
@@ -181,35 +185,35 @@ public class $ {
         return http.ajax(url);
     }
 
-    public static $Result get(Ajax ajax)  {
+    public static $Result get($Ajax ajax)  {
         return http.get(ajax);
     }
 
-    public static $Result post(Ajax ajax)  {
+    public static $Result post($Ajax ajax)  {
         return http.post(ajax);
     }
 
-    public static JSONObject getJSON(Ajax ajax)  {
+    public static JSONObject getJSON($Ajax ajax)  {
         return http.getJSON(ajax);
     }
 
-    public static JSONObject getJSONObject(Ajax ajax)  {
+    public static JSONObject getJSONObject($Ajax ajax)  {
         return http.getJSONObject(ajax);
     }
 
-    public static JSONArray getJSONArray(Ajax ajax)  {
+    public static JSONArray getJSONArray($Ajax ajax)  {
         return http.getJSONArray(ajax);
     }
 
-    public static $Result ajax(Ajax ajax)  {
+    public static $Result ajax($Ajax ajax)  {
         return http.ajax(ajax);
     }
 
-    private static $Result sendGet(Ajax ajax)  {
+    private static $Result sendGet($Ajax ajax)  {
         return http.sendGet(ajax);
     }
 
-    private static $Result sendPost(Ajax ajax)  {
+    private static $Result sendPost($Ajax ajax)  {
         return http.sendPost(ajax);
     }
 
@@ -636,6 +640,10 @@ public class $ {
 
     public static String sout(Object... o){
         return logger.sout(o);
+    }
+
+    public static String debugOut(Object... o){
+        return logger.debugOut(o);
     }
 
     public static String simple(Object data) {

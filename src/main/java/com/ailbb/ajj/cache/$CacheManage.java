@@ -34,6 +34,14 @@ public interface $CacheManage {
     Object getCacheData(String key);
 
     /**
+     * 获取对应缓存
+     * @param key 缓存的key
+     * @param clazz 需要序列化的数据
+     * @return 缓存数据
+     */
+    <T> T getCacheData(String key, Class<T> clazz);
+
+    /**
      * 获取所有缓存
      * @return 所有缓存
      */
