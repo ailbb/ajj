@@ -430,12 +430,29 @@ public class $ {
         return date.now(ns);
     }
 
+    /**
+     * 计时器 | 获取当前时间与上一次时间的偏移量
+     * @return 偏移量时间
+     */
     public static long timeclock(){
         return date.timeclock();
     }
 
+    /**
+     * 计时器
+     * @param tag 0:启动 >0:指定位置 -1获取当前时间与第一次记录的时间偏移量
+     * @return 偏移量时间
+     */
     public static long timeclock(int tag){
         return date.timeclock(tag);
+    }
+
+    /**
+     * 获取时间缓存器数据
+     * @return
+     */
+    public static List<Long> getTimeclockCache(){
+        return date.getTimeclockCache();
     }
 
     public static String format(String patten, Date... d){

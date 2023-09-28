@@ -118,6 +118,9 @@ public class $File {
         }
     }
 
+    public String readFileToText(File file)   {
+        return readFileToText(file, 0, false);
+    }
     public String readFileToText(File file, long currentPos)   {
         return readFileToText(file, currentPos, true);
     }

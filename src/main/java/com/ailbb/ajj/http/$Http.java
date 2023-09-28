@@ -409,16 +409,9 @@ public class $Http {
         }catch (Exception e){
             e.printStackTrace();
         }finally {
-            try {
-                out.close();
-                ips.close();
-            } catch (IOException e) {
-                System.out.println("关闭流出现异常");
-                e.printStackTrace();
-            }
+            $.file.closeStearm(out);
+            $.file.closeStearm(ips);
         }
-
-        return ;
     }
 
     public $Result sendGet($Ajax ajax)  {

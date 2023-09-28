@@ -17,7 +17,7 @@ import static com.ailbb.ajj.$.*;
 public class $Date {
     public $Cron cron = new $Cron();
     public  $DateVariable dateVariable = new $DateVariable();
-    private List<Long> tcache = new ArrayList<>();
+    public $Timeclock timeclock = new $Timeclock();
 
     public String now(String... ns){
         String n = lastDef("s", ns);
@@ -137,29 +137,24 @@ public class $Date {
         return mondayOfCalendar(6).getTime();
     }
 
-    /*
-     * 计时器
-     * @return
+    /**
+     * 计时器 | 获取当前时间与上一次时间的偏移量
+     * @return 偏移量时间
      */
     public long timeclock() {
-        return timeclock(0);
+        return timeclock.timeclock();
     }
-    /*
+
+    /**
      * 计时器
-     * @param tag 下标
-     * @return
+     * @param tag 0:启动 >0:指定位置 -1获取当前时间与第一次记录的时间偏移量
+     * @return 偏移量时间
      */
     public long timeclock(int tag) {
-        long now = System.currentTimeMillis();
-        int cSize = tcache.size();
-        boolean isEnd = tag == 0 && cSize != 0; // 当不为空时候，结束
+        return timeclock.timeclock(tag);
+    }
 
-        try {
-            return cSize != 0 ? ( tag > 0 && tag < cSize ? tcache.get(tag) - tcache.get(tag - 1) : now - tcache.get(isEnd ? tag : cSize-1) ) : 0; // 如果tag大于已缓存大小，则移动下标到末尾
-        } finally {
-            if(isEnd) tcache.clear(); // 开始/结束 标识为0 清空缓存
-
-            tcache.add(now);
-        }
+    public List<Long> getTimeclockCache() {
+        return timeclock.getTimeclockCache();
     }
 }
