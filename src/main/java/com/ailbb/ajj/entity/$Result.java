@@ -248,16 +248,6 @@ public class $Result {
 
     @Override
     public String toString() {
-        return "$Result{" +
-                "success=" + success +
-                ", message=" + message +
-                ", error=" + error +
-                ", code=" + code +
-                ", status=" + status +
-                ", type='" + type + '\'' +
-                ", data=" + data +
-                ", title='" + title + '\'' +
-                ", remark='" + remark + '\'' +
-                '}';
+        return $.toJsonString(this);
     }
 }

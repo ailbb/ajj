@@ -219,7 +219,7 @@ public class $File {
         } catch (IOException ioe) {
             ioe.printStackTrace();
         } finally {
-            $.file.closeStearm(in);
+            $.file.closeStream(in);
         }
         return "";
 
@@ -286,8 +286,8 @@ public class $File {
             } catch (IOException e) {
                 $.exception(e);
             } finally {
-                $.file.closeStearm(bis);
-                $.file.closeStearm(reader);
+                $.file.closeStream(bis);
+                $.file.closeStream(reader);
             }
         }
 
@@ -314,8 +314,8 @@ public class $File {
             } catch (IOException e) {
                 $.exception(e);
             } finally {
-                $.file.closeStearm(bis);
-                $.file.closeStearm(reader);
+                $.file.closeStream(bis);
+                $.file.closeStream(reader);
             }
         }
 
@@ -334,7 +334,7 @@ public class $File {
         } catch (IOException e) {
             throw e;
         } finally {
-            closeStearm(input).closeStearm(output);
+            closeStream(input).closeStream(output);
         }
         return this;
     }
@@ -350,7 +350,7 @@ public class $File {
         } catch (IOException e) {
             throw e;
         } finally {
-            closeStearm(input).closeStearm(output);
+            closeStream(input).closeStream(output);
         }
         return this;
     }
@@ -493,8 +493,8 @@ public class $File {
             } catch (IOException e) {
                 rs.addError(exception(e));
             } finally {
-                $.file.closeStearm(inputStream);
-                $.file.closeStearm(outputStream);
+                $.file.closeStream(inputStream);
+                $.file.closeStream(outputStream);
             }
         }
 
@@ -954,20 +954,37 @@ public class $File {
         FileCounter.fileLineCount(path, contextFilter);
     }
 
-    public $File closeStearm(AutoCloseable closeable){
-        if(null != closeable)
-            try {
-                closeable.close();
-            } catch (IOException e) {
-                $.exception(e);
-            } catch (Exception e) {
-                $.exception(e);
-            }
+    public $File close(AutoCloseable... closeables){
+        for(AutoCloseable closeable : closeables) {
+            if(null != closeable)
+                try {
+                    closeable.close();
+                } catch (IOException e) {
+                    $.exception(e);
+                } catch (Exception e) {
+                    $.exception(e);
+                }
+        }
 
         return this;
     }
 
-    public $File closeStearm(AutoCloseable closeable, long dealyTimeOut, String flagKey){
+    public $File closeStream(AutoCloseable... closeables){
+        for(AutoCloseable closeable : closeables) {
+            if(null != closeable)
+                try {
+                    closeable.close();
+                } catch (IOException e) {
+                    $.exception(e);
+                } catch (Exception e) {
+                    $.exception(e);
+                }
+        }
+
+        return this;
+    }
+
+    public $File closeStream(AutoCloseable closeable, long dealyTimeOut, String flagKey){
         $DelayCloseable.doDelayCloseable(closeable, dealyTimeOut, flagKey);
 
         return this;

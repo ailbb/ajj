@@ -31,7 +31,7 @@ public class $DelayCloseable implements Runnable {
 
 
     private void startDelayCloseable(){
-        new Thread(this).start();
+        $.async(this);
     }
 
     public $DelayCloseable resetDealyTimeOut(long dealyTimeOut){
@@ -44,14 +44,14 @@ public class $DelayCloseable implements Runnable {
         try {
             while (true){
                 if(dealyTimeOut--<0) {
-                    $.file.closeStearm(this.autoCloseable);
+                    $.file.closeStream(this.autoCloseable);
                     break;
                 }
                 Thread.sleep(100);
             }
         } catch (Exception e) {
             $.error("失败！",e);
-            $.file.closeStearm(this.autoCloseable);
+            $.file.closeStream(this.autoCloseable);
         }
     }
 }

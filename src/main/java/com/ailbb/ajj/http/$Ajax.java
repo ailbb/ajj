@@ -3,6 +3,7 @@ package com.ailbb.ajj.http;
 import com.ailbb.ajj.entity.$Result;
 import net.sf.json.JSONObject;
 
+import java.io.OutputStream;
 import java.net.UnknownHostException;
 import java.util.Map;
 
@@ -20,6 +21,8 @@ public class $Ajax {
     private Object data;
     private $Proxy proxy;
     private Map<String, String> property;
+
+    private OutputStream outputStream;
 
     private Callback callback;
 
@@ -43,7 +46,7 @@ public class $Ajax {
         if(this.getProxy() == null) {
             warn("Proxy is null! Use default config!");
             try {
-                ip = getIp();
+                ip = http.getIp();
             } catch (UnknownHostException e) {
                 ip = "127.0.0.1";
             }
@@ -139,6 +142,15 @@ public class $Ajax {
 
     public $Ajax setProxy($Proxy proxy) {
         this.proxy = proxy;
+        return this;
+    }
+
+    public OutputStream getOutputStream() {
+        return outputStream;
+    }
+
+    public $Ajax setOutputStream(OutputStream outputStream) {
+        this.outputStream = outputStream;
         return this;
     }
 

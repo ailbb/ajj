@@ -57,7 +57,7 @@ public class $CSV {
         } catch (Exception e) {
             rs.addError($.exception(e));
         } finally {
-            $.file.closeStearm(pw);
+            $.file.closeStream(pw);
         }
 
         return rs;

@@ -1,5 +1,7 @@
 package com.ailbb.ajj.date;
 
+import com.ailbb.ajj.$;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,4 +41,25 @@ public class $Timeclock {
     public List<Long> getTimeclockCache() {
         return tcache;
     }
+
+    /**
+     * 计时器 | 获取当前时间与上一次时间的偏移量
+     * @return 偏移量时间
+     */
+    public long timeclock(String message) {
+        long t = timeclock();
+        $.info($.now()+"/"+t+"\t"+message);
+        return t;
+    }
+
+    /**
+     * 计时器 | 获取当前时间与上一次时间的偏移量
+     * @return 偏移量时间
+     */
+    public long timeclock(String message, int flag) {
+        long t = timeclock(flag);
+        $.info($.now()+"/"+t+"\t"+message);
+        return t;
+    }
+
 }

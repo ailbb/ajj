@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class $CacheManagerImpl implements $CacheManage {
     private static Map<String, $EntityCache> caches = new ConcurrentHashMap<String, $EntityCache>();
     private $CacheListener cacheListener;
-    public static long TIME_OUT = 1000*60*60;
+    public static long TIME_INTERVAL = 1000*60*60; // 1小时刷新一次
 
     /**
      * 获取数据, 并自动延期
@@ -15,7 +15,7 @@ public class $CacheManagerImpl implements $CacheManage {
      * @param delayRunnable 自动延迟缓存类
      */
     public synchronized <T> T autoGetSaveData(String key, $AutoDelayRunnable<T> delayRunnable) {
-        return autoGetSaveData(key, delayRunnable, TIME_OUT);
+        return autoGetSaveData(key, delayRunnable, TIME_INTERVAL);
     }
 
     /**
@@ -23,9 +23,9 @@ public class $CacheManagerImpl implements $CacheManage {
      * @param key 缓存的key
      * @param delayRunnable 自动延迟缓存类
      */
-    public synchronized <T> T autoGetSaveData(String key, $AutoDelayRunnable<T> delayRunnable, long TIME_OUT) {
+    public synchronized <T> T autoGetSaveData(String key, $AutoDelayRunnable<T> delayRunnable, long TIME_INTERVAL) {
         if(null == getCache(key)) {
-            save(key, new $EntityCache(delayRunnable.loadData(), delayRunnable, TIME_OUT));
+            save(key, new $EntityCache(delayRunnable.loadData(), delayRunnable, TIME_INTERVAL*2));
         }
 
         return (T)getCacheData(key);
@@ -48,7 +48,7 @@ public class $CacheManagerImpl implements $CacheManage {
      * @param data 缓存数据
      */
     public <T> T save(String key, T data) {
-        return save(key, data, TIME_OUT);
+        return save(key, data, TIME_INTERVAL*2);
     }
     /**
      * 存入缓存

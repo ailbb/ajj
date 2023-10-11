@@ -118,7 +118,7 @@ public class FileCounter {
         final int[] i = {0};
         String val = null;       // 记录输入度的字符串
 
-        new Thread(new Runnable() {
+        $.async(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -131,7 +131,7 @@ public class FileCounter {
                     }
                 } catch (Exception e) {}
             }
-        }).start();
+        });
 
         do{
             System.out.print("\n\n\n请输入命令：\r\n");

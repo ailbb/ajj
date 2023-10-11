@@ -110,7 +110,7 @@ public class $Excel {
         } catch (IOException e) {
             rs.addError($.exception(e));
         } finally{
-            $.file.closeStearm(is);
+            $.file.closeStream(is);
         }
 
         return rs.setData(datas);

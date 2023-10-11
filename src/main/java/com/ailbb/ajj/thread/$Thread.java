@@ -2,27 +2,142 @@ package com.ailbb.ajj.thread;
 
 import com.ailbb.ajj.$;
 
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.concurrent.TimeoutException;
+import java.util.*;
+import java.util.concurrent.*;
 
 /*
  * Created by Wz on 6/20/2018.
  */
 public class $Thread<T> {
-    public void async(Runnable... rs){
-        for(Runnable r : rs) {
-            new Thread(r).start();
-        }
+    ExecutorService runThreadPoolExecutor;
+
+    // 创建一个ScheduledExecutorService实例
+    ScheduledExecutorService scheduledExecutor;
+
+    int runThreadPoolSize; // 运行线程池大小
+    int scheduledPoolSize; // 调度线程池大小
+    TimeUnit unit = TimeUnit.MILLISECONDS; // 时间单位
+
+    public $Thread(){
+        this(300,300);
     }
 
-    public void async(boolean daemon, Runnable... rs){
+    public $Thread(int runThreadPoolSize, int scheduledPoolSize){
+        this.runThreadPoolSize = runThreadPoolSize;
+        this.scheduledPoolSize = scheduledPoolSize;
+
+
+        // 创建线程池
+        runThreadPoolExecutor = Executors.newFixedThreadPool(runThreadPoolSize);
+        scheduledExecutor = Executors.newScheduledThreadPool(scheduledPoolSize);
+    }
+
+    public static $Thread getInstance(){
+        return new $Thread();
+    }
+
+    public static $Thread getInstance(int fixedThreadPoolSize, int scheduledThreadPoolSize){
+        return new $Thread(fixedThreadPoolSize, scheduledThreadPoolSize);
+    }
+
+    $Thread shutdown(){
+        this.runThreadPoolExecutor.shutdown();
+        this.scheduledExecutor.shutdown();
+        return this;
+    }
+
+
+    public int getRunPoolActiveCount(){
+        return ((ThreadPoolExecutor)(this.runThreadPoolExecutor)).getActiveCount();
+    }
+
+    public int getScheduledPoolActiveCount(){
+        return ((ThreadPoolExecutor)(this.scheduledExecutor)).getActiveCount();
+    }
+
+    public Thread async(Runnable... rs){
+        return async(false, rs);
+    }
+
+    public Thread async(boolean daemon, Runnable... rs){
+        // 否则执行执行
+        Thread thread = null;
         for(Runnable r : rs) {
-            Thread t = new Thread(r);
-            t.setDaemon(daemon);
-            t.start();
+            thread = new Thread(r);
+            thread.setDaemon(daemon);
+            this.runThreadPoolExecutor.submit(thread);
         }
+
+        return thread;
+    }
+
+    public void async(long delayTimeout, Runnable... rs){
+        async(false, delayTimeout, 0, rs);
+    }
+
+    public void async(long delayTimeout, long intervalTime, Runnable... rs){
+        async(false, delayTimeout, intervalTime, rs);
+    }
+    public void async(boolean daemon, long delayTimeout, Runnable... rs){
+        async(daemon, delayTimeout, 0, rs);
+    }
+
+    public void async(boolean daemon, long delayTimeout, long intervalTime, Runnable... rs){
+
+        // 如果是延时任务，交给延期任务执行
+        if(intervalTime > 0) {
+            asyncIntervalRun(intervalTime, delayTimeout, rs);
+        }
+
+        // 如果是延时任务，交给延期任务执行
+        else if(delayTimeout > 0) {
+            asyncTimeoutRun(delayTimeout, rs);
+        }
+
+        // 如果是非守护线程（默认执行），交给线程池去执行
+        else async(daemon, rs);
+    }
+
+    /**
+     * 让一个任务延期执行
+     * @param delayTimeout
+     * @param rs
+     */
+    public void asyncTimeoutRun(long delayTimeout, Runnable... rs){
+        // 使用schedule方法来安排在给定的延迟后执行命令
+        // 这里将任务安排在5秒后执行
+        for(Runnable r : rs) {
+            scheduledExecutor.schedule(r, delayTimeout, unit);
+        }
+
+        // 记得最后要关闭executor，否则它会阻止JVM退出
+//        executor.shutdown();
+    }
+
+    /**
+     * 让一个任务延期执行
+     * @param intervalTime 定期时间
+     * @param rs 执行列表
+     */
+    public void asyncIntervalRun(long intervalTime, Runnable... rs){
+        asyncIntervalRun(intervalTime, 0, rs);
+    }
+
+    /**
+     * 让一个任务定时执行（重复）
+     * @param intervalTime 定期执行时间
+     * @param delayTimeout 延期执行
+     * @param rs 执行列表
+     */
+    public void asyncIntervalRun(long intervalTime, long delayTimeout, Runnable... rs){
+        // 使用schedule方法来安排在给定的延迟后执行命令
+        // 这里将任务安排在5秒后执行
+        for(Runnable r : rs) {
+            scheduledExecutor.scheduleAtFixedRate(r, delayTimeout, intervalTime, unit);
+        }
+
+        // 记得最后要关闭executor，否则它会阻止JVM退出
+//        executor.shutdown();
     }
 
     /*
@@ -46,12 +161,12 @@ public class $Thread<T> {
             $Runnable<T> r = rs[i];
             final int j = i;
 
-            new Thread(new Runnable() {
+            $.async(new Runnable() {
                 @Override
                 public void run() {
                     result.put(j, r.run());
                 }
-            }).start();
+            });
         }
 
         long t = System.currentTimeMillis(); // 当前时间
@@ -82,5 +197,66 @@ public class $Thread<T> {
      */
     List<T> asyncAndReturn($Runnable<T>... rs) throws Exception {
         return asyncAndReturnList(rs);
+    }
+
+
+    public void asyncInterval(long intervalTime, Runnable... rs){
+        interval(0, intervalTime, rs);
+    }
+
+    public void asyncTimeout(long delayTimeout, Runnable... rs){
+        async(delayTimeout, rs);
+    }
+
+    public void timeout(long delayTimeout, Runnable... rs){
+        async(delayTimeout, rs);
+    }
+
+    public void interval(long intervalTime, Runnable... rs){
+        interval(0, intervalTime, rs);
+    }
+
+    public void interval(long delayTimeout, long intervalTime, Runnable... rs){
+        async(delayTimeout, intervalTime, rs);
+    }
+
+    public ExecutorService getRunThreadPoolExecutor() {
+        return runThreadPoolExecutor;
+    }
+
+    public void setRunThreadPoolExecutor(ExecutorService runThreadPoolExecutor) {
+        this.runThreadPoolExecutor = runThreadPoolExecutor;
+    }
+
+    public ScheduledExecutorService getScheduledExecutor() {
+        return scheduledExecutor;
+    }
+
+    public void setScheduledExecutor(ScheduledExecutorService scheduledExecutor) {
+        this.scheduledExecutor = scheduledExecutor;
+    }
+
+    public int getRunThreadPoolSize() {
+        return runThreadPoolSize;
+    }
+
+    public void setRunThreadPoolSize(int runThreadPoolSize) {
+        this.runThreadPoolSize = runThreadPoolSize;
+    }
+
+    public int getScheduledPoolSize() {
+        return scheduledPoolSize;
+    }
+
+    public void setScheduledPoolSize(int scheduledPoolSize) {
+        this.scheduledPoolSize = scheduledPoolSize;
+    }
+
+    public TimeUnit getUnit() {
+        return unit;
+    }
+
+    public void setUnit(TimeUnit unit) {
+        this.unit = unit;
     }
 }

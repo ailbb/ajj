@@ -54,6 +54,13 @@ public class $Date {
         return format("yyyy-MM-dd HH:mm:ss", date);
     }
 
+    public String format(String patten, long date){
+        return new SimpleDateFormat(patten).format(new Date(date));
+    }
+    public String format(long date){
+        return format("yyyy-MM-dd HH:mm:ss", date);
+    }
+
     public Date parse(String date, String... patten) throws ParseException {
         return new SimpleDateFormat(lastDef("yyyy-MM-dd HH:mm:ss", patten)).parse(date);
     }
@@ -143,6 +150,26 @@ public class $Date {
      */
     public long timeclock() {
         return timeclock.timeclock();
+    }
+
+    /**
+     * 计时器 | 获取当前时间与上一次时间的偏移量
+     * @return 偏移量时间
+     */
+    public long timeclock(String message) {
+        long t = timeclock.timeclock();
+        $.info($.now()+"/"+t+"\t"+message);
+        return t;
+    }
+
+    /**
+     * 计时器 | 获取当前时间与上一次时间的偏移量
+     * @return 偏移量时间
+     */
+    public long timeclock(String message, int flag) {
+        long t = timeclock.timeclock(flag);
+        $.info($.now()+"/"+t+"\t"+message);
+        return t;
     }
 
     /**

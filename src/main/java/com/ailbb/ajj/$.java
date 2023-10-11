@@ -1,6 +1,7 @@
 package com.ailbb.ajj;
 
 import com.ailbb.ajj.cache.$CacheManagerImpl;
+import com.ailbb.ajj.date.$Timeclock;
 import com.ailbb.ajj.encrypt.util.StringEncryptorUtil;
 import com.ailbb.ajj.encrypt.EncryptUtil;
 import com.ailbb.ajj.encrypt.Encryption;
@@ -38,9 +39,8 @@ import javax.crypto.NoSuchPaddingException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+
+import java.io.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.InvalidAlgorithmParameterException;
@@ -49,6 +49,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.text.ParseException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 /*
  * Created by Wz on 5/9/2018.
@@ -65,9 +66,8 @@ public class $ {
 
     // http
     public static $Http http = new $Http();
-    public static $Download downloader = new $Download();
-    public static $Server server = new $Server();
     public static $Url url = new $Url();
+    public static $Server server = new $Server();
     public static $Velocity velocity = new $Velocity();
 
     // file
@@ -82,6 +82,7 @@ public class $ {
 
     // tomcat处理类
     public static $Tomcat tomcat = new $Tomcat();
+    public static $Download downloader = new $Download();
 
     // thread
     public static $Thread thread = new $Thread();
@@ -135,12 +136,6 @@ public class $ {
     // email
     public static $Mail mail = new $Mail();
 
-    // 结果对象
-    public static $Result result() { return new $Result(); }
-
-    // 进度条对象
-    public static $Progress progress() { return new $Progress(); }
-
     static {
         try {
             $Proxy.init();
@@ -149,6 +144,12 @@ public class $ {
         }
     }
 
+
+    // 结果对象
+    public static $Result result() { return new $Result(); }
+
+    // 进度条对象
+    public static $Progress progress() { return new $Progress(); }
 
     public static String md5(String str){
         return encrypt.MD5(str);
@@ -209,12 +210,49 @@ public class $ {
         return http.ajax(ajax);
     }
 
-    private static $Result sendGet($Ajax ajax)  {
+    public static $Result sendGet($Ajax ajax)  {
         return http.sendGet(ajax);
     }
 
-    private static $Result sendPost($Ajax ajax)  {
+    public static String sendGet(String url)  {
+        return http.sendGet(url);
+    }
+
+    public static $Result sendPost($Ajax ajax)  {
         return http.sendPost(ajax);
+    }
+
+    public static String sendPost(String url)  {
+        return http.sendPost(url);
+    }
+
+    public static $Result sendRequest($Ajax ajax)  {
+        return http.sendRequest(ajax);
+    }
+
+    public static String sendRequest(String url) throws IOException {
+        return http.sendRequest(url);
+    }
+
+    public static void sendRequest(OutputStream outputStream, String url) throws IOException {
+        http.sendRequest(outputStream, url);
+    }
+
+    public static boolean testPing(String host){
+        return http.testPing(host);
+    }
+
+
+    public static boolean testTelnet(String host, int port){
+        return http.testTelnet(host, port);
+    }
+
+    public static boolean isActive(String host){
+        return testPing(host);
+    }
+
+    public static boolean isActive(String host, int port){
+        return testTelnet(host, port);
     }
 
     public static Map<String, Host> getHosts() {
@@ -229,8 +267,20 @@ public class $ {
         return server.getHostsIp();
     }
 
-    public static String getIp(String... name) throws UnknownHostException {
-        return http.getIp(name);
+    public static String getHostName() {
+        try {
+            return http.getInetAddress().getHostName();
+        } catch (UnknownHostException e) {
+            return "localhost";
+        }
+    }
+
+    public static String getIp(String... name) {
+        try {
+            return http.getIp(name);
+        } catch (UnknownHostException e) {
+            return "";
+        }
     }
 
     public static InetAddress getInetAddress(String... name) throws UnknownHostException {
@@ -292,6 +342,16 @@ public class $ {
      //* file area
     public static $Result read(InputStream is)  {
        return file.read(is);
+    }
+
+     //* close stream
+    public static void closeStream(AutoCloseable... closeable)  {
+       file.closeStream(closeable);
+    }
+
+     //* file area
+    public static void close(AutoCloseable... closeable)  {
+       file.closeStream(closeable);
     }
 
     public static $Result zip(String path, String... paths)  {
@@ -439,6 +499,22 @@ public class $ {
     }
 
     /**
+     * 计时器 | 获取当前时间与上一次时间的偏移量
+     * @return 偏移量时间
+     */
+    public static long timeclock(String message){
+        return date.timeclock(message);
+    }
+
+    /**
+     * 计时器 | 获取当前时间与上一次时间的偏移量
+     * @return 偏移量时间
+     */
+    public static long timeclock(String message, int flag) {
+        return date.timeclock(message, flag);
+    }
+
+    /**
      * 计时器
      * @param tag 0:启动 >0:指定位置 -1获取当前时间与第一次记录的时间偏移量
      * @return 偏移量时间
@@ -451,9 +527,30 @@ public class $ {
      * 获取时间缓存器数据
      * @return
      */
+    public static $Timeclock newTimeclock(){
+        return new $Timeclock();
+    }
+
+    /**
+     * 获取时间缓存器数据
+     * @return
+     */
     public static List<Long> getTimeclockCache(){
         return date.getTimeclockCache();
     }
+
+    public static void timeout(long delayTimeout, Runnable... rs){
+        thread.timeout(delayTimeout, rs);
+    }
+
+    public static void interval(long intervalTime, Runnable... rs){
+        interval(0, intervalTime, rs);
+    }
+
+    public static void interval(long delayTimeout, long intervalTime, Runnable... rs){
+        thread.interval(delayTimeout, intervalTime, rs);
+    }
+
 
     public static String format(String patten, Date... d){
         return date.format(patten, d);
@@ -469,13 +566,28 @@ public class $ {
 
     //* Thread area
 
-    public static void async(Runnable... r){
-        thread.async(r);
+    public static Thread async(Runnable... r){
+        return thread.async(r);
     }
-    //* Thread area
 
-    public static void async(boolean daemon, Runnable... r){
-        thread.async(daemon, r);
+    public static Thread async(boolean daemon, Runnable... r){
+        return thread.async(daemon, r);
+    }
+
+    public static void async(long delayTimeout, Runnable... rs){
+        thread.async(delayTimeout, rs);
+    }
+
+    public static void async(long delayTimeout, long intervalTime, Runnable... rs){
+        thread.async(delayTimeout, intervalTime, rs);
+    }
+
+    public static void asyncInterval(long intervalTime, Runnable... rs){
+        thread.asyncInterval(intervalTime, rs);
+    }
+
+    public static void asyncTimeout(long delayTimeout, Runnable... rs){
+        thread.asyncTimeout(delayTimeout, rs);
     }
 
     //* regex
@@ -607,6 +719,14 @@ public class $ {
         return system.system();
     }
 
+    public static int cpu(){
+        return system.cpu();
+    }
+
+    public static long mem(){
+        return system.mem();
+    }
+
     //* system
 
     public static $Result resultIf($Result rs1, $Result rs2){
@@ -657,6 +777,10 @@ public class $ {
 
     public static String sout(Object... o){
         return logger.sout(o);
+    }
+
+    public static String firstOut(Object... o){
+        return logger.firstOut(o);
     }
 
     public static String debugOut(Object... o){
@@ -730,6 +854,30 @@ public class $ {
     }
     public static Encryption StringEncryptor(String key) {
         return new StringEncryptorUtil(key);
+    }
+
+    public static double avg(Long... keySet) {
+        return longer.avg(keySet);
+    }
+
+    public static long min(Long... keySet) {
+        return longer.min(keySet);
+    }
+
+    public static long max(Long... keySet) {
+        return longer.max(keySet);
+    }
+
+    public static double avg(Integer... keySet) {
+        return integer.avg(keySet);
+    }
+
+    public static int min(Integer... keySet) {
+        return integer.min(keySet);
+    }
+
+    public static int max(Integer... keySet) {
+        return integer.max(keySet);
     }
 
 }

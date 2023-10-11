@@ -156,17 +156,21 @@ public class $Http {
             $.error("Proxy URL File error, e = {}", e);
             throw e;
         } finally {
-            if (inputStream != null) {
-                inputStream.close();
-            }
-            if (outputStream != null) {
-                outputStream.flush();
-                outputStream.close();
-            }
+            $.close(inputStream);
             if (conn != null) {
                 conn.disconnect();
             }
         }
+    }
+
+    /**
+     * 代理地址进行转发
+     * @param outputStream 输出流
+     * @param targetUrl 转发到目标URL
+     * @throws IOException
+     */
+    public void proxyUrl(OutputStream outputStream, String targetUrl) throws IOException {
+        sendRequest(outputStream, targetUrl);
     }
 
     /**
@@ -197,6 +201,11 @@ public class $Http {
             }
 
             inputStream = conn.getInputStream();
+
+            response.setContentType(conn.getContentType());
+            // 文件代理时候的文件信息，为文件重新设置名字，采用数据库内存储的文件名称
+            response.addHeader("Content-Disposition", conn.getHeaderField("Content-Disposition"));
+
             outputStream = response.getOutputStream();
 
             byte[] buffer = new byte[1024];
@@ -212,13 +221,7 @@ public class $Http {
             $.error("Proxy URL File error, e = {}", e);
             throw e;
         } finally {
-            if (inputStream != null) {
-                inputStream.close();
-            }
-            if (outputStream != null) {
-                outputStream.flush();
-                outputStream.close();
-            }
+            $.closeStream(inputStream);
             if (conn != null) {
                 conn.disconnect();
             }
@@ -320,12 +323,12 @@ public class $Http {
         }
 
         if(ajax.isAsync()) {
-            new Thread(new Runnable() {
+            $.async(new Runnable() {
                 @Override
                 public void run() {
                     ajax(ajax.setAsync(false));
                 }
-            }).start();
+            });
 
             return rs;
         } else {
@@ -338,7 +341,7 @@ public class $Http {
 
                 rs.addMessage(info(String.format("Send %s Data：%s", ajax.getType(), $.simple(ajax.getParams()))));
 
-                rs = ajax.getType().equals($GET) ? sendGet(ajax, isClearSession) : sendPost(ajax, isClearSession);
+                rs = sendRequest(ajax, isClearSession);
 
                 rs.addMessage(info(String.format("Get %s Data：%s", ajax.getType(), $.simple(rs.getData()))));
 
@@ -367,7 +370,6 @@ public class $Http {
 
         return false;
     }
-
 
     public void sendFile(HttpServletResponse response, String path) {
         sendFile(response, path, null);
@@ -409,9 +411,17 @@ public class $Http {
         }catch (Exception e){
             e.printStackTrace();
         }finally {
-            $.file.closeStearm(out);
-            $.file.closeStearm(ips);
+            $.file.closeStream(out);
+            $.file.closeStream(ips);
         }
+    }
+
+    public String sendGet(String url)  {
+        return sendRequest(new $Ajax(url).setType($GET)).getDataToString();
+    }
+
+    public String sendPost(String url)  {
+        return sendRequest(new $Ajax(url).setType($POST)).getDataToString();
     }
 
     public $Result sendGet($Ajax ajax)  {
@@ -462,6 +472,8 @@ public class $Http {
      * @return $Result 结构体
      */
     public $Result sendRequest($Ajax ajax, boolean isClearSession)  {
+        if(null != ajax.getOutputStream()) return sendRequest(ajax.getOutputStream(), ajax, isClearSession);
+
         OutputStreamWriter out = null;
         BufferedReader in = null;
         StringBuffer result = new StringBuffer();
@@ -558,26 +570,195 @@ public class $Http {
         } catch (IOException e) {
             rs.addError(exception(e));
         } finally {  //使用finally块来关闭输出流、输入流
-            try{
-                if(out!=null) out.close();
-                if(in!=null) in.close();
-            } catch (IOException ex){
-                rs.addError(exception(ex));
-            }
+            $.closeStream(in, out);
         }
 
         return rs.setData(result.toString());
     }
 
-    public String getIp(String... name) {
-        try {
-            InetAddress inetAddress = getInetAddress(last(name));
+    /*
+     * 发送请求
+     * @param ajax ajax 请求对象
+     * @return $Result 结构体
+     */
+    public $Result sendRequest(OutputStream outputStream, $Ajax ajax, boolean isClearSession)  {
+        OutputStreamWriter out = null;
+        BufferedReader in = null;
+        $Result rs = $.result();
 
-            return null == inetAddress ? "localhost" : inetAddress.getHostAddress();
-        } catch (Exception e) {
-            $.warn(e);
-            return "";
+        try {
+            String requestUrl = ajax.getUrl();
+
+            // 在链接内添加内容
+            if(ajax.getParams() != null) {
+                requestUrl += "?" + toHttpParams(ajax.getParams());
+            }
+
+            URL realUrl = new URL(requestUrl);
+            // 打开和URL之间的连接
+            HttpURLConnection conn = (HttpURLConnection)realUrl.openConnection();
+            String baseUrl = $.url.base(conn.getURL());
+            String localCookie = cookies.get(baseUrl); // 获取本地留存的 cookie
+
+            // 设置通用的请求属性
+            conn.setRequestMethod(ajax.getType().equalsIgnoreCase($GET) ? $GET : $POST);
+
+            conn.setDoOutput(true); // 允许连接提交信息
+            conn.setDoInput(true);
+            conn.setUseCaches(false);
+
+            conn.setInstanceFollowRedirects(isClearSession ? true : false); // 防止因为跳转引起的模拟登录异常 !! 关键 !!
+
+            conn.setConnectTimeout(ajax.getTimeout());
+            conn.setReadTimeout(ajax.getTimeout());
+
+            conn.setRequestProperty("Accept", "*/*");
+            conn.setRequestProperty("Connection", "Keep-Alive");
+            conn.setRequestProperty("Content-Type", ajax.getType().equalsIgnoreCase($POST) && !isJSON(ajax.getData()) ? "application/x-www-form-urlencoded; ENCODING=UTF-8" : "application/json; ENCODING=UTF-8" );
+
+            if(!isClearSession && !$.isEmptyOrNull(localCookie)) {
+                rs.addMessage($.info("set-cookie：" + localCookie));
+                conn.setRequestProperty("Cookie", localCookie); // 设置发送的cookie
+            } else {
+                rs.addMessage($.info("clear cookie"));
+                conn.setRequestProperty("Cookie", ""); // 设置发送的cookie，置为null会某些情况引发400错误
+            }
+
+            if(!isEmptyOrNull(ajax.getProperty()))
+                for(String key : ajax.getProperty().keySet() )
+                    conn.setRequestProperty(key, ajax.getProperty().get(key));
+
+
+            // 建立实际的连接
+            conn.connect();
+
+            if(ajax.getType().equalsIgnoreCase($POST) && ajax.getData() != null) {
+                // 获取URLConnection对象对应的输出流
+                out = new OutputStreamWriter(conn.getOutputStream(), "utf-8");
+                // 发送请求参数
+                if (!$.isEmptyOrNull(ajax.getData())) {
+                    out.write($.str(ajax.getData()));
+                }
+                // flush输出流的缓冲
+                out.flush();
+            }
+
+            // 设置返回后的通用请求
+            localCookie = conn.getHeaderField("Set-Cookie");// 取到返回的Cookie
+            if (localCookie != null) {
+                $.info("get-cookie：" + localCookie);
+                cookies.put(baseUrl, localCookie);
+            }
+
+            rs.addMessage($.info("http-status：" + conn.getResponseCode()));
+
+            String line;
+            // 定义BufferedReader输入流来读取URL的响应
+            if(null != conn.getErrorStream()) {
+                in = new BufferedReader(new InputStreamReader(conn.getErrorStream(), "utf-8"));
+
+                byte[] buffer = new byte[1024];
+                // 每次读取的字符串长度，如果为-1，代表全部读取完毕
+                int len = 0;
+                // 使用一个输入流从buffer里把数据读取出来
+                while((len = in.read()) != -1 ){
+                    // 用输出流往buffer里写入数据，中间参数代表从哪个位置开始读，len代表读取的长度
+                    outputStream.write(buffer, 0, len);
+                }
+                outputStream.flush();
+            }
+
+            // 定义BufferedReader输入流来读取URL的响应
+            in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
+            while ((line = in.readLine()) != null) {
+                byte[] buffer = new byte[1024];
+                // 每次读取的字符串长度，如果为-1，代表全部读取完毕
+                int len = 0;
+                // 使用一个输入流从buffer里把数据读取出来
+                while((len = in.read()) != -1 ){
+                    // 用输出流往buffer里写入数据，中间参数代表从哪个位置开始读，len代表读取的长度
+                    outputStream.write(buffer, 0, len);
+                }
+                outputStream.flush();
+            }
+
+            conn.disconnect(); // 断开连接
+        } catch (UnsupportedEncodingException e) {
+            rs.addError(exception(e));
+        } catch (ProtocolException e) {
+            rs.addError(exception(e));
+        } catch (MalformedURLException e) {
+            rs.addError(exception(e));
+        } catch (IOException e) {
+            rs.addError(exception(e));
+        } finally {  //使用finally块来关闭输出流、输入流
+            $.closeStream(out, in);
         }
+
+        return rs;
+    }
+
+    /*
+     * 发送请求
+     * @param ajax ajax 请求对象
+     * @return $Result 结构体
+     */
+    public void sendRequest(OutputStream outputStream, String targetUrl) throws IOException {
+        InputStream inputStream = null; // 对端输出，本端接收流
+        HttpURLConnection conn = null; // HTTTP连接
+
+        try {
+            /* 创建一个目标URL地址对象 */
+            URL url = new URL(targetUrl);
+
+            /* 打开连接 */
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod($GET);
+
+            inputStream = conn.getInputStream();
+
+            byte[] buffer = new byte[1024];
+            // 每次读取的字符串长度，如果为-1，代表全部读取完毕
+            int len = 0;
+            // 使用一个输入流从buffer里把数据读取出来
+            while((len = inputStream.read(buffer)) != -1 ){
+                // 用输出流往buffer里写入数据，中间参数代表从哪个位置开始读，len代表读取的长度
+                outputStream.write(buffer, 0, len);
+            }
+            outputStream.flush();
+        } catch (Exception e) {
+            $.error("Send Request error, e = {}", e);
+            throw e;
+        } finally {
+            $.file.closeStream(inputStream);
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+    }
+
+    /*
+     * 发送请求
+     * @param ajax ajax 请求对象
+     * @return $Result 结构体
+     */
+    public String sendRequest(String targetUrl) throws IOException {
+        return sendRequest(targetUrl, $GET);
+    }
+
+    /*
+     * 发送请求
+     * @param targetUrl targetUrl 请求连接
+     * @return String 返回数据
+     */
+    public String sendRequest(String targetUrl, String method) throws IOException {
+        return sendRequest(new $Ajax(targetUrl).setType(method)).getDataToString();
+    }
+
+    public String getIp(String... name) throws UnknownHostException {
+        InetAddress inetAddress = getInetAddress(last(name));
+
+        return null == inetAddress ? "localhost" : inetAddress.getHostAddress();
     }
 
     public InetAddress getInetAddress(String... name) throws UnknownHostException {
@@ -688,4 +869,27 @@ public class $Http {
         return JSONObject.fromObject(maps);
     }
 
+    public boolean testTelnet(String host, int port) {
+        try (Socket socket = new Socket()) {
+            socket.connect(new InetSocketAddress(host, port), 500); // 设置连接超时时间为500ms
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    public boolean testPing(String host) {
+        try {
+            InetAddress inetAddress = getInetAddress(host);
+            if (inetAddress.isReachable(500)) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (UnknownHostException e) {
+            return false;
+        } catch (IOException e) {
+            return false;
+        }
+    }
 }

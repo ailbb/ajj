@@ -169,7 +169,7 @@ public class $FileTailReader {
         }
 
         private Thread createThread(){
-            this.runThread = new Thread(()->{
+            this.runThread = $.async(()->{
                 while (!closed) {
                     if(file.length() > currentPos) { // 当文件大小超出指针范围时，读取新的一部分
                         $.debugOut("监听到文件变化..."+file.getPath());

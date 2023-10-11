@@ -63,6 +63,9 @@ public class $EntityCache <T> {
     public boolean delayTime() {
         expiresTime = System.currentTimeMillis() + timeOut;
         lastUpdateTime = new Date();
+
+        if(null != autoDelayRunnable) setData(autoDelayRunnable.loadData()); // 延期时候，重新加载数据
+
         return true;
     }
 

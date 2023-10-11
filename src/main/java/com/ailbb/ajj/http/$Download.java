@@ -14,9 +14,7 @@ public class $Download {
     Map<String, Boolean> waitList = new HashMap<>();
     public int maxThread = 10;
 
-    public $Download(){
-        this.startChecking();
-    }
+    public $Download(){}
 
     public boolean download(String addressURL, String targetPath) {
         while(!getDownloadThread(addressURL)) { // 如果没有获取到下载资源，就等待
@@ -97,7 +95,7 @@ public class $Download {
         for(int i=0; i<urls.size(); i++) {
             int idx = i+1;
             String picStr = urls.get(i);
-            new Thread(new Runnable() {
+            $.async(new Runnable() {
                 @Override
                 public void run() {
                     $.info(">> 正在下载文件第："+ idx + "（个）;");
@@ -105,7 +103,7 @@ public class $Download {
                     boolean isDone = download(picStr, targetDir);
                     resultMap.put(picStr, isDone);
                 }
-            }).start();
+            });
         }
 
         while(resultMap.size() != urls.size()){}; // 如果没完，则一直等待
@@ -120,13 +118,13 @@ public class $Download {
         for(String url : urlMap.keySet()) {
             int idx = i++;
             String downLoadPath = urlMap.get(url);
-            new Thread(new Runnable() {
+            $.async(new Runnable() {
                 @Override
                 public void run() {
                     boolean isDone = download(url, downLoadPath);
                     resultMap.put(url, isDone);
                 }
-            }).start();
+            });
         }
 
         while(resultMap.size() != urlMap.size()){}; // 如果没完，则一直等待
@@ -200,38 +198,35 @@ public class $Download {
 
     int lastCheckDownload = 0;
     int lastCheckWait = 0;
-    private void startChecking(){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true){
-                    if(downloadList.size() != 0) {
-                        lastCheckDownload = downloadList.size();
-                        $.info("正在下载任务队列："+downloadList.size() + "/"+maxThread);
-                        if(downloadList.size()<3){
-                            for(String key: downloadList.keySet()) $.log(key);
-                        }
-                    }
-                    if(waitList.size() != 0) {
-                        lastCheckWait = waitList.size();
-                        $.info("正在等待下载队列："+waitList.size());
-                    }
-
-                    if(downloadList.size() == 0 && lastCheckDownload != 0) {
-                        lastCheckDownload = 0;
-                        lastCheckWait = 0;
-                        $.info("当前下载任务队列："+downloadList.size());
-                        $.info("当前等待下载队列："+waitList.size());
-                    }
-
-                    try {
-                        Thread.sleep(3000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
+    public void startChecking(){
+        $.async(() -> {
+            while (true){
+                if(downloadList.size() != 0) {
+                    lastCheckDownload = downloadList.size();
+                    $.info("正在下载任务队列："+downloadList.size() + "/"+maxThread);
+                    if(downloadList.size()<3){
+                        for(String key: downloadList.keySet()) $.log(key);
                     }
                 }
+                if(waitList.size() != 0) {
+                    lastCheckWait = waitList.size();
+                    $.info("正在等待下载队列："+waitList.size());
+                }
+
+                if(downloadList.size() == 0 && lastCheckDownload != 0) {
+                    lastCheckDownload = 0;
+                    lastCheckWait = 0;
+                    $.info("当前下载任务队列："+downloadList.size());
+                    $.info("当前等待下载队列："+waitList.size());
+                }
+
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        }).start();
+        });
     }
 
     public $Download setMaxThread(int i) {

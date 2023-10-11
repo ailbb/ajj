@@ -41,6 +41,7 @@ public class $Proxy {
         }
 
         tomcat.init(); // 初始化tomcat内容
+        downloader.startChecking(); // 启动检查任务
     }
 
     private static boolean initProxy(final String $PATH) {

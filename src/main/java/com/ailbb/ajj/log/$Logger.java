@@ -5,8 +5,7 @@ import static com.ailbb.ajj.$.*;
 import com.ailbb.ajj.$;
 import com.ailbb.ajj.exception.$Exception;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /*
  * Created by Wz on 6/20/2018.
@@ -19,7 +18,7 @@ public class $Logger {
     private boolean PRINT_TIME = true; // 打印时间信息
     private $LoggerCallback loggerCallback = null;
     private List<String> history = new ArrayList<>();
-    private int maxHistroyLine = 1000; // 默认缓存1000行记录
+    private int maxHistroyLine = 100000; // 默认缓存1000行记录
     private boolean ended = false;
     public static boolean DebugEnabled = false;
 
@@ -99,13 +98,25 @@ public class $Logger {
 
     public String msg(Object... o){ return sout(o); }
 
+    public String firstOut(Object... o) {
+        List<Object> lo = new ArrayList<>();
+
+        for (Object _s : o) {
+            if(!history.contains(_s)) lo.add(_s);
+        }
+
+        return sout($.list.listToArray(lo));
+    }
     public String debugOut(Object... o) {
         return isDebugEnabled() ? sout(o) : $.lastStr(o);
     }
 
     public String sout(Object... o){
         for(Object oi : o) {
-            String s = oi.toString()+"\n";
+            if(null == oi) oi = "";
+
+            String os = oi.toString();
+            String s = os+"\n";
 
             if(PRINT_TIME) s = now("s") + "\t" + s;
 
@@ -117,7 +128,7 @@ public class $Logger {
 
             if(history.size() > maxHistroyLine) history.remove(0);
 
-            history.add(s); // 添加历史信息
+            history.add(os); // 添加历史信息
 
             System.out.print(s);
 
@@ -202,4 +213,5 @@ public class $Logger {
     public void setEnded(boolean ended) {
         this.ended = ended;
     }
+
 }
