@@ -96,12 +96,10 @@ public class $ {
     public static $SnowflakeIdWorker snowflakeIdWorker = new $SnowflakeIdWorker(0);
 
 
-
     // extends -- 基础扩展
     public static $Thread thread = new $Thread();
     public static $Jar jar = new $Jar();
     public static $Java java = new $Java();
-
 
 
     // http  -- 服务扩展
@@ -114,11 +112,11 @@ public class $ {
 
     // system -- 系统扩展
     public static $System system = new $System();
-    public static $File file = new $File();
     public static $Path path = new $Path();
-    public static $Logger logger = new $Logger();
+    public static $File file = new $File();
     public static $Properties properties = file.properties;
     public static $Yml yml = file.yml;
+    public static $Logger logger = new $Logger();
 
 
     // tomcat -- 业务处理类

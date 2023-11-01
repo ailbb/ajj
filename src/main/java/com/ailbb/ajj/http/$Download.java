@@ -181,7 +181,7 @@ public class $Download {
                 try {
                     b = String.valueOf(c).getBytes("utf-8");
                 } catch (Exception ex) {
-                    System.out.println(ex);
+                    $.error(ex);
                     b = new byte[0];
                 }
                 for (int j = 0; j < b.length; j++) {

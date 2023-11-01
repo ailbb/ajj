@@ -1,6 +1,7 @@
 package com.ailbb.ajj.file;
 
 import com.ailbb.ajj.$;
+import com.ailbb.ajj.sys.$System;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class $Path {
     public String getPath(String path, boolean isSubRoot){
         String currpath = "";
 
-        if(system().equals("windows")) {
+        if(new $System().system().equals("windows")) {
             if(test("^[A-Za-z]:", path) || test("/[A-Za-z]:", path)  ) currpath = rel("/", path);
         } else {
             if(path.startsWith("/")) currpath = rel(path);

@@ -138,7 +138,7 @@ public class Oracle extends JDBCRunner {
             logger.msg(new StringBuilder().append("truncate table:")
                     .append(orclTable).toString());
             boolean flag = stmt.execute(sql);
-            System.out.println("flag:"+flag);
+            logger.msg("flag:"+flag);
             return flag;
         } catch (Exception e){
             logger.err(e);

@@ -1157,7 +1157,7 @@ public class $File {
         } else if (file.isFile()) {
             fileList.add(file);
         } else {
-            System.out.println("Error file." + file.getName());
+            $.warn("Error file." + file.getName());
         }
 
         return fileList;

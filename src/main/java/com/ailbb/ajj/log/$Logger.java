@@ -1,12 +1,12 @@
 package com.ailbb.ajj.log;
 
-import static com.ailbb.ajj.$.*;
-
 import com.ailbb.ajj.$;
-import com.ailbb.ajj.exception.$Exception;
-import org.slf4j.Logger;
 
-import java.util.*;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.ailbb.ajj.$.*;
 
 /*
  * Created by Wz on 6/20/2018.
@@ -23,8 +23,15 @@ public class $Logger {
     private boolean ended = false;
     public static boolean DebugEnabled = false;
 
+    public PrintStream ps;
 
-    public $Logger() {}
+    public $Logger() {
+         this.ps  = System.out;
+    }
+
+    public $Logger(PrintStream ps) {
+         this.ps  = ps;
+    }
     public $Logger(String filePath) {
         this(filePath, null);
 
@@ -209,7 +216,7 @@ public class $Logger {
             if(null != loggerCallback) {
                 loggerCallback.info(os);
             } else {
-                System.out.print(s);
+                this.ps.print(s);
             }
 
             if(history.size() > maxHistroyLine) history.remove(0);
@@ -297,4 +304,11 @@ public class $Logger {
         this.ended = ended;
     }
 
+    public PrintStream getPs() {
+        return ps;
+    }
+
+    public void setPs(PrintStream ps) {
+        this.ps = ps;
+    }
 }

@@ -134,8 +134,8 @@ public class FileCounter {
         });
 
         do{
-            System.out.print("\n\n\n请输入命令：\r\n");
-            System.out.print("\t list:{type} 展开类型的文件列表；");
+            $.sout("\n\n\n请输入命令：\r\n");
+            $.sout("\t list:{type} 展开类型的文件列表；");
             val = input.next();
             i[0] = 0; // 重新计时
             commonLine(val);

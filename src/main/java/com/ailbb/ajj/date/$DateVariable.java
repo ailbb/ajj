@@ -203,7 +203,7 @@ public class $DateVariable {
         String time1 = format_date("yyyyMMddHHmm", startTime);
         String day = time1.substring(0, 8);
         String minute = time1.substring(8, 12);
-        System.out.println("day=" + day + ",minute='" + minute + "'");
+        $.sout("day=" + day + ",minute='" + minute + "'");
         return "day=" + day + ",minute='" + minute + "'";
     }
 
@@ -255,7 +255,7 @@ public class $DateVariable {
         int minutes = 8 * 60 - a;
         startTime.setMinutes(startTime.getMinutes() + minutes);
         String newTime = format_date("yyyy-MM-dd HH:mm:00", startTime);
-        System.out.println("unixtime_last:" + newTime);
+        $.sout("unixtime_last:" + newTime);
         return "'" + newTime + "'";
     }
 
@@ -300,7 +300,7 @@ public class $DateVariable {
         String time1 = format_date("yyyyMMddHHmm", startTime);
         String day = time1.substring(0, 8);
         String minute = time1.substring(8, 12);
-        System.out.println("day=" + day + ",minute='" + minute + "'");
+        $.sout("day=" + day + ",minute='" + minute + "'");
         return "day=" + day + "/minute=" + minute + "/";
     }
 
@@ -317,7 +317,7 @@ public class $DateVariable {
         }
         String time1 = format_date("yyyyMMddHHmm", startTime);
         String day = time1.substring(0, 8);
-        System.out.println("day=" + day);
+        $.sout("day=" + day);
         return day;
     }
 
@@ -334,7 +334,7 @@ public class $DateVariable {
         }
         String time1 = format_date("yyyyMMddHHmm", startTime);
         String minute = time1.substring(8, 12);
-        System.out.println("minute=" + minute);
+        $.sout("minute=" + minute);
         return minute;
     }
 
@@ -351,7 +351,7 @@ public class $DateVariable {
             startTime.setMonth(startTime.getMonth() - a);
         }
         lasttime = format_date(formate, startTime);
-        System.out.println("startTime=" + lasttime);
+        $.sout("startTime=" + lasttime);
         return lasttime;
     }
 

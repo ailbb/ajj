@@ -2,6 +2,7 @@ package com.ailbb.ajj.cache;
 
 import com.ailbb.ajj.$;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import java.io.File;
 import java.util.Map;
@@ -52,8 +53,13 @@ public class $CacheQueue {
     }
 
     public String getCurrModel(){
-        if(null != redis) return "redis";
+        if(testRedis()) return "redis";
         return "local";
+    }
+
+    public synchronized boolean registRedis(Jedis redis){
+        this.redis = redis;
+        return true;
     }
 
     public synchronized boolean registRedis(String addr, int port){
@@ -65,58 +71,76 @@ public class $CacheQueue {
         this.addr = addr;
         this.port = port;
         this.password = password;
-        return connect();
+
+        return connectRedis();
     }
 
-    public synchronized boolean connect(){
+    public synchronized boolean connectRedis(){
         // 连接Redis服务器
         try {
-            redis = new Jedis(addr, port);
-            // 设置密码
-            if(!$.isEmptyOrNull(password)) redis.auth(password);
+            if ($.isEmptyOrNull(addr)) {
+                return false;
+            } else {
+                redis = new Jedis(addr, port);
+                // 设置密码
+                if(!$.isEmptyOrNull(password)) redis.auth(password);
+            }
 
             redis.connect();
 
             $.info("[Cache] Regist Redis cache success!["+redis.dbSize()+"]");
-
             return true;
         } catch (Exception e){
-            redis = null;
+//            redis = null;
             $.warn("[Cache] Regist Redis cache ERROR! Use default local Cache!"+e);
         }
 
         return false;
     }
 
-    public synchronized boolean reConnect(){
+    public synchronized boolean reConnectRedis(){
         if(null == redis) return false;
-        // 连接Redis服务器
-        close();
 
-        return connect();
+        // 连接Redis服务器
+        if(redis.isConnected()) redis.close();
+
+        return connectRedis();
+    }
+
+    public boolean testRedis(){
+        if(null == redis) return false;
+
+        try {
+            redis.dbSize();
+            return true;
+        } catch (JedisConnectionException e) {
+            try {
+                $.warn("[Cache] Redis is Not connect! Try reConnect! ["+e+"]");
+                return reConnectRedis();
+            } catch (Exception e1){
+                return false;
+            }
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public synchronized Jedis getRedis() {
-        if(null != redis && !redis.isConnected()) redis.connect();
-
-        return null != redis ? redis : null;
+        return redis;
     }
 
     public synchronized void close(){
+        clear();
+
         // 关闭连接
-        if(null != redis) {
-            redis.close();
-            redis = null;
-        } else {
-            caches.clear();
-        }
+        if(testRedis()) redis.close();
     }
 
 
     public synchronized void put(String key, $EntityCache value) {
         caches.put(key, value);
 
-        if(null != redis) { // 如果redis不为空，则将数据存入redis
+        if(testRedis()) { // 如果redis不为空，则将数据存入redis
             try {
                 Object o = value.getData();
 
@@ -134,7 +158,7 @@ public class $CacheQueue {
 
 
     public synchronized  $EntityCache get(String key) {
-        if(null != redis) {
+        if(testRedis()) {
             String o = getRedis().get(key);
             if(null != o && null != caches.get(key)) {
                 caches.get(key).setData(o);
@@ -165,7 +189,7 @@ public class $CacheQueue {
     public synchronized void remove(String key) {
         caches.remove(key);
 
-        if(null != redis) {
+        if(testRedis()) {
             getRedis().del(key);
         }
     }

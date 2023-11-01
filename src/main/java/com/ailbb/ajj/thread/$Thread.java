@@ -218,7 +218,7 @@ public class $Thread<T> {
 
         while (result.size() != rs.length) {
             Thread.sleep(1000);
-            System.out.println("已完成任务数：" + result.size() + "!=" + " 总队列：" +rs.length);
+            $.sout("已完成任务数：" + result.size() + "!=" + " 总队列：" +rs.length);
             if(System.currentTimeMillis() - t > timeOut) throw new TimeoutException("等待连接异常！");
         };
 

@@ -302,7 +302,6 @@ public class $System {
         s.setAgentVer(null);
         s.setCreateTime(new Date());
         s.setRemark("");
-        System.out.println(mem());
         s.setTotalMem($.unit.convert(osBean.getTotalMemorySize()));
         s.setSubmitSeconds(String.valueOf(osBean.getProcessCpuTime()));
         s.setBytesRecv("-1");
