@@ -73,7 +73,7 @@ public class $CacheQueue {
         try {
             redis = new Jedis(addr, port);
             // 设置密码
-            if(null != password) redis.auth(password);
+            if(!$.isEmptyOrNull(password)) redis.auth(password);
 
             redis.connect();
 

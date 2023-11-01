@@ -67,45 +67,8 @@ public class $ {
 
     public static Map<String, $Proxy> $PROXY = new HashMap<String, $Proxy>();
 
-    // http
-    public static $Http http = new $Http();
-    public static $Url url = new $Url();
-    public static $Server server = new $Server();
-    public static $Velocity velocity = new $Velocity();
 
-    // file
-    public static $File file = new $File();
-    public static $Path path = new $Path();
-
-    // date
-    public static $Date date = new $Date();
-
-    // 缓存对象
-    public static $CacheManagerImpl cache = new $CacheManagerImpl();
-
-    // tomcat处理类
-    public static $Tomcat tomcat = new $Tomcat();
-    public static $Download downloader = new $Download();
-
-    // thread
-    public static $Thread thread = new $Thread();
-
-    // jar&java
-    public static $Jar jar = new $Jar();
-    public static $Java java = new $Java();
-
-    // regex
-    public static $Regex regex = new $Regex();
-
-    // regex
-    public static $Test test = new $Test();
-
-    // unit
-    public static $Unit unit = new $Unit();
-    public static $Suffix suffix = new $Suffix();
-    public static $Charset charset = new $Charset();
-
-    // lang
+    // lang -- 基础
     public static $Json json = new $Json();
     public static $String string = new $String();
     public static $Integer integer = new $Integer();
@@ -116,33 +79,55 @@ public class $ {
     public static $List list = new $List();
     public static $Map map = new $Map();
     public static $Bean bean = new $Bean();
-    public static $Mybatis mybatis = new $Mybatis();
+    public static $Cast cast = new $Cast();
 
-    // 加密方法
+
+    // unit -- 工具
+    public static $Regex regex = new $Regex();
+    public static $Test test = new $Test();
+    public static $Date date = new $Date();
+    public static $Unit unit = new $Unit();
+    public static $Suffix suffix = new $Suffix();
+    public static $Charset charset = new $Charset();
     public static EncryptUtil encrypt = new EncryptUtil();
-
-    // system
-    public static $System system = new $System();
-
-    // jdbc
-    public static $JDBC jdbc = new $JDBC();
-
-    // log
-    public static $Logger logger = new $Logger();
-
     public static Encryption stringencryptor = new StringEncryptorUtil();
     public static Encryption aes = new AESUtil();
     public static Encryption sm4 = new Sm4Util();
-
-    // 属性工具类
-    public static $Properties properties = file.properties;
-    public static $Yml yml = file.yml;
-    public static $Cast cast = new $Cast();
-    public static $SSL ssl = new $SSL();
     public static $SnowflakeIdWorker snowflakeIdWorker = new $SnowflakeIdWorker(0);
 
-    // email
+
+
+    // extends -- 基础扩展
+    public static $Thread thread = new $Thread();
+    public static $Jar jar = new $Jar();
+    public static $Java java = new $Java();
+
+
+
+    // http  -- 服务扩展
+    public static $Http http = new $Http();
+    public static $Url url = new $Url();
+    public static $SSL ssl = new $SSL();
+    public static $Server server = new $Server();
+    public static $Velocity velocity = new $Velocity();
+
+
+    // system -- 系统扩展
+    public static $System system = new $System();
+    public static $File file = new $File();
+    public static $Path path = new $Path();
+    public static $Logger logger = new $Logger();
+    public static $Properties properties = file.properties;
+    public static $Yml yml = file.yml;
+
+
+    // tomcat -- 业务处理类
+    public static $Tomcat tomcat = new $Tomcat();
+    public static $Download downloader = new $Download();
+    public static $CacheManagerImpl cache = new $CacheManagerImpl();
     public static $Mail mail = new $Mail();
+    public static $JDBC jdbc = new $JDBC();
+    public static $Mybatis mybatis = new $Mybatis();
 
     static {
         try {
