@@ -13,7 +13,7 @@ import static com.ailbb.ajj.$.*;
  */
 public class $Logger {
     public static int LOG_LEVEL = 0;
-    private static String LOG_PATH = $.getPath() + "log/";
+    private static String LOG_PATH = "log/";
     private String File_PATH = null;
     private boolean PRINT_DZ = false; // 打印堆栈信息
     private boolean PRINT_TIME = true; // 打印时间信息
@@ -94,9 +94,9 @@ public class $Logger {
 
     public $Logger init(){ return init(date.now("ns") + ".log"); }
 
-    public $Logger init(String filePath){ return new $Logger(LOG_PATH + filePath); }
+    public $Logger init(String filePath){ return new $Logger($.getPath() + LOG_PATH + filePath); }
 
-    public $Logger init(String filePath, $LoggerCallback loggerCallback){ return new $Logger(LOG_PATH + filePath, loggerCallback); }
+    public $Logger init(String filePath, $LoggerCallback loggerCallback){ return new $Logger($.getPath() + LOG_PATH + filePath, loggerCallback); }
 
     public $Logger setLevel(int level){
         $Logger.LOG_LEVEL = level;

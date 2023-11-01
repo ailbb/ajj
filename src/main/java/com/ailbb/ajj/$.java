@@ -61,7 +61,7 @@ public class $ {
     //* 存储全局变量
     public static String $NAME = "";
     public static String $ROOT = "/" + $NAME;
-    
+
     public static final int $TIMEOUT = 100000;
     public static final String $PROXY_PATH = "ajj.json";
 
@@ -859,7 +859,7 @@ public class $ {
             return logger.error(o);
         } catch (Exception e) {
             System.out.println("无法唤醒日志类："+e);
-            System.out.println(o);
+            e.printStackTrace();
         }
         return $.lastStr(o);
     }
@@ -869,7 +869,7 @@ public class $ {
             return logger.warn(o);
         } catch (Exception e) {
             System.out.println("无法唤醒日志类："+e);
-            System.out.println(o);
+            e.printStackTrace();
         }
         return $.lastStr(o);
     }
