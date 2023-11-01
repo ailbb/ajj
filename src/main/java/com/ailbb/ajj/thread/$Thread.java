@@ -9,6 +9,7 @@ import java.util.concurrent.*;
  * Created by Wz on 6/20/2018.
  */
 public class $Thread<T> {
+    Map<String, Thread> threadRunQueue;
     ExecutorService runThreadPoolExecutor;
 
     // 创建一个ScheduledExecutorService实例
@@ -25,7 +26,7 @@ public class $Thread<T> {
     public $Thread(int runThreadPoolSize, int scheduledPoolSize){
         this.runThreadPoolSize = runThreadPoolSize;
         this.scheduledPoolSize = scheduledPoolSize;
-
+        threadRunQueue = new HashMap<>();
 
         // 创建线程池
         runThreadPoolExecutor = Executors.newFixedThreadPool(runThreadPoolSize);
@@ -46,6 +47,17 @@ public class $Thread<T> {
         return this;
     }
 
+    public Map<String, Thread> getRunThreadQueue(){
+        for(String key : threadRunQueue.keySet()){
+            if(!threadRunQueue.get(key).isAlive()) threadRunQueue.remove(key);
+        }
+
+        return threadRunQueue;
+    }
+
+    public int getRunThreadQueueActiveCount(){
+        return getRunThreadQueue().size();
+    }
 
     public int getRunPoolActiveCount(){
         return ((ThreadPoolExecutor)(this.runThreadPoolExecutor)).getActiveCount();
@@ -55,47 +67,73 @@ public class $Thread<T> {
         return ((ThreadPoolExecutor)(this.scheduledExecutor)).getActiveCount();
     }
 
-    public Thread async(Runnable... rs){
+    public $ThreadTraCKer async(Runnable... rs){
         return async(false, rs);
     }
 
-    public Thread async(boolean daemon, Runnable... rs){
+    public $ThreadTraCKer async(boolean daemon, Runnable... rs){
         // 否则执行执行
-        Thread thread = null;
+        $ThreadTraCKer runnerTraCKer = null;
+
         for(Runnable r : rs) {
-            thread = new Thread(r);
-            thread.setDaemon(daemon);
-            this.runThreadPoolExecutor.submit(thread);
+            runnerTraCKer = new $ThreadTraCKer(r);
+            if (daemon) {
+                asyncThread(daemon, runnerTraCKer);
+            } else {
+                this.runThreadPoolExecutor.submit(runnerTraCKer);
+            }
         }
 
-        return thread;
+        return runnerTraCKer;
     }
 
-    public void async(long delayTimeout, Runnable... rs){
-        async(false, delayTimeout, 0, rs);
+    public $ThreadTraCKer async(long delayTimeout, Runnable... rs){
+        return async(false, delayTimeout, 0, rs);
     }
 
-    public void async(long delayTimeout, long intervalTime, Runnable... rs){
-        async(false, delayTimeout, intervalTime, rs);
+    public $ThreadTraCKer async(long delayTimeout, long intervalTime, Runnable... rs){
+        return async(false, delayTimeout, intervalTime, rs);
     }
-    public void async(boolean daemon, long delayTimeout, Runnable... rs){
-        async(daemon, delayTimeout, 0, rs);
+    public $ThreadTraCKer async(boolean daemon, long delayTimeout, Runnable... rs){
+        return async(daemon, delayTimeout, 0, rs);
     }
 
-    public void async(boolean daemon, long delayTimeout, long intervalTime, Runnable... rs){
+    public $ThreadTraCKer async(boolean daemon, long delayTimeout, long intervalTime, Runnable... rs){
 
         // 如果是延时任务，交给延期任务执行
         if(intervalTime > 0) {
-            asyncIntervalRun(intervalTime, delayTimeout, rs);
+            return asyncIntervalRun(intervalTime, delayTimeout, rs);
         }
 
         // 如果是延时任务，交给延期任务执行
         else if(delayTimeout > 0) {
-            asyncTimeoutRun(delayTimeout, rs);
+            return asyncTimeoutRun(delayTimeout, rs);
         }
 
         // 如果是非守护线程（默认执行），交给线程池去执行
-        else async(daemon, rs);
+        else return async(daemon, rs);
+    }
+
+
+    public Thread asyncThread(Runnable... rs){
+        return asyncThread(false, rs);
+    }
+
+    public Thread asyncThread(boolean daemon, Runnable... rs){
+        // 否则执行执行
+        Thread thread = null;
+        Map<String, Thread> _threadRunQueue = getRunThreadQueue();
+
+        for(Runnable r : rs) {
+            thread = new Thread(r);
+            thread.setDaemon(daemon);
+            thread.setName("ASYNC-"+thread.getId()+"-"+$.uuidStrNone(false));
+            _threadRunQueue.put(thread.getName(), thread);
+            thread.start();
+        }
+
+
+        return thread;
     }
 
     /**
@@ -103,15 +141,18 @@ public class $Thread<T> {
      * @param delayTimeout
      * @param rs
      */
-    public void asyncTimeoutRun(long delayTimeout, Runnable... rs){
+    public $ThreadTraCKer asyncTimeoutRun(long delayTimeout, Runnable... rs){
+        // 否则执行执行
+        $ThreadTraCKer runnerTraCKer = null;
         // 使用schedule方法来安排在给定的延迟后执行命令
         // 这里将任务安排在5秒后执行
         for(Runnable r : rs) {
-            scheduledExecutor.schedule(r, delayTimeout, unit);
+            runnerTraCKer = new $ThreadTraCKer(r);
+
+            scheduledExecutor.schedule(runnerTraCKer, delayTimeout, unit);
         }
 
-        // 记得最后要关闭executor，否则它会阻止JVM退出
-//        executor.shutdown();
+        return runnerTraCKer;
     }
 
     /**
@@ -129,15 +170,19 @@ public class $Thread<T> {
      * @param delayTimeout 延期执行
      * @param rs 执行列表
      */
-    public void asyncIntervalRun(long intervalTime, long delayTimeout, Runnable... rs){
+    public $ThreadTraCKer asyncIntervalRun(long intervalTime, long delayTimeout, Runnable... rs){
+        // 否则执行执行
+        $ThreadTraCKer runnerTraCKer = null;
+
         // 使用schedule方法来安排在给定的延迟后执行命令
         // 这里将任务安排在5秒后执行
         for(Runnable r : rs) {
-            scheduledExecutor.scheduleAtFixedRate(r, delayTimeout, intervalTime, unit);
+            runnerTraCKer = new $ThreadTraCKer(r);
+
+            scheduledExecutor.scheduleAtFixedRate(runnerTraCKer, delayTimeout, intervalTime, unit);
         }
 
-        // 记得最后要关闭executor，否则它会阻止JVM退出
-//        executor.shutdown();
+        return runnerTraCKer;
     }
 
     /*

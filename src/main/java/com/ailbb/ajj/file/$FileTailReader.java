@@ -1,34 +1,10 @@
 package com.ailbb.ajj.file;
 
 import com.ailbb.ajj.$;
-import com.ailbb.ajj.entity.$Result;
-import com.ailbb.ajj.file.csv.$CSV;
-import com.ailbb.ajj.file.ctl.$Ctl;
-import com.ailbb.ajj.file.excel.$Excel;
-import com.ailbb.ajj.file.properties.$Properties;
-import com.ailbb.ajj.file.tool.FileCounter;
-import com.ailbb.ajj.file.tool.FileMerge;
-import com.ailbb.ajj.file.xml.$Xml;
-import com.ailbb.ajj.file.yml.$Yml;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.fileupload2.core.DiskFileItemFactory;
-import org.apache.commons.fileupload2.core.FileItem;
-import org.apache.commons.fileupload2.core.FileUploadException;
-import org.apache.commons.fileupload2.jakarta.JakartaServletFileUpload;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
+import com.ailbb.ajj.thread.$ThreadTraCKer;
 
 import java.io.*;
-import java.net.URL;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.util.*;
-
-import static com.ailbb.ajj.$.*;
-import static com.ailbb.ajj.$.file;
 
 /*
  * Created by Wz on 6/20/2018.
@@ -80,7 +56,7 @@ public class $FileTailReader {
         private Map<String, TailReaderListener> listeners = new HashMap<>();
         private ArrayList<String> cacheData = new ArrayList<>();
 
-        private Thread runThread;
+        private $ThreadTraCKer runThreadTraCKer;
         private String aliasName;
 
         $FileTailReaderInstance(File file) {
@@ -156,20 +132,20 @@ public class $FileTailReader {
         public $FileTailReaderInstance start(boolean historyRead, long intervalTime){
             closed = !reset(historyRead, intervalTime); // 重置信息
 
-            if(null != runThread) { // 如果有没有关闭的实例，则直接返回
+            if(null != runThreadTraCKer) { // 如果有没有关闭的实例，则直接返回
                 $.debugOut("获取到正在运行的TailReader文件任务："+file.getPath());
                 return this;
             }
 
             $.info("启动TailReader文件任务："+file.getPath());
 
-            createThread().start(); // 启动线程
+            runThread(); // 启动线程
 
             return this;
         }
 
-        private Thread createThread(){
-            this.runThread = $.async(()->{
+        private $ThreadTraCKer runThread(){
+            this.runThreadTraCKer = $.async(()->{
                 while (!closed) {
                     if(file.length() > currentPos) { // 当文件大小超出指针范围时，读取新的一部分
                         $.debugOut("监听到文件变化..."+file.getPath());
@@ -209,10 +185,10 @@ public class $FileTailReader {
                 }
 
                 $.info("文件超时未写入，任务结束："+file.getPath());
-                runThread = null; // 实例设置为空
+                runThreadTraCKer = null; // 实例设置为空
             });
 
-            return this.runThread;
+            return this.runThreadTraCKer;
         }
 
         public ArrayList<String> readData() {

@@ -4,6 +4,7 @@ import static com.ailbb.ajj.$.*;
 
 import com.ailbb.ajj.$;
 import com.ailbb.ajj.exception.$Exception;
+import org.slf4j.Logger;
 
 import java.util.*;
 
@@ -34,9 +35,54 @@ public class $Logger {
         this(null, loggerCallback);
     }
 
+    public $Logger(org.slf4j.Logger slf4jLogger) {
+        this.regist(slf4jLogger);
+    }
+
     public $Logger(String filePath, $LoggerCallback loggerCallback) {
         this.File_PATH = $.getPath(filePath);
         this.loggerCallback = loggerCallback;
+    }
+
+    public $Logger regist(org.slf4j.Logger slf4jLogger) {
+        this.loggerCallback = new $LoggerCallback() {
+            @Override
+            public void log(Object... var1) {
+                for(Object o : var1) slf4jLogger.info($.str(o));
+            }
+
+            @Override
+            public void sout(Object... var1) {
+                for(Object o : var1) slf4jLogger.info($.str(o));
+            }
+
+            @Override
+            public void trace(Object... var1) {
+                for(Object o : var1) slf4jLogger.trace($.str(o));
+            }
+
+            @Override
+            public void debug(Object... var1) {
+                for(Object o : var1) slf4jLogger.debug($.str(o));
+            }
+
+            @Override
+            public void info(Object... var1) {
+                for(Object o : var1) slf4jLogger.info($.str(o));
+            }
+
+            @Override
+            public void warn(Object... var1) {
+                for(Object o : var1) slf4jLogger.warn($.str(o));
+            }
+
+            @Override
+            public void error(Object... var1) {
+                for(Object o : var1) slf4jLogger.error($.str(o));
+            }
+        };
+
+        return this;
     }
 
     public $Logger init(){ return init(date.now("ns") + ".log"); }
@@ -53,31 +99,67 @@ public class $Logger {
     public String err(Object... o){ return error(o); }
 
     public String error(Object... o){
-        for(Object oi : o) exception(new $Exception(String.format("[ERROR]\t%s", "[" + getDzInfo() + "]" + oi)));
+
+        if(null != loggerCallback) {
+            loggerCallback.error(o);
+        } else {
+            for(Object oi : o) {
+                sout(String.format("[ERROR]\t%s", "[" + getDzInfo() + "]" + oi));
+            }
+        }
         return $.lastStr(o);
     }
 
     public String warn(Object... o){
-        for(Object oi : o) sout(String.format("[WARNING]\t%s", oi));
+        if(null != loggerCallback) {
+            loggerCallback.warn(o);
+        } else {
+            for(Object oi : o) {
+                sout(String.format("[WARNING]\t%s", oi));
+            }
+        }
         return $.lastStr(o);
     }
 
     public String info(Object... o){
-        for(Object oi : o) sout( String.format("[INFO]\t%s", oi));
+        if(null != loggerCallback) {
+            loggerCallback.info(o);
+        } else {
+            for(Object oi : o) {
+                sout( String.format("[INFO]\t%s", oi));
+            }
+        }
         return $.lastStr(o);
     }
 
     public boolean isDebugEnabled(){
         return DebugEnabled;
     }
+    public String debugOut(Object... o) {
+        return debug(o);
+    }
 
     public String debug(Object... o){
-        for(Object oi : o) sout( String.format("[DEBUG]\t%s", oi));
+        if(!isDebugEnabled()) return $.lastStr(o);
+
+        if(null != loggerCallback) {
+            loggerCallback.debug(o);
+        } else {
+            for(Object oi : o) {
+                sout( String.format("[DEBUG]\t%s", oi));
+            }
+        }
         return $.lastStr(o);
     }
 
     public String log(Object... o){
-        for(Object oi : o) sout(String.format("[LOG]\t%s", oi));
+        if(null != loggerCallback) {
+            loggerCallback.log(o);
+        } else {
+            for(Object oi : o) {
+                sout(String.format("[LOG]\t%s", oi));
+            }
+        }
         return $.lastStr(o);
     }
 
@@ -88,9 +170,11 @@ public class $Logger {
 
             if(null != this.File_PATH) file.writeFile(this.File_PATH, true, emg);
 
-            if(null != loggerCallback) loggerCallback.callback(emg);
-
-            ei.printStackTrace();
+            if(null != loggerCallback) {
+                loggerCallback.error(emg);
+            } else {
+                ei.printStackTrace();
+            }
         }
 
         return isEmptyOrNull(e) ? null : e[e.length-1];
@@ -107,9 +191,6 @@ public class $Logger {
 
         return sout($.list.listToArray(lo));
     }
-    public String debugOut(Object... o) {
-        return isDebugEnabled() ? sout(o) : $.lastStr(o);
-    }
 
     public String sout(Object... o){
         for(Object oi : o) {
@@ -124,14 +205,16 @@ public class $Logger {
 
             if(null != this.File_PATH) file.writeFile(this.File_PATH, true, s);
 
-            if(null != loggerCallback) loggerCallback.callback(s);
+            // 如果有日志类接管
+            if(null != loggerCallback) {
+                loggerCallback.info(os);
+            } else {
+                System.out.print(s);
+            }
 
             if(history.size() > maxHistroyLine) history.remove(0);
 
             history.add(os); // 添加历史信息
-
-            System.out.print(s);
-
         }
 
         return $.lastStr(o);

@@ -45,7 +45,7 @@ public interface $CacheManage {
      * 获取所有缓存
      * @return 所有缓存
      */
-    Map<String, $EntityCache> getCacheAll();
+    $CacheQueue getCacheAll();
 
     /**
      * 判断是否在缓存中

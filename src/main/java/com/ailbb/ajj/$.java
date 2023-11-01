@@ -9,6 +9,7 @@ import com.ailbb.ajj.encrypt.util.AESUtil;
 import com.ailbb.ajj.encrypt.util.Sm4Util;
 import com.ailbb.ajj.file.$FileRunner;
 import com.ailbb.ajj.file.properties.$Properties;
+import com.ailbb.ajj.file.yml.$Yml;
 import com.ailbb.ajj.jar.$Jar;
 import com.ailbb.ajj.jar.$Java;
 import com.ailbb.ajj.jdbc.$JDBC;
@@ -28,8 +29,10 @@ import com.ailbb.ajj.server.Host;
 import com.ailbb.ajj.sys.$System;
 import com.ailbb.ajj.test.$Test;
 import com.ailbb.ajj.thread.$Thread;
+import com.ailbb.ajj.thread.$ThreadTraCKer;
 import com.ailbb.ajj.tomcat.$Tomcat;
 import com.ailbb.ajj.unit.$Charset;
+import com.ailbb.ajj.unit.$SnowflakeIdWorker;
 import com.ailbb.ajj.unit.$Suffix;
 import com.ailbb.ajj.unit.$Unit;
 import net.sf.json.JSONArray;
@@ -49,7 +52,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.text.ParseException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 /*
  * Created by Wz on 5/9/2018.
@@ -133,6 +136,11 @@ public class $ {
 
     // 属性工具类
     public static $Properties properties = file.properties;
+    public static $Yml yml = file.yml;
+    public static $Cast cast = new $Cast();
+    public static $SSL ssl = new $SSL();
+    public static $SnowflakeIdWorker snowflakeIdWorker = new $SnowflakeIdWorker(0);
+
     // email
     public static $Mail mail = new $Mail();
 
@@ -283,6 +291,10 @@ public class $ {
         }
     }
 
+    public static String getIp(HttpServletRequest request) {
+        return http.getIp(request);
+    }
+
     public static InetAddress getInetAddress(String... name) throws UnknownHostException {
         return http.getInetAddress(name);
     }
@@ -406,6 +418,11 @@ public class $ {
         return file.deleteFile(files);
     }
 
+    /**
+     * DELETE Files
+     * @param files files
+     * @return result
+     */
     public static $Result delete(File... files)  {
         return file.delete(files);
     }
@@ -432,6 +449,10 @@ public class $ {
         return file.isExists(path);
     }
 
+    public static boolean isExists(File _file){
+        return file.isExists(_file);
+    }
+
     public static boolean isExists(String path, boolean isFormatPath){
         return file.isExists(path, isFormatPath);
     }
@@ -446,6 +467,13 @@ public class $ {
 
     public static void mkdir(String... path) {
         file.mkdir(path);
+    }
+
+    public static void mkdir(File... files) {
+        file.mkdir(files);
+    }
+    public static void mkdirParents(File... files) {
+        file.mkdirParents(files);
     }
 
     public static void mkdirOrFile(String... path) {
@@ -566,11 +594,11 @@ public class $ {
 
     //* Thread area
 
-    public static Thread async(Runnable... r){
+    public static $ThreadTraCKer async(Runnable... r){
         return thread.async(r);
     }
 
-    public static Thread async(boolean daemon, Runnable... r){
+    public static $ThreadTraCKer async(boolean daemon, Runnable... r){
         return thread.async(daemon, r);
     }
 
@@ -672,6 +700,20 @@ public class $ {
         return string.last(strs);
     }
 
+    /**
+     * 字符串是否包含
+     */
+    public static boolean include(String str, String... searchs){
+        return string.include(str, searchs);
+    }
+
+    /**
+     * 字符串是否以结尾
+     */
+    public static boolean endsWith(String str, String... searchs){
+        return string.endsWith(str, searchs);
+    }
+
     public static <T> T  lastDef(T def, T... strs) {
         return object.lastDef(def, strs);
     }
@@ -690,6 +732,45 @@ public class $ {
         return list.indexOfList(r, str);
     }
 
+    public static UUID uuid(){
+        return UUID.randomUUID();
+    }
+
+    public static String uuidStr(){
+        return UUID.randomUUID().toString();
+    }
+
+    public static String uuidStr(boolean upperCase){
+        String uid = UUID.randomUUID().toString();
+        return upperCase ? uid.toUpperCase() : uid.toLowerCase();
+    }
+
+    public static long uuidSnowflakeId(){
+        return snowflakeIdWorker.nextId();
+    }
+
+
+    public static long snowflakeId(){
+        return snowflakeIdWorker.nextId();
+    }
+
+    public static String uuidSnowflakeIdStr(){
+        return $.str(snowflakeIdWorker.nextId());
+    }
+
+
+    public static String snowflakeIdStr(){
+        return $.str(snowflakeIdWorker.nextId());
+    }
+
+    public static String uuidStrNone(){
+        return UUID.randomUUID().toString().replaceAll("-","");
+    }
+
+    public static String uuidStrNone(boolean upperCase){
+        String uid = UUID.randomUUID().toString().replaceAll("-","");
+        return upperCase ? uid.toUpperCase() : uid.toLowerCase();
+    }
 
     //* json
 
@@ -713,6 +794,21 @@ public class $ {
         return json.toBean(object, cLass);
     }
 
+    public static boolean isJSON(Object o){
+        try {
+            $.toJsonObject(o);
+            return true;
+        } catch (Exception e){
+            try {
+                $.toJsonArray(o);
+                return true;
+            } catch (Exception e1){
+            }
+        }
+
+        return false;
+    }
+
     //* system
 
     public static String system(){
@@ -727,6 +823,14 @@ public class $ {
         return system.mem();
     }
 
+    public static boolean isWindows(){
+        return system.system().equals("windows");
+    }
+
+    public static boolean isLinux(){
+        return !system.system().equals("windows");
+    }
+
     //* system
 
     public static $Result resultIf($Result rs1, $Result rs2){
@@ -737,6 +841,26 @@ public class $ {
 
     public static boolean isDebugEnabled(){
         return logger.isDebugEnabled();
+    }
+
+    public static boolean enableDebug(){
+        logger.DebugEnabled = true;
+        return true;
+    }
+
+    public static boolean openDebug(){
+        logger.DebugEnabled = true;
+        return true;
+    }
+
+    public static boolean colseDebug(){
+        logger.DebugEnabled = false;
+        return true;
+    }
+
+    public static boolean disableDebug(){
+        logger.DebugEnabled = false;
+        return true;
     }
 
     public static String debug(Object... o){
@@ -789,6 +913,10 @@ public class $ {
 
     public static String simple(Object data) {
         return string.simple(data);
+    }
+
+    public static String formatNumber(double data) {
+        return string.formatNumber(data);
     }
 
     public static String toCameUnder(String c){
@@ -880,4 +1008,29 @@ public class $ {
         return integer.max(keySet);
     }
 
+    public static double max(Collection<Double> keySet) {
+        if($.isEmptyOrNull(keySet)) return 0;
+
+        return keySet.stream().max((a,b)->{ return a>b ? 1:-1; }).get();
+    }
+
+    public static double max(Double... keySet) {
+        return max(Arrays.stream(keySet).collect(Collectors.toSet()));
+    }
+
+    public static String getClassPath() {
+        return path.getPath("");
+    }
+
+    public static String getClassPath(String p) {
+        return path.getPath(p);
+    }
+
+    public static boolean isZip(String path){
+        return file.isCompressFile(path);
+    }
+
+    public static $Result mkLinkOrCopyFile(File f, File linkFile){ return file.mkLinkOrCopyFile(f, linkFile); }
+
+    public static $Result mkLinkOrCopyFileAndUnZIP(File f, File linkFile){ return file.mkLinkOrCopyFileAndUnZIP(f, linkFile); }
 }

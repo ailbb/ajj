@@ -1,5 +1,7 @@
 package com.ailbb.ajj.cache;
 
+import com.ailbb.ajj.$;
+
 import java.util.Date;
 
 public class $EntityCache <T> {
@@ -62,9 +64,13 @@ public class $EntityCache <T> {
     }
     public boolean delayTime() {
         expiresTime = System.currentTimeMillis() + timeOut;
-        lastUpdateTime = new Date();
 
-        if(null != autoDelayRunnable) setData(autoDelayRunnable.loadData()); // 延期时候，重新加载数据
+        if(null != autoDelayRunnable) {
+            $.async(() -> { // 重新加载数据
+                // 如果时间已经过半, 并且自动延期,  则重新加载数据
+                setData(autoDelayRunnable.loadData()); // 延期时候，重新加载数据
+            });
+        }
 
         return true;
     }
@@ -74,7 +80,8 @@ public class $EntityCache <T> {
      * @return
      */
     public boolean isHalfExpires() {
-        return (expiresTime - System.currentTimeMillis()) < timeOut/2;
+        boolean halfExpires = (expiresTime - System.currentTimeMillis()) < timeOut/2;
+        return halfExpires;
     }
 
     public $AutoDelayRunnable<T> getAutoDelayRunnable() {

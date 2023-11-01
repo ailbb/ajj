@@ -1,13 +1,23 @@
 package com.ailbb.ajj.cache;
 
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class $CacheManagerImpl implements $CacheManage {
-    private static Map<String, $EntityCache> caches = new ConcurrentHashMap<String, $EntityCache>();
+    private static $CacheQueue cacheQueue = new $CacheQueue();
     private $CacheListener cacheListener;
     public static long TIME_INTERVAL = 1000*60*60; // 1小时刷新一次
+
+    public void registRedis(String addr, int port){
+        cacheQueue.registRedis(addr, port);
+    }
+
+    public void registRedis(String addr, int port, String password){
+        cacheQueue.registRedis(addr, port, password);
+    }
+
+    public String getCurrModel(){
+        return cacheQueue.getCurrModel();
+    }
 
     /**
      * 获取数据, 并自动延期
@@ -38,7 +48,7 @@ public class $CacheManagerImpl implements $CacheManage {
      */
     public $EntityCache save(String key, $EntityCache cache) {
         if(null == cacheListener) cacheListener = new $CacheListener(this).startListen();
-        caches.put(key, cache);
+        cacheQueue.put(key, cache);
         return cache;
     }
 
@@ -68,7 +78,7 @@ public class $CacheManagerImpl implements $CacheManage {
      * @return 缓存对象
      */
     public $EntityCache getCache(String key) {
-        return this.isContains(key) ? caches.get(key) : null;
+        return this.isContains(key) ? cacheQueue.get(key) : null;
     }
 
     /**
@@ -78,15 +88,15 @@ public class $CacheManagerImpl implements $CacheManage {
      */
     public Object getCacheData(String key) {
         if (this.isContains(key)) {
-            return caches.get(key).getData();
+            return cacheQueue.get(key).getData();
         }
         return null;
     }
 
-    @Override
+    //    @Override
     public <T> T getCacheData(String key, Class<T> clazz) {
         if (this.isContains(key)) {
-            return (T)caches.get(key).getData();
+            return (T) cacheQueue.get(key).getData();
         }
         return null;
     }
@@ -95,8 +105,8 @@ public class $CacheManagerImpl implements $CacheManage {
      * 获取所有缓存
      * @return 所有缓存
      */
-    public Map<String, $EntityCache> getCacheAll() {
-        return caches;
+    public $CacheQueue getCacheAll() {
+        return cacheQueue;
     }
 
     /**
@@ -105,14 +115,14 @@ public class $CacheManagerImpl implements $CacheManage {
      * @return 是否有缓存key
      */
     public boolean isContains(String key) {
-        return caches.containsKey(key);
+        return cacheQueue.containsKey(key);
     }
 
     /**
      * 清除所有缓存
      */
     public void clearAll() {
-        caches.clear();
+        cacheQueue.clear();
         cacheListener.stopListen();
     }
 
@@ -122,10 +132,10 @@ public class $CacheManagerImpl implements $CacheManage {
      */
     public void clearByKey(String key) {
         if (this.isContains(key)) {
-            caches.remove(key);
+            cacheQueue.remove(key);
         }
 
-        if(caches.size() == 0) cacheListener.stopListen();
+        if(cacheQueue.size() == 0) cacheListener.stopListen();
     }
 
     /**
@@ -134,7 +144,7 @@ public class $CacheManagerImpl implements $CacheManage {
      * @return boolean
      */
     public boolean isExpires(String key) {
-        return !caches.containsKey(key) ? true : caches.get(key).isExpires();
+        return !cacheQueue.containsKey(key) ? true : cacheQueue.get(key).isExpires();
     }
 
     /**
@@ -143,7 +153,7 @@ public class $CacheManagerImpl implements $CacheManage {
      * @return boolean
      */
     public boolean isHalfExpires(String key) {
-        return !caches.containsKey(key) ? true : caches.get(key).isHalfExpires();
+        return !cacheQueue.containsKey(key) ? true : cacheQueue.get(key).isHalfExpires();
     }
 
     /**
@@ -152,7 +162,7 @@ public class $CacheManagerImpl implements $CacheManage {
      * @return boolean
      */
     public boolean delayTime(String key) {
-        return !caches.containsKey(key) ? true : caches.get(key).delayTime();
+        return !cacheQueue.containsKey(key) ? true : cacheQueue.get(key).delayTime();
     }
 
     /**
@@ -160,6 +170,7 @@ public class $CacheManagerImpl implements $CacheManage {
      * @return
      */
     public Set<String> getAllKeys() {
-        return caches.keySet();
+        return cacheQueue.keySet();
     }
+
 }

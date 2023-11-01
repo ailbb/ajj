@@ -29,6 +29,7 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.*;
 
 /*
@@ -383,9 +384,9 @@ public class $File {
 
         try {
             if(file.exists() && isAdd)
-                warn(String.format("Append Data To [%s]", file.getName()));
+                debugOut(String.format("Append Data To [%s]", file.getName()));
             else
-                info(String.format("Write Data To [%s]", file.getName()));
+                debugOut(String.format("Write Data To [%s]", file.getName()));
 
             if(!file.exists()) mkdir(path.substring(0, path.lastIndexOf("/")));
 
@@ -407,12 +408,51 @@ public class $File {
         return rs;
     }
 
+    /**
+     * 比对文件是否被修改
+     * @param spath
+     * @param dPath
+     * @return
+     */
+    boolean isModify(String spath, String dPath){
+        return isModify($.getFile(spath), $.getFile(dPath));
+    }
+
+    /**
+     * 比对文件是否被修改
+     * @param sfile
+     * @param dfile
+     * @return
+     */
+    boolean isModify(File sfile, File dfile){
+        return getModify(sfile, dfile)!=0;
+    }
+
+    /**
+     * 比对文件是否被修改
+     * @param spath
+     * @param dPath
+     * @return
+     */
+    int getModify(String spath, String dPath){
+        return getModify($.getFile(spath), $.getFile(dPath));
+    }
+
+    int getModify(File sfile, File dfile){
+        int modify = 1;
+        if(!sfile.exists() || !dfile.exists()) return modify;
+
+        if(!sfile.getName().equals(dfile.getName())) return modify;
+
+        return (int)(sfile.lastModified() - dfile.lastModified());
+    }
+
     public $Result copyFile(String sourcePath, String destPath)  {
-        return copyFile(sourcePath, destPath, false);
+        return copyFile(sourcePath, destPath, getModify(sourcePath, destPath)>0);
     }
 
     public $Result copyFile(File file, String destPath)  {
-        return copyFile(file, destPath, false);
+        return copyFile(file, destPath, getModify(file, $.getFile(destPath))>0);
     }
 
     public $Result copyFile(File sfile, String destPath, boolean isReplace)  {
@@ -421,8 +461,8 @@ public class $File {
 
     public $Result copyFile(File sfile, String destPath, boolean isReplace, boolean isDel)  {
         $Result rs = $.result();
-        File dfile = getFile(destPath);
-        String sourcePath = sfile.getPath();
+        File dfile = getFile(destPath); // 拷贝输出文件
+        String sourcePath = sfile.getPath(); // 源文件
 
         if(!sfile.exists()) return rs.addMessage($.warn("File Not Found："+sfile.getPath()));
 
@@ -434,12 +474,12 @@ public class $File {
         } else if(dfile.exists() && !isReplace) {
             rs.addMessage(warn(String.format("%s is exists! -> %s", destPath, convert(dfile.length()))));
         } else if(!sfile.getPath().equals(dfile.getPath())){
-            mkdir(dfile);
+            mkdirOrFile(dfile);
 
             FileChannel inputChannel = null;
             FileChannel outputChannel = null;
             try {
-                rs.addMessage(info(String.format("Copy file：%s -> %s -> %s", sourcePath, destPath, convert(sfile.length()))));
+                rs.addMessage(debugOut(String.format("Copy file：%s -> %s -> %s", sourcePath, destPath, convert(sfile.length()))));
                 inputChannel = new FileInputStream(sfile).getChannel();
                 outputChannel = new FileOutputStream(dfile).getChannel();
                 outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
@@ -477,7 +517,7 @@ public class $File {
         if(dfile.exists() && !isReplace) {
             rs.addMessage(warn(String.format("%s is exists! -> %s", destFilePath, convert(dfile.length()))));
         } else {
-            mkdir(dfile); // 创建文件的
+            mkdirOrFile(dfile); // 创建文件的
 
             OutputStream outputStream = null;
             try {
@@ -610,6 +650,9 @@ public class $File {
 
     public boolean isExists(String path){
         return isExists(path, false);
+    }
+    public boolean isExists(File file){
+        return file.exists();
     }
 
     public boolean isExists(String path, boolean isFormatPath){
@@ -799,7 +842,7 @@ public class $File {
 
         if(null == is) throw new FileNotFoundException(path);
 
-        info(String.format("Read file：%s", path));
+        debugOut(String.format("Read file：%s", path));
 
         return is;
     }
@@ -809,7 +852,7 @@ public class $File {
 
         if(null == is) throw new FileNotFoundException(file.getAbsolutePath());
 
-        info(String.format("Read file：%s", file.getAbsolutePath()));
+        debugOut(String.format("Read file：%s", file.getAbsolutePath()));
 
         return is;
     }
@@ -862,8 +905,43 @@ public class $File {
 
         for(File file : files) {
             if(null != file && !file.exists()) {
-                rs.addMessage(info(String.format("Delete directory：%s", file.getPath())));
+                rs.addMessage(warn(String.format("Delete directory：%s", file.getPath())));
                 file.deleteOnExit();
+            }
+        }
+
+        return rs;
+    }
+
+
+    public $Result deleteRF(String... path) {
+        $Result rs = $.result();
+
+        for(String p : path) {
+            File file = new File(getPath(p));
+            if(file.exists()) {
+                deleteRF(file);
+            }
+        }
+
+        return rs;
+    }
+
+    public $Result deleteFileRF(File... files)  {
+        return deleteRF(files);
+    }
+
+    public $Result deleteRF(File... files) {
+        $Result rs = $.result();
+
+        for(File file : files) {
+            if(null != file && file.exists()) {
+                rs.addMessage(warn(String.format("Delete File：%s", file.getPath())));
+                if(file.isDirectory() && file.listFiles().length != 0){
+                    deleteRF(file.listFiles());
+                }
+
+                file.delete();
             }
         }
 
@@ -884,18 +962,25 @@ public class $File {
         $Result rs = $.result();
 
         for(String p : path) {
-            String _mkPath = getPath(p);
-            String _fileName = null;
-            String[] split = _mkPath.split("/"); // 切分路径
+            File _mkfile = $.getFile(p);
 
-            if(split[split.length-1].indexOf(".") > 1) { // 如果是文件名, 则分别创建文件夹和文件
-                _fileName = split[split.length-1];
-                _mkPath = _mkPath.substring(0, _mkPath.lastIndexOf("/"));
-            }
-
-            mkdir(new File(_mkPath));
             try {
-                new File(_mkPath + "/" + _fileName).createNewFile();
+                mkdirParents(_mkfile).createNewFile();
+            } catch (IOException e) {
+                rs.addError(e);
+            }
+        }
+
+        return rs;
+    }
+
+    public $Result mkfile(File... files) {
+        $Result rs = $.result();
+
+        for(File file : files) {
+            try {
+                rs.addMessage(debugOut(String.format("Create File：%s", file.getPath())));
+                mkdirParents(file).createNewFile();
             } catch (IOException e) {
                 rs.addError(e);
             }
@@ -909,15 +994,29 @@ public class $File {
         $Result rs = $.result();
 
         for(String p : path) {
-            String _mkPath = getPath(p);
-            String _fileName = null;
-            String[] split = _mkPath.split("/"); // 切分路径
+            mkdirOrFile($.getFile(p));
+        }
 
-            if(split[split.length-1].indexOf(".") > 1) { // 如果是文件名, 则分别创建文件夹和文件
-                mkfile(p);
+        return rs;
+    }
+
+    public $Result mkdirOrFile(File... files) {
+        $Result rs = $.result();
+
+        for(File file : files) {
+            if(file.exists()) continue;
+
+            int fidx = file.getName().lastIndexOf(".");
+
+            if(fidx == 0) {
+                mkfile(file);
+            } else if(fidx > 0 && $.isSuffix(file.getName().substring(fidx+1))) {// 如果是文件名带小数点，认为是文件
+                mkfile(file);
             } else {
-                mkdir(p);
+                mkdir(file);
             }
+
+            rs.addData(file);
         }
 
         return rs;
@@ -928,21 +1027,22 @@ public class $File {
         $Result rs = $.result();
 
         for(File file : files) {
-            File tempFile = file;
-
-            int fidx = file.getName().lastIndexOf(".");
-
-            if(fidx > 1 && $.isSuffix(file.getName().substring(fidx+1))) tempFile = file.getParentFile(); // 如果是文件名带小数点，认为是文件
-
-            if(!tempFile.exists()) {
-                rs.addMessage(info(String.format("Make directory：%s", tempFile.getPath())));
-                rs.addData(file);
-
-                tempFile.mkdirs(); // 创建目录
+            if(!file.exists()) {
+                rs.addMessage(debugOut(String.format("Make directory：%s", file.getPath())));
+                file.mkdirs(); // 创建目录
             }
         }
 
         return rs;
+    }
+
+
+    public File mkdirParents(File... files) {
+        for(File file : files) {
+            file.getParentFile().mkdirs(); // 创建目录
+        }
+
+        return $.last(files);
     }
 
 
@@ -1017,6 +1117,34 @@ public class $File {
         return mapperLocations;
     }
 
+    public List<File> scanPath(String path) {
+        List<File> paths = new ArrayList<>();
+        scanPath(path, (f)->{
+            paths.add(f);
+        });
+        return paths;
+    }
+
+    public List<String> scanPathToString(String path) {
+        List<String> paths = new ArrayList<>();
+        scanPath(path, (f)->{
+            paths.add(f.getAbsolutePath());
+        });
+        return paths;
+    }
+
+    public void scanPath(String path, $FileRunner runner) {
+        File f = $.file.getFile(path);
+
+        if(f.isDirectory()) {
+            for(String p : f.list()) {
+                scanPath(path+"\\"+p, runner);
+            }
+        } else {
+            runner.run(f);
+        }
+    }
+
     public List<File> getFiles(String path){
         return getFiles(new File(path));
     }
@@ -1034,4 +1162,94 @@ public class $File {
 
         return fileList;
     }
+
+
+    /**
+     * 创建软连接，或者拷贝
+     */
+    public $Result mkLinkOrCopyFile(File f, File linkFile){
+        $Result rs = $.result();
+
+        if(linkFile.exists() && f.lastModified() <= linkFile.lastModified()) { // 如果路径不存在，则将本地地址，做软连接到指定路径
+            rs.addMessage($.debugOut("获取软连接成功：" + f.getAbsolutePath()+" =====>>> " + linkFile.getAbsolutePath()));
+            return rs;
+        }
+
+        // 非压缩文件，则直接创建软连接
+        try {
+            Files.createSymbolicLink(f.toPath(), linkFile.toPath());
+            rs.addDataList(f.getAbsolutePath());
+            rs.addMessage($.debugOut("创建软连接成功：" + f.getAbsolutePath()+" =====>>> " + linkFile.getAbsolutePath()));
+        } catch (IOException e) {
+            try {
+                rs.addMessage($.warn("无权限创建软连接，尝试拷贝文件到目标目录：" + f.getAbsolutePath()+" =====>>> " + linkFile.getAbsolutePath()));
+                $.file.copyFile(f, linkFile.getAbsolutePath(), true);
+                rs.addDataList(f.getAbsolutePath());
+                rs.addMessage($.debugOut("拷贝文件成功：" + f.getAbsolutePath()+" =====>>> " + linkFile));
+            } catch (Exception e1) {
+                rs.addMessage($.debugOut("拷贝文件失败："+e1)).setSuccess(false);
+            }
+        }
+
+        return rs;
+    }
+
+    /**
+     * 创建软连接，或者拷贝
+     */
+    public $Result mkLinkOrCopyFileAndUnZIP(File f, File linkFile){
+        $Result rs = $.result();
+
+        if($.isZip(f.getName())){ // 如果是压缩文件，则解压到对应目录
+            try {
+                String zipPath = $.suffix.replaceSuffix(linkFile.getAbsolutePath());
+
+                while ($.isZip(zipPath)) zipPath = $.suffix.replaceSuffix(zipPath);
+
+                if($.isExists(zipPath)) { // 如果路径不存在，则将本地地址，做软连接到指定路径
+                    $.debugOut("获取软连接成功：" + f.getAbsolutePath()+" =====>>> " + zipPath);
+                    return rs;
+                }
+
+                rs.addMessage($.debugOut("解压文件到目标目录"));
+                $.unzip(f.getAbsolutePath(),  zipPath);
+                rs.addDataList(f.getAbsolutePath());
+                if(rs.isSuccess()){
+                    rs.addMessage($.debugOut("解压文件成功：" + f.getAbsolutePath()+" =====>>> " + zipPath));
+                } else {
+                    rs.addMessage($.warn("解压文件失败：")).setSuccess(false);
+                    rs.getError().forEach(e->{
+                        e.printStackTrace();
+                    });
+                }
+            } catch (Exception e1) {
+                $.warn("解压文件失败："+e1);
+            }
+            return rs;
+        }
+
+        if(linkFile.exists() && f.lastModified() <= linkFile.lastModified()) { // 如果路径不存在，则将本地地址，做软连接到指定路径
+            rs.addMessage($.debugOut("获取软连接成功：" + f.getAbsolutePath()+" =====>>> " + linkFile.getAbsolutePath()));
+            return rs;
+        }
+
+        // 非压缩文件，则直接创建软连接
+        try {
+            Files.createSymbolicLink(f.toPath(), linkFile.toPath());
+            rs.addDataList(f.getAbsolutePath());
+            rs.addMessage($.debugOut("创建软连接成功：" + f.getAbsolutePath()+" =====>>> " + linkFile.getAbsolutePath()));
+        } catch (IOException e) {
+            try {
+                rs.addMessage($.warn("无权限创建软连接，尝试拷贝文件到目标目录：" + f.getAbsolutePath()+" =====>>> " + linkFile.getAbsolutePath()));
+                $.file.copyFile(f, linkFile.getAbsolutePath(), true);
+                rs.addDataList(f.getAbsolutePath());
+                rs.addMessage($.debugOut("拷贝文件成功：" + f.getAbsolutePath()+" =====>>> " + linkFile));
+            } catch (Exception e1) {
+                rs.addMessage($.debugOut("拷贝文件失败："+e1)).setSuccess(false);
+            }
+        }
+
+        return rs;
+    }
+
 }

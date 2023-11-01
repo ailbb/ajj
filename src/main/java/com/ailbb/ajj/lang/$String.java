@@ -5,10 +5,7 @@ import com.ailbb.ajj.$;
 import static com.ailbb.ajj.$.*;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -191,5 +188,33 @@ public class $String {
             start = end;
         }
         return buffer.toString();
+    }
+
+
+    public java.lang.String formatNumber(double f) {
+        return new Formatter().format("%.2f", f).toString();
+    }
+
+
+    /**
+     * 扩展工具集
+     */
+    public boolean include(String str, String... searchs){
+        for(String s : searchs) {
+            if(str.toLowerCase().indexOf(s.toLowerCase()) != -1) return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * 扩展工具集
+     */
+    public boolean endsWith(String str, String... searchs){
+        for(String s : searchs) {
+            if(str.toLowerCase().endsWith(s.toLowerCase())) return true;
+        }
+
+        return false;
     }
 }

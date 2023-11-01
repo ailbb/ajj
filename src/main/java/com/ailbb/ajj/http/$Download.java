@@ -199,7 +199,8 @@ public class $Download {
     int lastCheckDownload = 0;
     int lastCheckWait = 0;
     public void startChecking(){
-        $.async(() -> {
+        $.async(true, () -> {
+            $.info("启动监听任务队列检查："+Thread.currentThread().getId() + "/"+Thread.currentThread().getName());
             while (true){
                 if(downloadList.size() != 0) {
                     lastCheckDownload = downloadList.size();

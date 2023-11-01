@@ -18,6 +18,7 @@ public class $Result {
     private $Status status = $Status.$DEFAULT; // 状态
     private String type = "object"; // 数据类型有默认值
     private Object data = ""; // 数据
+    private long total = 0; // 数据条数
     private String title = ""; // 标题
     private String remark = ""; // 备注
 
@@ -99,6 +100,15 @@ public class $Result {
         return this;
     }
 
+    public long getTotal() {
+        return total;
+    }
+
+    public $Result setTotal(long total) {
+        this.total = total;
+        return this;
+    }
+
     public $Result addMessage(boolean isSuccess, String... messages) {
         this.setSuccess(isSuccess);
 
@@ -160,8 +170,10 @@ public class $Result {
     public $Result addData(String... datas) {
         if($.isEmptyOrNull(this.data)) this.data = "";
 
-        for(String d : datas)
+        for(String d : datas) {
             this.data += d;
+            this.total++;
+        }
 
         return this;
     }
@@ -177,8 +189,10 @@ public class $Result {
     public $Result putData(Object... objects) {
         if($.isEmptyOrNull(this.data)) this.data = new ArrayList<Object>();
 
-        for(Object o : objects)
+        for(Object o : objects) {
             ((ArrayList<Object>)this.data).add(o);
+            this.total++;
+        }
 
         return this;
     }
@@ -187,6 +201,7 @@ public class $Result {
         if($.isEmptyOrNull(this.data)) this.data = new HashMap<String, Object>();
 
         ((HashMap<String, Object>)this.data).put(key, value);
+        this.total++;
 
         return this;
     }

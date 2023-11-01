@@ -5,13 +5,51 @@ import java.util.Map;
 
 public class $Suffix {
     Map<String, SuffixEnum> suffixEnumMap = new HashMap<>();
+    Map<String, String> curstomSuffixEnumMap = new HashMap<>();
     public $Suffix(){
         for(SuffixEnum se : SuffixEnum.values()) {
             suffixEnumMap.put(se.suffix.toUpperCase(), se);
         }
     }
     public boolean isSuffix(String name) {
-        return suffixEnumMap.get(name.toUpperCase().replaceAll("\\.","")) != null;
+        if(null != getSuffix(name) || null != getCustomSuffix(name)) return true;
+        return false;
+    }
+    public SuffixEnum getSuffix(String name) {
+        if(name.indexOf(".") == 0) name = name.substring(1);
+
+        SuffixEnum suffixEnum = suffixEnumMap.get(name.toUpperCase());
+        if(null == suffixEnum) suffixEnum = suffixEnumMap.get(name.substring(name.lastIndexOf(".")+1).toUpperCase());
+
+        return suffixEnum;
+    }
+    public String getCustomSuffix(String name) {
+        if(name.indexOf(".") == 0) name = name.substring(1);
+
+        String suffixEnum = curstomSuffixEnumMap.get(name.toUpperCase());
+        if(null == suffixEnum) suffixEnum = curstomSuffixEnumMap.get(name.substring(name.lastIndexOf(".")+1).toUpperCase());
+
+        return suffixEnum;
+    }
+
+    public $Suffix addSuffix(String suffix, String describe) {
+        if(suffix.indexOf(".") == 0) suffix = suffix.substring(1);
+
+        curstomSuffixEnumMap.put(suffix.toUpperCase(), describe);
+        return this;
+    }
+
+    public  String replaceSuffix(String fileName){
+        SuffixEnum se = getSuffix(fileName);
+
+        if(null != se) {
+            fileName = fileName.substring(0, fileName.toUpperCase().lastIndexOf(se.suffix)-1);
+        } else {
+            String se1 = getCustomSuffix(fileName);
+            if(null != se1) fileName = fileName.substring(0, fileName.toUpperCase().lastIndexOf(se1)-1);
+        }
+
+        return fileName;
     }
 
     public static enum SuffixEnum{
@@ -620,7 +658,17 @@ public class $Suffix {
         suffix_603("JPG","JPEG图形文件"),
         suffix_604("MME","Internet邮件扩展格式的多用途文件，经常作为发送e-mail时在AOL里附件而创建的文件；在一个多区MIM文件里的文件能用WinZip或其他类似程序打开"),
         suffix_605("MPG","MPEG动画文件"),
-        suffix_606("FFK","Microsoft快速查找文件");
+        suffix_606("FFK","Microsoft快速查找文件"),
+
+        suffix_JAR("JAR","Microsoft快速查找文件"),
+        suffix_PARCEL("PARCEL","Microsoft快速查找文件"),
+        suffix_SHA("SHA","Microsoft快速查找文件"),
+        suffix_SHA1("SHA1","Microsoft快速查找文件"),
+        suffix_SHA256("SHA256","Microsoft快速查找文件"),
+        suffix_CSS("CSS","Microsoft快速查找文件"),
+        suffix_GZ("GZ","Microsoft快速查找文件"),
+        suffix_TAR("TAR","Microsoft快速查找文件"),
+        suffix_TARGZ("TAR.GZ","Microsoft快速查找文件");
 
         private String suffix;
         private String describe;

@@ -221,6 +221,11 @@ public class $Zip {
                     fouts.close();
                 }
             }
+
+            if(allFileName.size() == 0) {
+                rs.addMessage("不支持该文件类型："+zipPath).setSuccess(false);
+            }
+
             fins.close();
             zins.close();
         } catch (Exception e) {

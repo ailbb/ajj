@@ -755,10 +755,48 @@ public class $Http {
         return sendRequest(new $Ajax(targetUrl).setType(method)).getDataToString();
     }
 
+
+    public String getIp(HttpServletRequest request) {
+        if (request == null) {
+            throw (new RuntimeException("getIpAddr method HttpServletRequest Object is null"));
+        }
+        String ip = request.getHeader("X-Real-IP");//通过Nginx作了反向代理后的获取真实ip
+        if ((ip == null) || (ip.length() == 0) || ("unknown".equalsIgnoreCase(ip))) {
+            ip = request.getHeader("x-forwarded-for");
+        }
+        if ((ip == null) || (ip.length() == 0) || ("unknown".equalsIgnoreCase(ip))) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if ((ip == null) || (ip.length() == 0) || ("unknown".equalsIgnoreCase(ip))) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if ((ip == null) || (ip.length() == 0) || ("unknown".equalsIgnoreCase(ip))) {
+            ip = request.getRemoteAddr();
+        }
+        if (ip.equals("0:0:0:0:0:0:0:1")){
+            ip = "127.0.0.1";
+        }
+        // 多个路由时，取第一个非unknown的ip
+        if (ip.contains(",")) {
+            ip=ip.split(",")[0];
+        }
+        return ip;
+    }
+
     public String getIp(String... name) throws UnknownHostException {
         InetAddress inetAddress = getInetAddress(last(name));
 
         return null == inetAddress ? "localhost" : inetAddress.getHostAddress();
+    }
+
+    public InetAddress getIPAddress(NetworkInterface networkInterface) {
+        for (InterfaceAddress address : networkInterface.getInterfaceAddresses()) {
+            InetAddress ipAddress = address.getAddress();
+            if (ipAddress instanceof Inet4Address) {
+                return ipAddress;
+            }
+        }
+        return null;
     }
 
     public InetAddress getInetAddress(String... name) throws UnknownHostException {

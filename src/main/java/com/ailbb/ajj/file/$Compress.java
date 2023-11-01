@@ -27,6 +27,7 @@ public class $Compress {
         return zip.uncompress(path);
     }
     public $Result unzip(String path, String descPath)  {
+        if(path.toLowerCase().endsWith("gz")) return gzip.uncompress(path, descPath);
         return zip.uncompress(path, descPath);
     }
 
@@ -96,7 +97,15 @@ public class $Compress {
      * @return
      */
     public boolean isCompressFile(String fileName){
-        return null == fileName ? false : (fileName.endsWith($Zip.$POSTFIX) || fileName.endsWith($GZip.$POSTFIX));
+        if(null == fileName) return false;
+
+        String[] ss = new String[]{$Zip.$POSTFIX, $GZip.$POSTFIX, "tar", "tar.gz", "gz", "zip", "7z"};
+
+        for(String s: ss) {
+            if(fileName.toLowerCase().endsWith(s.toLowerCase())) return true;
+        }
+
+        return false;
     }
 
 }
