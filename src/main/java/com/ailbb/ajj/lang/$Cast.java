@@ -37,4 +37,35 @@ public class $Cast {
         }
     }
 
+
+    /**
+     * 类型转换
+     * @param object
+     * @return
+     * @param <T>
+     */
+    public <T> T clone(T object) {
+        T t = null;
+        try {
+            Method[] methods = object.getClass().getMethods();
+            t = (T)object.getClass().getDeclaredConstructor().newInstance();
+
+            for(Method method : methods) {
+                if(method.getName().equals("getClass")) continue;
+                if(method.getName().indexOf("get") != -1 || method.getName().startsWith("is") ) {
+                    try {
+                        t.getClass().getMethod(method.getName().replace("get","set"), method.getReturnType()).invoke(t, method.invoke(object));
+                    } catch (Exception e){
+                        $.debugOut(e);
+                    }
+                }
+            }
+
+        } catch (Exception e){
+            e.printStackTrace();
+        } finally {
+            return t;
+        }
+    }
+
 }

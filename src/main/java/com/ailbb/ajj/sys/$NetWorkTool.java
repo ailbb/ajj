@@ -29,6 +29,25 @@ public class $NetWorkTool {
 
     public synchronized $NetIoState getNetWork(){return getNetWork(null); }
 
+    public boolean isLocalIp(String ip) {
+        if($.isEmptyOrNull(ip) || "localhost".equals(ip.toLowerCase())) return true;
+
+        for (InetAddress inetAddress : $.system.netWork.getLocalIps()) {
+            if(inetAddress.getHostName().toLowerCase().equals(ip)) return true;
+        };
+
+        return false;
+    }
+    public boolean isLocalIp(List<String> ips) {
+        if($.isEmptyOrNull(ips)) return true;
+
+        for (String ip : ips) {
+            if(isLocalIp(ip)) return true;
+        }
+
+        return false;
+    }
+
     public synchronized $NetIoState getNetWork(String targetIp){
         $NetIoState netIoState = new $NetIoState();
         $NetTestState netTestState1 = null;

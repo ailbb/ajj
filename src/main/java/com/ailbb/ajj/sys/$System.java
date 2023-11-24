@@ -21,10 +21,18 @@ import java.util.*;
  * Created by Wz on 6/20/2018.
  */
 public class $System {
-    public static $NetWorkTool netWork = new $NetWorkTool();
+    public $NetWorkTool netWork = new $NetWorkTool();
 
     public String system(){
         return System.getProperty("os.name").toLowerCase().startsWith("windows") ? "windows" : "linux";
+    }
+
+    public boolean isLocalIp(String ip) {
+        return netWork.isLocalIp(ip);
+    }
+
+    public boolean isLocalIp(List<String> ips) {
+        return netWork.isLocalIp(ips);
     }
 
     public OperatingSystemMXBean operatingSystemMXBean(){

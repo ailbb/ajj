@@ -428,6 +428,10 @@ public class $ {
         return file.isFile(path);
     }
 
+    public static boolean isDirectory(String path){
+        return file.isDirectory(path);
+    }
+
     public static boolean isExists(String path){
         return file.isExists(path);
     }
@@ -792,6 +796,16 @@ public class $ {
         return false;
     }
 
+    public <T> T cast(Object object, Class<T> clazz) {
+        return cast.cast(object, clazz);
+    }
+
+
+    public static <T> T clone(T object) {
+        return cast.clone(object);
+    }
+
+
     //* system
 
     public static String system(){
@@ -812,6 +826,14 @@ public class $ {
 
     public static boolean isLinux(){
         return !system.system().equals("windows");
+    }
+
+    public static boolean isLocalIp(String ip) {
+        return system.isLocalIp(ip);
+    }
+
+    public static boolean isLocalIp(List<String> ips) {
+        return system.isLocalIp(ips);
     }
 
     //* system

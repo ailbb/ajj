@@ -20,7 +20,7 @@ public class $Thread<T> {
     TimeUnit unit = TimeUnit.MILLISECONDS; // 时间单位
 
     public $Thread(){
-        this(300,300);
+        this(Runtime.getRuntime().availableProcessors()*3,Runtime.getRuntime().availableProcessors()*3);
     }
 
     public $Thread(int runThreadPoolSize, int scheduledPoolSize){

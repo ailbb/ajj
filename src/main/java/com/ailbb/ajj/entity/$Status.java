@@ -13,6 +13,8 @@ public class $Status {
     private String message = ""; // 状态消息
     private String tag = ""; // 状态标签
 
+    private boolean end = false; // 是否结束
+
 
     public static $Status getStatus(int i){
         $Status status = new $Status();
@@ -45,6 +47,7 @@ public class $Status {
         this.code = code;
         this.message = message;
         this.tag = tag;
+        this.end = true;
     }
 
     public boolean isSuccess() {
@@ -81,6 +84,14 @@ public class $Status {
     public $Status setCode(int code) {
         this.code = code;
         return this;
+    }
+
+    public boolean isEnd() {
+        return end;
+    }
+
+    public void setEnd(boolean end) {
+        this.end = end;
     }
 
     public enum SUCCESS {

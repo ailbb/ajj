@@ -16,6 +16,15 @@ public class $ConnConfiguration {
     private String password;
     private String url;
     private int timeOut = 1000 * 5 * 60;
+    private int retryTimes = 99;
+
+    public int getRetryTimes() {
+        return retryTimes;
+    }
+
+    public void setRetryTimes(int retryTimes) {
+        this.retryTimes = retryTimes;
+    }
 
     public int getTimeOut() {
         return timeOut;
@@ -47,7 +56,11 @@ public class $ConnConfiguration {
     public $ConnConfiguration setIp(List<String> ips) {
         this.ips.clear();
         for(String ip: ips) {
-            this.ips.add($.string.trim(ip));
+            String tip = $.string.trim(ip);
+
+            if($.isEmptyOrNull(this.getIp())) this.setIp(tip);
+
+            this.ips.add(tip);
         }
         return this;
     }
@@ -55,8 +68,13 @@ public class $ConnConfiguration {
     public $ConnConfiguration setIp(String[] ips) {
         this.ips.clear();
         for(String ip: ips) {
-            this.ips.add($.string.trim(ip));
+            String tip = $.string.trim(ip);
+
+            if($.isEmptyOrNull(this.getIp())) this.setIp(tip);
+
+            this.ips.add(tip);
         }
+
         return this;
     }
 
@@ -66,6 +84,9 @@ public class $ConnConfiguration {
 
     public $ConnConfiguration setIps(List<String> ips) {
         this.ips = ips;
+
+        if($.isEmptyOrNull(this.getIp())) this.setIp(ips.get(0));
+
         return this;
     }
 
@@ -95,6 +116,7 @@ public class $ConnConfiguration {
         this.password = password;
         return this;
     }
+
 
     @Override
     public String toString() {

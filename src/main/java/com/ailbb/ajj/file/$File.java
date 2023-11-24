@@ -492,7 +492,7 @@ public class $File {
                     inputChannel.close();
                     outputChannel.close();
 
-                    if(isDel) sfile.deleteOnExit();
+                    if(isDel) sfile.delete();
                 } catch (IOException e) {
                     rs.addError(exception(e));
                 }
@@ -572,7 +572,7 @@ public class $File {
                 if(!isReplace && targetFile.exists()) return; // 如果不替换，文件存在时候就跳过
 
                 $.file.writeFile(targetFile, $.file.readLine(f, runnable));
-                if(isDel) f.deleteOnExit();
+                if(isDel) f.delete();
             }
         }
     }
@@ -889,7 +889,7 @@ public class $File {
             File file = new File(getPath(p));
             if(!file.exists()) {
                 rs.addMessage(info(String.format("Delete directory：%s", p)));
-                file.deleteOnExit();
+                file.delete();
             }
         }
 
@@ -906,7 +906,7 @@ public class $File {
         for(File file : files) {
             if(null != file && !file.exists()) {
                 rs.addMessage(warn(String.format("Delete directory：%s", file.getPath())));
-                file.deleteOnExit();
+                file.delete();
             }
         }
 
@@ -947,6 +947,8 @@ public class $File {
 
         return rs;
     }
+
+    public $Result mkdirs(String... path) { return mkdir(path); }
 
     public $Result mkdir(String... path) {
         $Result rs = $.result();
