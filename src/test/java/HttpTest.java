@@ -1,26 +1,17 @@
-import com.ailbb.ajj.$;
-import com.ailbb.ajj.entity.$Result;
-import com.ailbb.ajj.http.Ajax;
-import net.sf.json.JSONObject;
-
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Properties;
 
 /*
  * Created by Wz on 6/30/2019.
  */
 public class HttpTest {
     public static void main(String[] args) throws IOException {
-        String app_id = "brd-app-01";
+        String app_id = "demo-app-01";
         String timestamp = "2022/03/29 09:20:51 241";
         String trans_id = "1648191363805";
-        String body = "{\"type\":\"normal-hbase\",\"limit\":100,\"param\":{\"table_name\":\"zb_zhw_yw_broadtech:xdr_msisdn\",\"day\":\"20220321\",\"msisdn\":\"18602333818\",\"starttime\":\"1\",\"endtime\":\"18\"}}";
-        String secret = "1E2F3FAA7346835928D5D9B13BC7CE3B";
+        String body = "{\"type\":\"normal-hbase\",\"limit\":100,\"param\":{\"table_name\":\"demo_table:test_data\",\"day\":\"20220321\",\"msisdn\":\"13800000000\",\"starttime\":\"1\",\"endtime\":\"18\"}}";
+        String secret = "DEMO_SECRET_KEY_FOR_TEST_ONLY";
         String p1=null;
         String p2=null;
 

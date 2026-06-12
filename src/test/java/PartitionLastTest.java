@@ -1,5 +1,5 @@
 import com.ailbb.ajj.$;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class PartitionLastTest {
     @Test

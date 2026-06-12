@@ -114,7 +114,7 @@ public class ShangbaoJDBCTest {
             "\tfrom check.check_lte_exchanger \n" +
             "\twhere time BETWEEN date_sub( now(), INTERVAL 50 MINUTE ) \tAND now()\n" +
             "\tand port in ('GigabitEthernet3/0/8(10G)','GigabitEthernet2/0/1','GigabitEthernet2/0/1','GigabitEthernet3/0/9(10G)','GigabitEthernet2/0/0')\n" +
-            " and host='172.26.1.25'\n" +
+            " and host='10.0.0.1'\n" +
             " group by  CASE WHEN PORT IN ('GigabitEthernet3/0/8(10G)') then 'ESB' \n" +
             "\tWHEN PORT IN ('GigabitEthernet2/0/1','GigabitEthernet2/0/2') then '集团信息化' \n" +
             "\tWHEN PORT IN ('GigabitEthernet3/0/9(10G)','GigabitEthernet2/0/0') then '管局' end\n" +
@@ -123,7 +123,7 @@ public class ShangbaoJDBCTest {
             "\n" +
             "select 'TT' momot_room,tx_flow/100 up_load from check_lte_interfaceinfo  \n" +
             "where  time BETWEEN date_sub( now(), INTERVAL 30 MINUTE ) \tAND now()\n" +
-            "and ip='172.26.1.198' and port='1/f/25';\n";
+            "and ip='10.0.0.2' and port='1/f/25';\n";
 
     static String overview_sql = "\n" +
             "select cpu_load,mem_load,disk_load\n" +
@@ -165,11 +165,11 @@ public class ShangbaoJDBCTest {
         $JDBCConnConfiguration jdbcConnConfiguration = new $JDBCConnConfiguration();
 
         jdbcConnConfiguration.setDriver("com.mysql.jdbc.Driver");
-        jdbcConnConfiguration.setPort(43306);
-        jdbcConnConfiguration.setIp("127.0.0.1");
-        jdbcConnConfiguration.setDatabase("check");
-        jdbcConnConfiguration.setUsername("root");
-        jdbcConnConfiguration.setPassword("broadtech");
+        jdbcConnConfiguration.setPort(3306);
+        jdbcConnConfiguration.setIp("demo-mysql-server");
+        jdbcConnConfiguration.setDatabase("testdb");
+        jdbcConnConfiguration.setUsername("testuser");
+        jdbcConnConfiguration.setPassword("Test@123456");
 
         $.jdbc.mysql.setConnConfiguration(jdbcConnConfiguration);
 

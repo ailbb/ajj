@@ -8,6 +8,6 @@ import java.util.Properties;
 public class PropertiesTest {
     public static void main(String[] args) {
 
-        System.out.println($.file.properties.getProperty("D:\\Z\\Code\\java\\java-ee\\Share\\sharepro\\code\\web-service\\sharepro\\src\\main\\resources\\cdb\\local-151\\cmf.yml", "cmf.login"));
+        System.out.println($.file.properties.getProperty("D:\\Demo\\Project\\demo-config\\src\\main\\resources\\config\\demo-config.yml", "cmf.login"));
     }
 }

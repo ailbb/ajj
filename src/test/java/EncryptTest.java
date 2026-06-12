@@ -17,9 +17,9 @@ public class EncryptTest {
     static int threads = 100; // 总数据大小
     static int tnum = 0;
     static List<String> tt = Arrays.asList(
-            "182028107", // 单条加密测试数据1
+            "demo_test_data1", // 单条加密测试数据1
             "{\"name\":\"color\",\"sex\":\"man\"}", // 单条加密测试数据2
-            "07"
+            "demo_test_data3"
     );
 
     public static void main(String[] args) throws Exception {
@@ -152,13 +152,13 @@ public class EncryptTest {
                 "#[%]#[%]#[%]"
         );
 
-        System.out.println("原值："+"13452180666");
+        System.out.println("原值："+"13800000000");
 //        String ekey = UUID.randomUUID().toString().getRowContext("-","");
         String ekey = "2";
 
         for(String k : keys) {
             try {
-                List<String> v = new Sm4Util(ekey).encrypt(k, Arrays.asList("13452180666"));
+                List<String> v = new Sm4Util(ekey).encrypt(k, Arrays.asList("13800000000"));
                 System.out.println("秘钥：" + k +" 加密值：" + v);
                 List<String> v1 = new Sm4Util(ekey).decrypt(k, v);
                 System.out.println("解密" + v1);
@@ -187,7 +187,7 @@ public class EncryptTest {
                 json = tt.get(tnum)+number;
                 try {
                 // 自定义的32位16进制密钥
-                String key = "888368581322491ace9q79348a2757d1";
+                String key = "demo32key_for_test_only0000000000000";
                 System.out.println("原值:"+json);
                 String cipher = $.encrypt.SM4encode(json, key);
                 System.out.println("加密:"+cipher);
@@ -212,7 +212,7 @@ public class EncryptTest {
                 json = tt.get(tnum)+number;
                 try {
                 // 自定义的32位16进制密钥
-                String key = "888368581322491ace9q79348a2757d1";
+                String key = "demo32key_for_test_only0000000000000";
                 System.out.println("原值:"+json);
 
                 Encryption eu = new Sm4Util(key);
@@ -238,7 +238,7 @@ public class EncryptTest {
                 json = tt.get(tnum)+number;
                 try {
                 // 自定义的32位16进制密钥
-                String key = "888368581322491ace9q79348a2757d1";
+                String key = "demo32key_for_test_only0000000000000";
                 String rule = "#[3]*[%]#[2]";
                 System.out.println("原值:"+json);
 
@@ -293,7 +293,7 @@ public class EncryptTest {
             int number = new Random().nextInt(100);
             json = tt.get(tnum)+number;
             // 自定义的32位16进制密钥
-            String key = "888368581322491ace9q79348a2757d1";
+            String key = "demo32key_for_test_only0000000000000";
 
             if(j == 1) {
                 String cipher = Sm4Util.getInstance(key).encrypt(ruleKey, json);

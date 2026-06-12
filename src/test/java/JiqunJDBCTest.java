@@ -34,7 +34,7 @@ public class JiqunJDBCTest {
             "WHERE\n" +
             "\ttime BETWEEN date_sub( now(), INTERVAL 40 MINUTE ) \n" +
             "\tAND now() \n" +
-            "\tAND ce.HOST = '172.26.4.1' \n" +
+            "\tAND ce.HOST = '10.0.0.3' \n" +
             "\tAND tr.d_motor_room IS NOT NULL \n" +
             "GROUP BY\n" +
             "\ttr.d_motor_room";
@@ -57,11 +57,11 @@ public class JiqunJDBCTest {
         $JDBCConnConfiguration jdbcConnConfiguration = new $JDBCConnConfiguration();
 
         jdbcConnConfiguration.setDriver("com.mysql.jdbc.Driver");
-        jdbcConnConfiguration.setPort(43306);
-        jdbcConnConfiguration.setIp("127.0.0.1");
-        jdbcConnConfiguration.setDatabase("check");
-        jdbcConnConfiguration.setUsername("root");
-        jdbcConnConfiguration.setPassword("broadtech");
+        jdbcConnConfiguration.setPort(3306);
+        jdbcConnConfiguration.setIp("demo-mysql-server");
+        jdbcConnConfiguration.setDatabase("testdb");
+        jdbcConnConfiguration.setUsername("testuser");
+        jdbcConnConfiguration.setPassword("Test@123456");
 
         $.jdbc.mysql.setConnConfiguration(jdbcConnConfiguration);
 

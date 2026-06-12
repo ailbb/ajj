@@ -1,5 +1,5 @@
 import com.ailbb.ajj.$;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -7,6 +7,30 @@ import java.util.Date;
 public class DateTest {
     // 指定格式化时间对象
     SimpleDateFormat f = new SimpleDateFormat("YYYY 年 MM 月 dd 日 HH 点 mm 分 ss 秒"); // 正则表达式
+
+    public static void main(String[] args) throws InterruptedException {
+        $.sout("测试计时器");
+        $.sout("测试计时器"+$.timeclock());
+        $.sout("测试计时器"+$.timeclock());
+        $.sout("测试计时器"+$.timeclock());
+        $.sout("测试计时器"+$.timeclock());
+//        $.timeclock(0); // 0是启动
+
+//        while (true) {
+//            System.out.println("等待时间："+$.timeclock() +"秒");
+//            System.out.println("程序已经运行了："+$.timeclock(-1) +"秒");
+//            if($.timeclock(-1) > 1000*20) {
+//                System.out.println("测试获取所有的值："+$.join($.getTimeclockCache(), "\t") +"");
+//                System.out.println("程序结束："+$.timeclock(0) +"秒");
+//                break;
+//            }
+//            Thread.sleep(1500);
+//        }
+//
+//        System.out.println("测试为空的值："+$.timeclock() +"秒");
+//        System.out.println("测试-1的值："+$.timeclock(-1) +"秒");
+//        System.out.println("测试为0的值："+$.timeclock(0) +"秒");
+    }
 
     @Test // 入口函数
     public void TestDateFormat(){

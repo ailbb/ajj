@@ -11,7 +11,7 @@ public class CronTest {
 /*
         boolean a = true;
 
-        Properties p = $.file.yml.getProperties("D:\\Z\\Code\\java\\java-ee\\Share\\sharepro\\code\\web-service\\sharepro\\src\\main\\resources\\cdb\\local-127\\auth-config\\auth-user.yml");
+        Properties p = $.file.yml.getProperties("D:\\Demo\\Project\\demo-config\\src\\main\\resources\\config\\demo-auth.yml");
 
         Object bbb = p.get("auth.users");
 

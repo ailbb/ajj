@@ -1,5 +1,6 @@
 import com.ailbb.ajj.$;
 import com.ailbb.ajj.file.$FileReplacer;
+import com.ailbb.ajj.unit.$Suffix;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,14 +13,21 @@ public class FileTest {
 
     public static int r = 0;
     public static long size = 0;
-
     public static void main(String[] args) {
+        $.system.getSystemInfo();
+
+//        $.getFile("application.yml");
+//        $.suffix.addSuffix("bbb","");
+//        $.file.copyFile(
+//                $.getFile("D:\\Code\\BRD\\BRD_UDO\\BRD_UDO_Server\\abm-fileserver\\src\\main\\resources\\package\\parcel\\BHBASE-2.2.3.bhbase.3.9.9-el7\\BHBASE-2.2.3.bhbase.3.9.9-el7.parcel"),
+//                "D:\\fileserver\\package\\"+ "aaa.bbb",
+//                true, false);
 
 //        for(String p : Arrays.asList(
-//                "D:\\Z\\Code\\holdyum\\cisdi-water-group\\smart_medicate_frontend-v1"
+//                "D:\\Demo\\Project\\demo-frontend"
 //        )){
 //            for(String ps : $.file.getFile(p).list()) {
-//                copyFileToModifyTxt( "D:\\Z\\Code\\holdyum\\cisdi-water-group\\smart_medicate_frontend-v1\\"+ps, new HashMap<String,String>(){{
+//                copyFileToModifyTxt( "D:\\Demo\\Project\\demo-frontend\\"+ps, new HashMap<String,String>(){{
 //                    put(".html",".txt");
 //                    put(".js",".txt");
 //                    put(".css",".txt");
@@ -33,10 +41,10 @@ public class FileTest {
 //        }
 
 //        for(String p : Arrays.asList(
-//                "D:\\Z\\Code\\holdyum\\cisdi-water-group\\smart_medicate_frontend-v1\\public",
-//                "D:\\Z\\Code\\holdyum\\cisdi-water-group\\smart_medicate_frontend-v1\\shell",
-//                "D:\\Z\\Code\\holdyum\\cisdi-water-group\\smart_medicate_frontend-v1\\src",
-//                "D:\\Z\\Code\\holdyum\\cisdi-water-group\\smart_medicate_frontend-v1\\theme"
+//                "D:\\Demo\\Project\\demo-frontend\\public",
+//                "D:\\Demo\\Project\\demo-frontend\\shell",
+//                "D:\\Demo\\Project\\demo-frontend\\src",
+//                "D:\\Demo\\Project\\demo-frontend\\theme"
 //        )){
 //            copyFileToModifyTxt(p, new HashMap<String,String>(){{
 //                put(".html",".txt");
@@ -50,23 +58,23 @@ public class FileTest {
 //            }}, true, false);
 //        }
 
-        for(String p : Arrays.asList(
-                "D:\\Z\\Code\\holdyum\\cisdi-water-group\\smart-medicate-server-v1\\src"
-        )){
-            copyFileToModifyTxt(p, new HashMap<String,String>(){{
-                put(".*",".txt");
-            }}, true, false);
-        }
+//        for(String p : Arrays.asList(
+//                "D:\\Demo\\Project\\demo-backend\\src"
+//        )){
+//            copyFileToModifyTxt(p, new HashMap<String,String>(){{
+//                put(".*",".txt");
+//            }}, true, false);
+//        }
 
 
-//        $.file.readLine($.getFile("D:\\Z\\Code\\holdyum\\cg-cque\\ExamPlatDb_data.sql"), new $FileReplacer() {
+//        $.file.readLine($.getFile("D:\\Demo\\Project\\demo-project\\ExamPlatDb_data.sql"), new $FileReplacer() {
 //            @Override
 //            public Object getRowContext(String row, int rowIndex) {
 //                if(!row.contains("INSERT"))  {
 //                    System.out.println("问题数据");
 ////                    System.out.println("append：" + row);
 ////                    System.out.println("write：" + row);
-////                    $.file.writeFile("D:\\Z\\Code\\holdyum\\cg-cque\\ExamPlatDb_data.sql", true, row+"\r\n");
+////                    $.file.writeFile("D:\\Demo\\Project\\demo-project\\ExamPlatDb_data.sql", true, row+"\r\n");
 //                }
 ////                System.out.println("skip：" + rowIndex);
 //                return null;
@@ -81,7 +89,7 @@ public class FileTest {
      */
     public static void deleteXIAOSHUDIAN(){
         for(String path : Arrays.asList(
-                "D:\\Z\\Code\\java\\java-ee\\pengyf\\cg-cque"
+                "D:\\Demo\\Project\\demo-java-project"
         )) {
             $.file.searchPath(path, file -> {
                 if(file.getName().startsWith(".")) {
@@ -110,7 +118,10 @@ public class FileTest {
         } else {
             for(String key : contextFilter.keySet()) {
                 if((key.equals(".*") || $.test(key+"$", f.getPath())) && !f.getName().startsWith(".")) {
-                    $.file.copyFile(f, "C:\\Users\\sirzh\\Desktop\\噻\\源代码\\后端代码\\" + f.getName().substring(0, f.getName().lastIndexOf(".")) + contextFilter.get(key), isReplace, isDel);
+                    $.file.copyFile(
+                            f,
+                            "C:\\Users\\demo\\Desktop\\output\\" + f.getName().substring(0, f.getName().lastIndexOf(".")) + contextFilter.get(key),
+                            isReplace, isDel);
                 }
             }
         }

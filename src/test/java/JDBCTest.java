@@ -119,11 +119,11 @@ public class JDBCTest {
         $JDBCConnConfiguration jdbcConnConfiguration = new $JDBCConnConfiguration();
 
         jdbcConnConfiguration.setDriver("com.mysql.jdbc.Driver");
-        jdbcConnConfiguration.setPort(43306);
-        jdbcConnConfiguration.setIp("127.0.0.1");
-        jdbcConnConfiguration.setDatabase("check");
-        jdbcConnConfiguration.setUsername("root");
-        jdbcConnConfiguration.setPassword("broadtech");
+        jdbcConnConfiguration.setPort(3306);
+        jdbcConnConfiguration.setIp("demo-mysql-server");
+        jdbcConnConfiguration.setDatabase("testdb");
+        jdbcConnConfiguration.setUsername("testuser");
+        jdbcConnConfiguration.setPassword("Test@123456");
 
         $.jdbc.mysql.setConnConfiguration(jdbcConnConfiguration);
 

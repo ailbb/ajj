@@ -5,7 +5,7 @@ import java.io.File;
 
 public class FileSearch {
     public static void main(String[] args) {
-        $.searchPath("D:\\Z\\Code\\broadtech\\DaShuJuZhiDaPingZhanShi", new $FileRunner() {
+        $.searchPath("D:\\Demo\\Project\\demo-dataview", new $FileRunner() {
             @Override
             public void run(File f) {
                 if(f.getName().indexOf("index.html") != -1) System.out.println(f.getAbsolutePath());
